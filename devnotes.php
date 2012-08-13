@@ -164,8 +164,8 @@ Vim functionality.
 
 <a name="w_and_b_movements" href="#"></a>
 <h3 class="farleft">w and b movements</h3>
-<img alt="W motion FSM 1" src="/fsm-300.png"/>
-<img alt="W motion FSM 2" src="/fsm2-300.png"/>
+<img alt="W motion FSM 1" src="/images/fsm-300.png"/>
+<img alt="W motion FSM 2" src="/images/fsm2-300.png"/>
 
 <p>
 The "w" and "b" movements proved to be particularly challenging to
@@ -258,7 +258,7 @@ such.
 </p>
 
 <!--
-<img alt="W motion FSM 1" class="figure" src="/fsm-400.png"/>
+<img alt="W motion FSM 1" class="figure" src="/images/fsm-400.png"/>
 <div class="caption">A first attempt at the w-motion finite state
 machine.</div>
 -->
@@ -299,7 +299,7 @@ space, and in fact represents an empty line.
 </p>
 
 <!--
-<img alt="W motion FSM 2" class="figure" src="/fsm2-400.png"/>
+<img alt="W motion FSM 2" class="figure" src="/images/fsm2-400.png"/>
 <div class="caption">A new w-motion machine which handles empty lines
 correctly.</div>
 -->
@@ -361,7 +361,7 @@ this code?" standpoint.  </p>
 
 <a name="search_and_replace_cycle_detection" href="#"></a>
 <h3 class="farleft">search and replace cycle detection</h3>
-<img alt="Search" class="figure" src="/search-400.png"/>
+<img alt="Search" class="figure" src="/images/search-400.png"/>
 
 <p>
 My original search-and-replace algorithm went something like this:
@@ -476,7 +476,7 @@ point, so for now, it will stay as-is.
 
 <a name="line_visibility_issues" href="#"></a>
 <h3 class="farleft">line visibiliy issues</h3>
-<img alt="Line Visibilities" class="figure" src="/linevis-400.png"/>
+<img alt="Line Visibilities" class="figure" src="/images/linevis-400.png"/>
 <p>
 The very first iterations of <span class="tagname">knowvim</span> made no
 adjustments to line visibility, meaning that if you were looking at a

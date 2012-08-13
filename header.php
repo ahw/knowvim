@@ -46,9 +46,9 @@ if ($pagename == "terminal") {
 <head>
 <title><?= $pagename ?>know vim</title>
 <!--
-<link rel="icon" type="image/png" href="favicon.png"/>
+<link rel="icon" type="image/png" href="/images/favicon.png"/>
 -->
-<link rel="image_src" href="knowvim-thumbnail.png"/>
+<link rel="image_src" href="/images/knowvim-thumbnail.png"/>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="generator" content=""/>
 <meta name="robots" content="index,follow"/>
