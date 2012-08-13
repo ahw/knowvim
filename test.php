@@ -3,8 +3,8 @@
     <head>
         
         <title>test</title>
-        <link rel="stylesheet" type="text/css" href="shCore.css"/>
-        <link rel="stylesheet" type="text/css" href="shThemeDefault.css"/>
+        <link rel="stylesheet" type="text/css" href="/css/shCore.css"/>
+        <link rel="stylesheet" type="text/css" href="/css/shThemeDefault.css"/>
 
 
         <script type="text/javascript" src="jquery-1.6.1.js"></script>

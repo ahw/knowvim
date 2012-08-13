@@ -63,16 +63,16 @@ if ($pagename == "terminal") {
 if ($browser == 'mobile') {
     // Assert: we need the meta viewport tag and the mobile CSS file.
     echo '<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"/>';
-    echo '<link rel="stylesheet" type="text/css" href="m.knowvim.css"/>';
+    echo '<link rel="stylesheet" type="text/css" href="/css/m.knowvim.css"/>';
 } else {
     // Assert: it's a regular computer (hopefully), so use the regular CSS.
-    echo '<link rel="stylesheet" type="text/css" href="knowvim.css"/>';
+    echo '<link rel="stylesheet" type="text/css" href="/css/knowvim.css"/>';
 }
 ?>
 
 
-<link rel="stylesheet" type="text/css" href="shCore.css"/>
-<link rel="stylesheet" type="text/css" href="shThemeDefault.css"/>
+<link rel="stylesheet" type="text/css" href="/css/shCore.css"/>
+<link rel="stylesheet" type="text/css" href="/css/shThemeDefault.css"/>
 
 
 <script type="text/javascript" src="jquery-1.6.1.js"></script>
