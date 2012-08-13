@@ -1,0 +1,19 @@
+Welcome to knowvim.com, a place where you'll be introduced to Vim, text editor
+of the gods. If you're a programmer and have heard of Vim before, you know why
+you're here.  If you have no idea what's going on, here's the deal: programmers
+spend tons of time in source code; writing, removing and tweaking what is
+ultimately just a bunch of text.  They do all this with (no surprise) a text
+editor; a program that is used on a daily basis for the grunt work of coding and
+system administration.
+
+If you're on a Linux or Mac system you've got some choices for text editors,
+some available in both and some not: Nano, Emacs, Gedit, Vim, Eclipse, and
+TextMate, among others.  (As an aside, if you're on Windows, your life still
+sucks, but there is hope to be found in gvim. See the "links" page.)  If you
+desire greatness, have a willingness to learn, are patient, and know what's good
+for you, you have one choice, and that is Vim.  You really should know Vim.
+
+Use the links above to read stuff like, "why Vim?", where to start if you're a
+n00b, and advanced material for advanced individuals.  The python, latex, and
+java files are there for experimenting with the kind of code you might actually
+use in the real world (and by "real world" I mean "college courses").

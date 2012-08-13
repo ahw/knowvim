@@ -1,0 +1,14 @@
+Why you should know Vim:
+
+ * It is available on all major Linux distributions as well as Mac OS X.
+ * It employs a text-based user interface.  This means it requires no
+   graphical environment, just access to a terminal.  Especially useful and
+   sometimes necessary when SSHing into a remote machine.
+ * It is the well-established Swiss Army knife of UNIX-based systems.
+ * Your dad knew Vim.
+ * It is a chick magnet.
+ * It is a man tractor beam.
+ * People will respect you more.
+ * Vim is free and open source software.
+ * You need to pick a side in the Vim versus Emacs religious wars, and Vim is
+   the right side.  (See http://en.wikipedia.org/wiki/Editor_war.)

@@ -1,0 +1,53 @@
+SEARCH ONLY
+-----------
+For a simple search just type "/word_i_want_to_find".  The slash will put your
+cursor down below, kind of like Execute mode, except it's not.  Hit ENTER and
+Vim will put the cursor at the next occurrence of whatever word you were
+searching for.  If you were to type "i" from here you'd start Inserting at that
+point.  Try typing "/the" then press ENTER.  Cool, huh?
+
+If you want to find the next occurrence, just start hitting "n" (for "next") and
+the cursor will jump around to each occurence of the word.  "Search" isn't
+really it's own separate mode in Vim but I'm going to make this finite state
+machine anyway just to provide some idea of what's going on.  You'll figure it
+out soon enough.
+
+        +--------+   "/"    . . . . . . 
+        |        |--------> .         .-----+
+        | Normal |          . Search  .     | "n" Find the next occurence.
+        |        | <--------.         . <---+
+        +--------+   [ESC]  . . . . . .
+
+              (there are more lines after this, 50 in all)
+
+SEARCH AND REPLACE
+------------------
+Ah yes, ye olde search-and-replace. This piece of functionality has been around
+ever since people started doing things one way for a really long time only to
+realize they actually wanted to do it differently. Ever done that? Let's not go
+crazy here (there are many variations), I'm just going to give you the command
+that I use 99% of the time and I'm sure you'll take it from there. Here she is:
+
+              :%s/old_term/new_term/gc     Try :%s/the/TTTHHHEEE/gc
+              ||  |        |        ||
+              ||  |        |        ||
+              ||  what     |        ||
+              ||  you are  |        |+----+
+              ||  looking  |        |     |
+              ||  for     what      |     |
+              ||         you are    | "confirm" means 
+         +----+|        replacing   | ask before each replace
+         |     +--+      it with    |
+         |        |             "global"
+         |    "%s" means        means do
+         |    search the        this for
+         |    whole dang    all occurences
+         |     document
+      Execute
+        mode
+
+That's it! We've covered the basics of Normal, Insert, Execute, Search and
+Search-and-Replace. Other modes real Vim has that have been left out include
+Visual, Visual-Block, and Command-Line, but you'll look those up later,
+right? The only modes I have partially implemented here and not mentioned at
+all are Replace ("R") and Visual-Line ("V").

@@ -1,0 +1,19 @@
+Assuming you're a newbie, Vim is very much unlike any editor you've used before.
+It looks familiar enough, but as soon as you try typing anything, weird stuff
+happens. Type 'Andrew' and you'll see what I mean (no really, try it).
+ 
+Here you have two choices, a sort of red pill, blue pill, kind of scenario.  If
+you only came here to learn the teensy, tiniest, smallest set of commands you'll
+need to use Vim, then we may as well get this over with. Yours is the blue pill.
+ 
+     0) At a terminal you'd type "vim FILENAME" to open up a file in Vim.
+     1) Press "i". Now you can type.
+     2) Use the arrow keys to move around. Backspace and delete as usual.
+     3) When you're done hit [ESC]. The word "INSERT" will disappear.
+     4) To save the file and quit type ":wq" and hit ENTER.  To quit without
+     saving type ":q!" and hit ENTER.
+ 
+For those choosing red, well at least you know some super basics about getting
+in, editing, and getting out of Vim. Now hit [ESC], type ":o second.html",
+(don't worry about typing at the bottom of the screen for now), breathe deeply,
+and hit ENTER.

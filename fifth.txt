@@ -1,0 +1,30 @@
+If you're like most normal people, you'll need some time to digest all the
+information just thrown at you. The commands we just covered are literally the
+only ones I used for the first few weeks learning Vim. If you're just starting
+out I would encourage you to stick to these for now, and maybe give them a test
+drive on the code examples I've provided (python, latex, java).  Or maybe do
+":wq" and start something brand-new.  In case you hadn't noticed, there are some
+helpful links towards the bottom that open up various panels for you to
+reference as you learn.
+
+Below is a table summarizing what has been covered.  There is, however, ONE more
+really useful thing I think you should know about before we call it a day, and
+that is search and replace.  It's used all the time by everyone so it's a good
+one to know about.  When you're ready, type ":o sixth.html" and hit ENTER.
+
+ Key   | Action         | How you'll remember this
+-------|----------------|-------------------------------------------------------
+ hjkl  | Move around    | A hook, K2, left of "jk", right of "jk".
+       |                | 
+ i     | Enter Insert   | "i" stands for "Insert"
+       |                | 
+ [ESC] | Enter Normal   | Escape from wherever you are, go back to the mode
+       |                | where everything makes sense and life is easy: Normal
+       |                | mode.
+       |                | 
+ :     | Enter Execute  | Twoface, coin flipping, just wanting what's fair.
+       |                | 
+ :wq   | Save and quit  | "write" and "quit"
+       |                | 
+ :q!   | Quit no save   |  I KNOW WHAT I'M DOING (YOU'RE YELLING), JUST QUIT!
+       |                | 

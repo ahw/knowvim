@@ -1,0 +1,78 @@
+<pre class="lineno">  1</pre><pre class="inputline">Glad to see you here. The "start" section covered a really tiny set of commands</pre>
+<pre class="lineno">  2</pre><pre class="inputline">to get people started with Vim. Here, I'll talk about some other commands I</pre>
+<pre class="lineno">  3</pre><pre class="inputline">personally find quite useful. If you're feeling information overload setting in</pre>
+<pre class="lineno">  4</pre><pre class="inputline">after going through the "start" section don't sweat it; stick with those simple</pre>
+<pre class="lineno">  5</pre><pre class="inputline">commands and come back later when you want to get faster. Note: these commands</pre>
+<pre class="lineno">  6</pre><pre class="inputline">are all done within Normal mode.</pre>
+<pre class="lineno">  7</pre><pre class="inputline"> </pre>
+<pre class="lineno">  8</pre><pre class="inputline">TL;DR: Look at this table.</pre>
+<pre class="lineno">  9</pre><pre class="inputline"> </pre>
+<pre class="lineno"> 10</pre><pre class="inputline">Command | Action                     | How you'll remember this</pre>
+<pre class="lineno"> 11</pre><pre class="inputline">--------+----------------------------+------------------------------------------</pre>
+<pre class="lineno"> 12</pre><pre class="inputline"> .      | Repeat last command        | No idea, it's just awesome. Try "dd" then</pre>
+<pre class="lineno"> 13</pre><pre class="inputline">        |                            | press and hold "."</pre>
+<pre class="lineno"> 14</pre><pre class="inputline">        |                            |</pre>
+<pre class="lineno"> 15</pre><pre class="inputline">--------+----------------------------+------------------------------------------</pre>
+<pre class="lineno"> 16</pre><pre class="inputline">        |                            |</pre>
+<pre class="lineno"> 17</pre><pre class="inputline"> w      | Move to next word          | "w" stands for "word."</pre>
+<pre class="lineno"> 18</pre><pre class="inputline"> b      | Move to previous word      | Go (b)ack one word.</pre>
+<pre class="lineno"> 19</pre><pre class="inputline"> 0      | Move to beginning of line  | Zero is the beginning of everything.</pre>
+<pre class="lineno"> 20</pre><pre class="inputline"> $      | Move to the end of line    | If you've used regular expressions this</pre>
+<pre class="lineno"> 21</pre><pre class="inputline">        |                            | makes sense. If not, then how about</pre>
+<pre class="lineno"> 22</pre><pre class="inputline">        |                            | "Money doesn't matter in the END" (?)</pre>
+<pre class="lineno"> 23</pre><pre class="inputline"> }      | Move to next paragraph     | Imagine drawing one of those beautiful</pre>
+<pre class="lineno"> 24</pre><pre class="inputline">        |                            | curly braces around each paragraph in</pre>
+<pre class="lineno"> 25</pre><pre class="inputline">        |                            | your text.</pre>
+<pre class="lineno"> 26</pre><pre class="inputline"> {      | Move to previous paragraph | It's the opposite of "}".</pre>
+<pre class="lineno"> 27</pre><pre class="inputline"> gg     | Move to very top line      | Pictures the two g's as a couple of</pre>
+<pre class="lineno"> 28</pre><pre class="inputline">        |                            | balloons floating up into the sky. I</pre>
+<pre class="lineno"> 29</pre><pre class="inputline">        |                            | know, it's dumb.</pre>
+<pre class="lineno"> 30</pre><pre class="inputline"> G      | Move to very last line     | Contrast "G" with "gg"; "G" is like a</pre>
+<pre class="lineno"> 31</pre><pre class="inputline">        |                            | humongous heavy cinder block falling to</pre>
+<pre class="lineno"> 32</pre><pre class="inputline">        |                            | the bottom of the ocean.</pre>
+<pre class="lineno"> 33</pre><pre class="inputline">        |                            |</pre>
+<pre class="lineno"> 34</pre><pre class="inputline">--------+----------------------------+------------------------------------------</pre>
+<pre class="lineno"> 35</pre><pre class="inputline">        |                            |</pre>
+<pre class="lineno"> 36</pre><pre class="inputline"> dd     | Delete current line        | "How (d)o I (d)elete a line?"</pre>
+<pre class="lineno"> 37</pre><pre class="inputline"> D      | Delete rest of line        | Imagine the "D" as a giant mouth about to</pre>
+<pre class="lineno"> 38</pre><pre class="inputline">        |                            | eat the rest of the line.  Nom.</pre>
+<pre class="lineno"> 39</pre><pre class="inputline"> x      | Delete character           | Imagine the "x" as a crosshairs that</pre>
+<pre class="lineno"> 40</pre><pre class="inputline">        |                            | appears right before you zap a character</pre>
+<pre class="lineno"> 41</pre><pre class="inputline">        |                            | out of existence.</pre>
+<pre class="lineno"> 42</pre><pre class="inputline"> dw     | Delete word                | (d)elete the next (w)ord.</pre>
+<pre class="lineno"> 43</pre><pre class="inputline">        |                            |</pre>
+<pre class="lineno"> 44</pre><pre class="inputline"> dgg    | Delete to top              |</pre>
+<pre class="lineno"> 45</pre><pre class="inputline"> dG     | Delete to bottom           |</pre>
+<pre class="lineno"> 46</pre><pre class="inputline"> cw     | Delete word and INSERT     | The "c" stands for "change"</pre>
+<pre class="lineno"> 47</pre><pre class="inputline"> C      | Delete to end and INSERT   | It's just like D but with INSERT</pre>
+<pre class="lineno"> 48</pre><pre class="inputline"> r[x]   | Replace single             |</pre>
+<pre class="lineno"> 49</pre><pre class="inputline"> R      | REPLACE mode               | It's pretty obvious what the giant</pre>
+<pre class="lineno"> 50</pre><pre class="inputline">        |                            | capital "R" stands for.</pre>
+<pre class="lineno"> 51</pre><pre class="inputline"> s      | Delete char and INSERT     | No idea how you'll remember this,</pre>
+<pre class="lineno"> 52</pre><pre class="inputline">        |                            | you just will.</pre>
+<pre class="lineno"> 53</pre><pre class="inputline"> S      | Erase line and INSERT      | Same as above.</pre>
+<pre class="lineno"> 54</pre><pre class="inputline"> ~      | Toggle case                | Again, no idea how you'll remember this</pre>
+<pre class="lineno"> 55</pre><pre class="inputline">--------+----------------------------+------------------------------------------</pre>
+<pre class="lineno"> 56</pre><pre class="inputline">        |                            |</pre>
+<pre class="lineno"> 57</pre><pre class="inputline"> yy     | Copy the current line      | "y" stands for "yank." I guess imagine</pre>
+<pre class="lineno"> 58</pre><pre class="inputline">        | to "clipboard"             | that lines don't "want" to be copied to</pre>
+<pre class="lineno"> 59</pre><pre class="inputline">        |                            | the clipboard, so you must "yank" them.</pre>
+<pre class="lineno"> 60</pre><pre class="inputline"> p      | Paste clipboard contents   | "p" stands for "paste."</pre>
+<pre class="lineno"> 61</pre><pre class="inputline">        | into line below</pre>
+<pre class="lineno"> 62</pre><pre class="inputline"> </pre>
+<pre class="lineno"> 63</pre><pre class="inputline"> Note: Just so we're clear, Vim does not really use ridiculous mainstream</pre>
+<pre class="lineno"> 64</pre><pre class="inputline">       metaphors like "clipboard" when speaking of "copying and pasting"</pre>
+<pre class="lineno"> 65</pre><pre class="inputline">       lines of text (it uses "registers," because those sound infinitely</pre>
+<pre class="lineno"> 66</pre><pre class="inputline">       more serious and hardcore).  Nonetheless, when starting out you can</pre>
+<pre class="lineno"> 67</pre><pre class="inputline">       think of "yy" and "p" this way.</pre>
+<pre class="lineno"> 68</pre><pre class="inputline"> </pre>
+<pre class="lineno"> 69</pre><pre class="inputline">        |                            |</pre>
+<pre class="lineno"> 70</pre><pre class="inputline">--------+----------------------------+-----------------------------------------</pre>
+<pre class="lineno"> 71</pre><pre class="inputline">        |                            |</pre>
+<pre class="lineno"> 72</pre><pre class="inputline"> i      | Enter Insert               | "i" stands for "Insert."</pre>
+<pre class="lineno"> 73</pre><pre class="inputline"> I      | Enter Insert at very       | Capital "I" is like "i" on steroids.</pre>
+<pre class="lineno"> 74</pre><pre class="inputline">        | beginning of line.         |</pre>
+<pre class="lineno"> 75</pre><pre class="inputline"> a      | Enter Insert AFTER the     | "a" stands for "after."</pre>
+<pre class="lineno"> 76</pre><pre class="inputline">        | cursor                     |</pre>
+<pre class="lineno"> 77</pre><pre class="inputline"> A      | Enter Insert at very end   | Capital "A" is like "a" on steroids.</pre>
+<pre class="lineno"> 78</pre><pre class="inputline">        | of line                    |</pre>

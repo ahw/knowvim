@@ -1,0 +1,44 @@
+Let's talk about Normal mode.  
+
+Yes, you can move with the arrow keys, but you should avoid using this crutch if
+at all possible (and it's possible).  I call it a crutch because real Vim users
+scoff at arrow key navigation with a certain sense of elitism.  Alas, to join
+the cool kids you need something different.  In Vim, these keys are "h", "j",
+"k", and "l", and these are the directions they move the cursor:
+
+                      "k"
+                      ---
+                       |               You can either press them repeatedly or
+                       |               simply press and hold.  For example,
+            "h"  |-----+-----|  "l"    press and hold "j" until you see some
+                       |               more text (there are 44 lines in total
+                       |               the screen just shows the first 20).
+                      ---
+
+                      "j"
+
+
+Nice.  Notice how awesome it is that your fingers can stay on home row while
+navigating around the document.  "j" and "k" are probably the ones you'll use
+the most to begin with.  Isn't it convenient how they're right underneath your
+index and middle finger?  And yet, as convenient as this is, it defies
+conventions that have been cemented into our brains by almost every piece of
+consumer software ever developed, and for good reason.  They're ARROWS, after
+all; their purpose seems pretty clear.  Just give "hjkl" a shot for a while and
+soon it'll be second nature.
+
+
+ Key    Action      How you'll remember this
+ ---    ------      ------------------------
+   j    Move down   "j" looks like a hook that points downward at the end of a
+                    fishing line.
+
+   k    Move up     "k" stands for K2 -- the second-highest mountain in the
+                    world that for obvious reasons should remind you of things
+                    that go up.
+
+   h    Move left   It's to the left of "jk", your two most oft-used keys.
+
+   l    Move right  It's to the right of "jk", your two most oft-used keys.
+
+Type ":o fourth.html" and hit ENTER.

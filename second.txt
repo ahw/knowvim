@@ -1,0 +1,20 @@
+The reason why the letters you type sometimes cause strange things to happen and
+sometimes insert text as you would expect is because Vim is a "modal editor,"
+meaning the keys you press will cause different things to happen depending on
+the "mode" Vim is in.
+
+For now, let's talk about two modes: Normal and Insert.  When you press "i" you
+enter "INSERT" mode.  This allows you to type stuff.  Hitting [ESC] causes you
+to leave Insert mode and enter Normal mode.  Nothing appears in the bottom  bar
+of the screen in Normal mode because there isn't any need; it's the default
+mode, the most common mode, the mode you want to see after a long day at the
+office, the mode of your dreams, the mode you desire.  A brief finite state
+machine, because I'm a computer scientist and I love these things:
+
+        +--------+   "i"    +--------+   See? It's real simple, just switchin'
+        |        |--------> |        |   back 'n' forth between modes in a
+        | Normal |          | Insert |   modal editor.
+        |        | <--------|        |
+        +--------+   [ESC]  +--------+   Type ":o third.html" and hit ENTER.
+
+

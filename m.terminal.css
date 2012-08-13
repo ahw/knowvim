@@ -1,0 +1,66 @@
+h1 {
+    text-align:center;
+}
+
+html {
+    margin:0;
+    padding:0;
+    font-family:Arial,Helvetica;
+    background-color:#E0E0FF;
+}
+
+body {
+    height:100%;
+    color:#555;
+    margin:0;
+    background-color:#E0E0FF;
+    padding-left:0.5em;
+    padding-right:0.5em;
+}
+
+p {
+}
+
+.bold {
+    font-weight:bold;
+}
+
+.centered {
+    text-align:center;
+}
+
+img {
+    display:none;
+}
+
+pre {
+    overflow:auto;
+}
+
+#beta {
+    vertical-align:80%;
+    font-size:50%;
+    color:green;
+    margin-left:-0.5em;
+}
+
+a#homelink {
+    text-decoration:none;
+}
+
+a#homelink:visited {
+    color:#555;
+}
+a#homelink:hover {
+    color:#555;
+}
+a#homelink:visited {
+    color:#555;
+}
+a#homelink:active {
+    color:#555;
+}
+
+.tagname {
+    font-weight:bold;
+}

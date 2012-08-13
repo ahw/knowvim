@@ -1,0 +1,6 @@
+h   Move left   dd  Delete line I   INSERT  :w  Write file (save)
+l   Move right  x   Delete char a   INSERT (after)  :wq Write and quit
+k   Move up yy  Yank line (copy)    <ESC>   NORMAL  :q! Quit without write
+j   Move down   p   Paste line below    /pattern    Search  :o filename Open
+                n   Next occurrence     
+

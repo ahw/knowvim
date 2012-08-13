@@ -1,0 +1,60 @@
+Think of Normal mode as a giant sheet of perfectly transparent ice that has
+frozen over top of all the words in your document. You skate gracefully over
+this ice with "hjkl" movements.  Whenever you need to type something just triple
+toe loop over to where you want using the "hjkl" keys, then press "i" and begin
+furiously typing away.  When you're done, hit [ESC], and you'll surface from the
+depths of your deep blue document which will immediately freeze over again so
+you can use your favorite keys, "hjkl".
+
+Let's review:
+
+1) To get into your document you type (from the command line) "vim FILENAME".
+   Since this is all in the browser, we haven't actually had to do that,
+   which is why I want to mention it here.
+
+2) To move the cursor up and down it's "j" like a hook sinking down and "k" like
+   K2, pointing up.  To move left and right it's the two keys to the left and
+   right of "jk", these are "h" and "l".
+
+   (there's more text below this; 60 lines in total -- hold "j" to scroll down)
+
+3) To get back into Normal mode, where everything is frozen and you just skate
+   on top of it, hit [ESC].  If you're already in Normal mode hitting [ESC]
+   won't hurt you, you'll just stay in that mode.
+
+4) Getting out of Vim was covered briefly at the start, but it really deserves
+   more discussion.  There's another mode we haven't covered yet, and that's
+   "Execute" mode.  You can get to Execute mode from Normal mode by typing
+   ":" -- a colon.  The cursor will move to the bottom of the screen.  Now
+   you can type a command.  In most programs Ctrl+S is the shortcut for "save".
+   In Vim it's ":w".  To quit, type ":q".  If you're trying to quit and haven't
+   saved a modified file, Vim won't let you just leave without being more
+   explicit.  Here you have two options:
+
+     ":wq"  This says, "write and quit."
+     ":q!"  This says, "Just quit, I don't want to save!"
+
+   There are many other things you could type after the colon, but these
+   two, ":wq" and ":q!" are the two you'll use 99% time.  The other one
+   you've been using is ":o" which stands for "open" if you haven't figured
+   that out. If you're feeling adventurous try ":colorscheme hicon.
+
+A new finite state machine is in order:
+
+        +--------+   "i"    +--------+
+        |        |--------> |        |
+        | Normal |          | Insert |
+        |        | <--------|        |
+        +--------+   [ESC]  +--------+
+          |    ^
+          |    |
+      ":" |    | [ESC]   You can remember Execute mode because the two dots
+          |    |         of the colon kind of look like the two sides of the
+          V    |         coin that Twoface (from Batman?) always flips when
+       +---------+       deciding whether or not to kill (i.e., execute)
+       |         |       someone.  Macabre, I know, but now you'll remember.
+       | Execute |
+       |         |       Type ":o fifth.html" when you think you've had your
+       +---------+       fill of this crazy-awesome ASCII art.
+
+

@@ -1,0 +1,385 @@
+code {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight:bold;
+}
+
+.small {
+    font-size:8pt;
+    margin:0px;
+}
+
+.italic {
+    font-style:italic;
+}
+
+.tagname {
+    font-weight:bold;
+}
+pre.example {
+    background-color:white;
+    border-color:gray;
+    border-style:solid;
+    border-width:1px;
+    display:block;
+    padding:0.5em;
+    border-radius:5px;
+}
+
+img.figure {
+    display:block;
+}
+
+img {
+    display:inline;
+    margin-right:auto;
+    margin-left:auto;
+}
+
+.bold {
+    font-weight:bold;
+}
+
+#file_links {
+    text-align:center;
+}
+
+.settings_info {
+    font-weight:bold;
+    color:#777;
+    margin:0px;
+}
+
+.info {
+    color:#C00;
+}
+
+.error {
+    background-color:#FAFA00;
+    color:#111;
+    /* font-weight:bold; */
+}
+
+h1 {
+    margin-bottom:0px;
+    text-align:center;
+}
+
+a {
+    text-decoration:none;
+    outline:none;
+}
+
+a.contrast:link { color:green; }
+a.contrast:visited { color:green; }
+a.contrast:hover { color:green; text-decoration:underline; }
+a.contrast:active { color:green; }
+
+a.current_page:link { color:green; }
+a.current_page:visited { color:green; }
+a.current_page:hover { color:white; }
+a.current_page:active { color:white; }
+
+
+a#write_output_panel_hide_link:link { color:#D00; }
+a#write_output_panel_hide_link:visited { color:#D00; }
+a#write_output_panel_hide_link:hover { color:#D00; text-decoration:underline; }
+a#write_output_panel_hide_link:active { color:#D00; }
+
+a.panel_link { font-size:8pt; }
+a.panel_link:link { color:green; }
+a.panel_link:visited { color:green; }
+a.panel_link:hover {
+    color:green;
+    text-decoration:underline;
+}
+a.panel_link:active { color:green; }
+
+
+a:link { color:#555; } /* unvisited link  */
+a:visited { color:#555; } /* visited link    */
+a:hover { color: #DDD; }
+a:active { color: #DDD; }
+/* a:hover { color:#A0C0FF; } mouse over link */
+/* a:active { color:#DDF; } selected link   */
+
+.align-right {
+    float:right;
+    margin: 0px 0px 10px 10px;
+}
+
+.align-left {
+    float:left;
+    margin: 0px 10px 10px 0px;
+}
+
+.center {
+    text-align:center;
+}
+
+html {
+    height:100%;
+    margin-bottom:1px;
+    font-family: Arial, Helvetica, sans-serif;
+    /* note: trebuchet ms and tahoma also look good */
+    font-size: 90%;
+    color:#575757 
+}
+
+body {
+    text-align:center; /* for IE */
+    background-color:#DDF;
+}
+
+.mainbox {
+    color:#555;
+    width:980px;  /* 980 + 10 + 10 = 900 total width */
+    padding:10px;
+    text-align:left;
+    margin-top:30px;
+    margin-bottom:0px;
+    margin-left:auto;
+    margin-right:auto;
+    background:white;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    background-position:center;
+    background-color:#DDF;
+    border:1px #ccf solid;
+    border-radius: 10px;
+}
+
+h2.longtext {
+}
+
+.faq {
+    font-size:10pt;
+    text-align:justify;
+    /* width:600px; */
+    /* margin-left:auto; */
+    /* margin-right:auto; */
+}
+
+.longtext {
+    font-size:11pt;
+    text-align:justify;
+    width:600px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#write_output {
+    padding-top:3px;
+    display:none;
+    background-color:white;
+    border-color:#D00;
+    border-width:2px;
+    border-style:solid;
+}
+
+#instruction_panel {
+    display:none;
+    border-width:1px;
+    border-style:solid;
+    border-color:#DDF;
+    display:none;
+    margin-bottom:-25px;
+    background-color:white;
+}
+
+
+#settings {
+    display:none;
+    margin-bottom:-25px;
+}
+
+#about {
+    border-width:1px;
+    border-style:solid;
+    border-color:#DDF;
+    background-color:white;
+}
+
+#advanced_commands_panel {
+    display:none;
+    margin-bottom:-25px;
+}
+
+#adv_commands_table {
+    width:850px;
+    margin-right:auto;
+    margin-left:auto;
+}
+
+.commands_table {
+    width:850px;
+    margin-right:auto;
+    margin-left:auto;
+}
+
+#basic_commands_panel {
+    display:none;
+    margin-bottom:-25px;
+}
+
+#copyright {
+    text-align:center;
+    font-size:12pt;
+    font-weight:bold;
+    display:block;
+}
+
+#center_div {
+    margin-left:auto;
+    margin-right:auto;
+    margin-top: 100px;
+    width: 320px;
+    height: 320px;
+}
+
+/* #canvas_element { */
+    /* width:399px; */
+    /* height:300px; */
+    /* margin-left:auto; */
+    /* margin-right:auto; */
+/* } */
+
+pre {
+    font-family:"Monospace", monospace;
+    display:inline;
+    margin-top:0px;
+    margin-bottom:0px;
+    font-size:12pt;
+}
+
+.outlined {
+    border-color:gray;
+    border-width:1px;
+    border-style:solid;
+}
+
+.tilda_inputline {
+    font-size:12pt;
+    border:none;
+    color:#555;
+    background-color:#DDF;
+    width:800px;
+    display:inline-block;
+}
+
+.inputline {
+    font-size:12pt;
+    border:none;
+    color:#555;
+    background-color:#DDF;
+    width:800px;
+    display:inline-block;
+}
+
+.hidden {
+    display:none;
+}
+
+#beta {
+    vertical-align:80%;
+    font-size:10pt;
+    color:green;
+    margin-left:-5px;
+}
+
+td.command {
+    color:black;
+    /* font-weight:bold; */
+    text-align:left;
+    padding-left:5px;
+    font-family:"Monospace",monospace;
+}
+
+td.command.notyet {
+    /* color:#777; */
+}
+
+td.def.notyet {
+    color:#CC0000;
+}
+
+td.def.never {
+    color:green;
+}
+
+td.def {
+    color:#777;
+    padding-right:15px;
+    padding-left:5px;
+}
+
+.tilda_lineno {
+    font-size:12pt;
+    border:none;
+    color:#008;
+    font-weight:bold;
+    margin-right:8px;
+    display:inline-block;
+}
+
+.lineno {
+    font-size:12pt;
+    border:none;
+    color:green;
+    font-weight:bold;
+    margin-right:8px;
+    display:inline-block;
+}
+
+#cursor_char {
+    background-color:#CC0000;
+    color:white;
+}
+
+#bottom_bar {
+    margin-top:2px;
+}
+
+.source_code_link {
+    margin-right:15px;
+}
+
+#vimwindow {
+    width:840px;
+    margin-right:auto;
+    margin-left:auto;
+    /* border-width:1px; */
+    /* border-style:solid; */
+    /* border-color:#555; */
+    margin-top: 10px;
+    text-align:center;
+    text-align:left;
+}
+
+.caption {
+    margin-top:10px;
+    margin-bottom:10px;
+    text-align:center;
+    color:black;
+}
+
+#narrow {
+    width:610px;
+    margin-right:auto;
+    margin-left:auto;
+    margin-top: 10px;
+    text-align:center;
+    text-align:justify;
+}
+
+.farleft {
+    margin-top:40px;
+    margin-left:-120px;
+}
+
+#statusbar {
+    text-align:left;
+    width:770px;
+    display:inline-block;
+    padding-left:10px;
+    font-size:12pt;
+}
