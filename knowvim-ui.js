@@ -33,63 +33,6 @@ $(document).ready(function() {
         $(this).css("color", beta_color);
     });
 
-    // $("#what").click(function() {
-    //     $(".current_page").css("color", "#555");
-    //     // $("#source_code").load("what.html", function() { init(); });
-    //     $(".source_code_link").removeClass("current_page");
-    //     $(this).addClass("current_page");
-    //     $(".current_page").css("color", beta_color);
-    // });
-    // $("#explain").click(function() {
-    //     $(".current_page").css("color", "#555");
-    //     // $("#source_code").load("explain.html", function() { init(); });
-    //     $(".source_code_link").removeClass("current_page");
-    //     $(this).addClass("current_page");
-    //     $(".current_page").css("color", beta_color);
-    // });
-    // $("#why").click(function() {
-    //     $(".current_page").css("color", "#555");
-    //     // $("#source_code").load("why.html", function() { init(); });
-    //     $(".source_code_link").removeClass("current_page");
-    //     $(this).addClass("current_page");
-    //     $(".current_page").css("color", beta_color);
-    // });
-    // $("#start").click(function() {
-    //     $(".current_page").css("color", "#555");
-    //     // $("#source_code").load("start.html", function() { init(); });
-    //     $(".source_code_link").removeClass("current_page");
-    //     $(this).addClass("current_page");
-    //     $(".current_page").css("color", beta_color);
-    // });
-    // $("#advanced").click(function() {
-    //     $(".current_page").css("color", "#555");
-    //     // $("#source_code").load("advanced.html", function() { init(); });
-    //     $(".source_code_link").removeClass("current_page");
-    //     $(this).addClass("current_page");
-    //     $(".current_page").css("color", beta_color);
-    // });
-    // $("#python").click(function() {
-    //     $(".current_page").css("color", "#555");
-    //     // $("#source_code").load("python.html", function() { init(); });
-    //     $(".source_code_link").removeClass("current_page");
-    //     $(this).addClass("current_page");
-    //     $(".current_page").css("color", beta_color);
-    // });
-    // $("#latex").click(function() {
-    //     $(".current_page").css("color", "#555");
-    //     // $("#source_code").load("latex.html", function() { init(); });
-    //     $(".source_code_link").removeClass("current_page");
-    //     $(this).addClass("current_page");
-    //     $(".current_page").css("color", beta_color);
-    // });
-    // $("#java").click(function() {
-    //     $(".current_page").css("color", "#555");
-    //     // $("#source_code").load("java.html", function() { init(); });
-    //     $(".source_code_link").removeClass("current_page");
-    //     $(this).addClass("current_page");
-    //     $(".current_page").css("color", beta_color);
-    // });
-
     // Hide write output panel on link click.
     $("#write_output_panel_hide_link").click(function() {
         $("#write_output").slideUp('fast');

@@ -1,5 +1,5 @@
-// knowvim.js -- a Javascript implementation of a "stripped down" Vim editor
-// for the browser.  Copyright (C) 2011 Andrew W. Hallagan
+// knowvim.js - a partial Javascript implementation of Vim for the browser.
+// Copyright (C) 2011 Andrew W. Hallagan
 // 
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the
