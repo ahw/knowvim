@@ -16,11 +16,11 @@
     <meta name="Abstract" content="Try Vim, right in your browser!"/>
     <meta name="keywords" content="know, vim, browser, try, learn, vi, linux, unix, terminal, command, andrew, william, hallagan, bucknell, computer, science, engineering, awh"/>
     <link rel="stylesheet" type="text/css" href="/css/m.knowvim.css"/>
-    <script type="text/javascript" src="jquery-1.6.1.js"></script>
-    <script type="text/javascript" src="jquery-ui-1.8.16.custom.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-1.6.1.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.16.custom.min.js"></script>
     <!--
-    <script type="text/javascript" src="knowvim-ui.js"></script>
-    <script type="text/javascript" src="knowvim.js"></script>
+    <script type="text/javascript" src="/js/knowvim-ui.js"></script>
+    <script type="text/javascript" src="/js/knowvim.js"></script>
     -->
 
     <!-- ye olde Google Analytics -->

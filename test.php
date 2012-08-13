@@ -7,15 +7,15 @@
         <link rel="stylesheet" type="text/css" href="/css/shThemeDefault.css"/>
 
 
-        <script type="text/javascript" src="jquery-1.6.1.js"></script>
-        <script type="text/javascript" src="jquery-ui-1.8.16.custom.min.js"></script>
-        <!-- <script type="text/javascript" src="knowvim-ui.js"></script>
+        <script type="text/javascript" src="/js/jquery-1.6.1.js"></script>
+        <script type="text/javascript" src="/js/jquery-ui-1.8.16.custom.min.js"></script>
+        <!-- <script type="text/javascript" src="/js/knowvim-ui.js"></script>
         -->
-        <!-- <script type="text/javascript" src="knowvim.js"></script> -->
-        <script type="text/javascript" src="shCore.js"></script>
-        <script type="text/javascript" src="shBrushJScript.js"></script>
-        <script type="text/javascript" src="shBrushXml.js"></script>
-        <script type="text/javascript" src="shBrushPlain.js"></script>
+        <!-- <script type="text/javascript" src="/js/knowvim.js"></script> -->
+        <script type="text/javascript" src="/js/shCore.js"></script>
+        <script type="text/javascript" src="/js/shBrushJScript.js"></script>
+        <script type="text/javascript" src="/js/shBrushXml.js"></script>
+        <script type="text/javascript" src="/js/shBrushPlain.js"></script>
         <script type="text/javascript">
         $(document).ready(function() {
             SyntaxHighlighter.all();

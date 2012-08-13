@@ -75,15 +75,15 @@ if ($browser == 'mobile') {
 <link rel="stylesheet" type="text/css" href="/css/shThemeDefault.css"/>
 
 
-<script type="text/javascript" src="jquery-1.6.1.js"></script>
-<script type="text/javascript" src="jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery-1.6.1.js"></script>
+<script type="text/javascript" src="/js/jquery-ui-1.8.16.custom.min.js"></script>
 <?php if (
     $pagetitle != "about"
     && $pagetitle != "faq"
     && $pagetitle != "contact"
     && $pagetitle != "devnotes") { ?>
-<script type="text/javascript" src="knowvim-ui.js"></script>
-<script type="text/javascript" src="knowvim.js"></script>
+<script type="text/javascript" src="/js/knowvim-ui.js"></script>
+<script type="text/javascript" src="/js/knowvim.js"></script>
 <?php } ?>
 
 <!-- ye olde Google Analytics -->
