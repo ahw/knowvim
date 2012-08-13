@@ -303,6 +303,7 @@ function init() {
 
 function load_new_file_screen(filename) {
     var start_color = null;
+    var path = "/lessons/" + filename;
     switch(colorscheme) {
         case 'minimal':
             start_color = "#AAA";
@@ -310,7 +311,7 @@ function load_new_file_screen(filename) {
         default:
             start_color = "white";
     }
-    $("#source_code").load(filename, function() {
+    $("#source_code").load(path, function() {
         // -- $("#vimwindow").css("background-color", start_color);
         // -- $("#vimwindow").animate({backgroundColor: vimwindow_bg}, 1000);
         // -- $("#main").css("background-color", start_color);
@@ -2287,7 +2288,7 @@ function execute_command(command, args) {
             break;
         case 'o':
             // This attempts to load some file into the vimwindow.
-            var filename_re = /[\w\.]+/;
+            var filename_re = /\w+\.\w+/;
             var result = filename_re.exec(args)
             if (result != null) {
                 // Valid filename.  Try to load it.
