@@ -9,9 +9,9 @@
 
         <script type="text/javascript" src="jquery-1.6.1.js"></script>
         <script type="text/javascript" src="jquery-ui-1.8.16.custom.min.js"></script>
-        <!-- <script type="text/javascript" src="terminal-ui.js"></script>
+        <!-- <script type="text/javascript" src="knowvim-ui.js"></script>
         -->
-        <!-- <script type="text/javascript" src="terminal.js"></script> -->
+        <!-- <script type="text/javascript" src="knowvim.js"></script> -->
         <script type="text/javascript" src="shCore.js"></script>
         <script type="text/javascript" src="shBrushJScript.js"></script>
         <script type="text/javascript" src="shBrushXml.js"></script>

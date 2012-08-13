@@ -34,7 +34,7 @@ the browser, and how I handle user input to mimic the functionality of Vim.
 Subsequent sections talk about specific challenges I encountered and how I
 dealt with them.  Just so you know, (and because I reference it later) the
 entirety of <span class="tagname">knowvim's</span> Javascript logic is
-contained in <span class="tagname">terminal.js</span>, and yes, I used <a
+contained in <span class="tagname">knowvim.js</span>, and yes, I used <a
 class="contrast" href="http://git-scm.com/">git</a> from the very beginning
 for version control of everything (I'm looking at you, Team Tarball).  I set
 up a <a class="contrast"
@@ -109,7 +109,7 @@ class="tagname">span</span> tags and looks like this:
 <a name="user_interaction" href="#"></a>
 <h3 class="farleft">user interaction</h3>
 <p>
-Predictably, <span class="tagname">terminal.js</span> contains a global
+Predictably, <span class="tagname">knowvim.js</span> contains a global
 variable, "mode", which is used to direct keyboard input to various handlers
 in the code.  It's exactly the sort of setup you'd expect.
 </p>
