@@ -72,12 +72,12 @@ tags in the following way:
 
 <pre class="brush:xml">
 &lt;div id=&quot;source_code&quot;&gt;
-&lt;pre class=&quot;lineno&quot;&gt;  1&lt;/pre&gt;&lt;pre class=&quot;inputline&quot;&gt;x = 2&lt;/pre&gt;
-&lt;pre class=&quot;lineno&quot;&gt;  2&lt;/pre&gt;&lt;pre class=&quot;inputline&quot;&gt;y = 5&lt;/pre&gt;
+&lt;pre class=&quot;num&quot;&gt;  1&lt;/pre&gt;&lt;pre class=&quot;line&quot;&gt;x = 2&lt;/pre&gt;
+&lt;pre class=&quot;num&quot;&gt;  2&lt;/pre&gt;&lt;pre class=&quot;line&quot;&gt;y = 5&lt;/pre&gt;
 
               &lt;!--        more lines         --&gt;
 
-&lt;pre class=&quot;lineno&quot;&gt; 20&lt;/pre&gt;&lt;pre class=&quot;inputline&quot;&gt;print("hi")&lt;/pre&gt;
+&lt;pre class=&quot;num&quot;&gt; 20&lt;/pre&gt;&lt;pre class=&quot;line&quot;&gt;print("hi")&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&quot;bottom_bar&quot;&gt;
 &lt;!-- placeholders for bottom bar contents --&gt;
@@ -91,7 +91,7 @@ and row and column values are updated.  Manipulating parts of the <span
 class="tagname">bottom_bar</span> is relatively straight-forward, and
 the bulk of the logic in <span class="tagname">knowvim's</span> Javascript
 is there to make appropriate changes in <span
-class="tagname">lineno</span> and <span class="tagname">inputline</span>
+class="tagname">num</span> and <span class="tagname">line</span>
 elements.  The sorts of changes here include turning element visibility on
 and off, manipulating HTML element contents, manipulating CSS properties,
 and inserting/removing HTML elements from the page.  The cursor (you know,
@@ -103,7 +103,7 @@ class="tagname">span</span> tags and looks like this:
 </p>
 
 <pre class="brush:xml">
-&lt;pre class="inputline"&gt;The last lette&lt;span class="cursor_char"&gt;r&lt;/span&gt;&lt;/pre&gt;
+&lt;pre class="line"&gt;The last lette&lt;span class="cursor_char"&gt;r&lt;/span&gt;&lt;/pre&gt;
 </pre>
 
 <a name="user_interaction" href="#"></a>
@@ -176,35 +176,35 @@ with a few tweaks).  The algorithm would already be complicated enough if we wer
 just looking at a text file composed of a sequence of lines, but because of
 the way I implemented things in HTML, each line in the "file" that you see
 on the screen is contained within its own <span
-class="tagname">inputline</span> element.  This adds a couple of weird
+class="tagname">line</span> element.  This adds a couple of weird
 complications:
 </p>
 
 <ol>
     <li>There are no newline characters, just a sequence of <span
-    class="tagname">inputline</span> elements which appear one after
+    class="tagname">line</span> elements which appear one after
     the other. So we can't write code that says, "move forward according to
     w-motion logic until you hit a newline, then jump to the next
     line."</li>
     <li>There are no such things as "empty" lines in the file (lines which
     contain no other characters other than newline). There are simply <span
-    class="tagname">inputline</span> elements with empty contents.  But in
+    class="tagname">line</span> elements with empty contents.  But in
     fact, even this is not the case, because when the cursor is on what
     should be an empty line, we still have to insert a blank space so that
     the cursor shows up (it makes the background of that blank space a red
     rectangle).  In other words, we can't ever have this:
     <pre class="brush:xml">
-&lt;pre class="inputline"&gt;&lt;/pre&gt;
+&lt;pre class="line"&gt;&lt;/pre&gt;
     </pre>
     Because we need, at minimum, a blank space available to wrap the
     cursor's <span class="tagname">span</span> tags around.  We have to have
     this instead:
     <pre class="brush:xml">
-&lt;pre class="inputline"&gt; &lt;/pre&gt;
+&lt;pre class="line"&gt; &lt;/pre&gt;
     </pre>
     Which means that <span class="italic">lines with a single
     space are actually interpreted as newlines.</span>  So unlike real
-    Vim, we can't ever have an <span class="tagname">inputline</span> whose
+    Vim, we can't ever have an <span class="tagname">line</span> whose
     contents mimics ' \n'.  I figured it's a very small edge case that
     many people won't even notice or care about.</li>
 </ol>
@@ -240,11 +240,11 @@ Else If c is in N then
 <p>
 The algorithm is straight-forward enough, but it's implementation is
 difficult given the environment provided by HTML.  We could extract the
-contents of each <span class="tagname">inputline</span> element and feed it
+contents of each <span class="tagname">line</span> element and feed it
 to the w-motion algorithm as a stream, but the lack of newline characters
 poses a serious setback. We know that single blank spaces are sometimes
 interpreted as newline characters, but only if they are the only contents on
-a line.  Once all <span class="tagname">inputline</span> elements are strung
+a line.  Once all <span class="tagname">line</span> elements are strung
 together though, we have no way of knowing which blank spaces are to be
 interpreted as newlines and which as actual blank spaces.
 </p>
@@ -252,7 +252,7 @@ interpreted as newlines and which as actual blank spaces.
 <p>
 Still, I didn't initially think this would be a huge issue.  After all, we
 can just "pretend" we saw a newline whenever we've looked at all the
-characters in an <span class="tagname">inputline</span>.  As the algorithm
+characters in an <span class="tagname">line</span>.  As the algorithm
 seemed to correspond nicely to a finite state machine, I implemented it as
 such.
 </p>
@@ -369,12 +369,12 @@ My original search-and-replace algorithm went something like this:
 
 <ol>
 <li>Look for an occurrence of the search pattern on the current <span
-class="tagname">inputline</span>.</li>
+class="tagname">line</span>.</li>
 <li>If an occurrence is found, replace it with the given replacement string
 and start again.</li>
 <li>If no occurrences are found, move to the next <span
-class="tagname">inputline</span> and try again.  If we've already looked at
-every <span class="tagname">inputline</span> (we can keep a count going to
+class="tagname">line</span> and try again.  If we've already looked at
+every <span class="tagname">line</span> (we can keep a count going to
 figure this out), then there aren't any more occurrences of the search
 pattern in the file, so we're done.</li>
 </ol>
@@ -485,8 +485,8 @@ more authentic feel though, and part of that feel involved restricting
 the size of the "viewing window" such that only say, 20 lines, were visible
 at once.  In terms of what's actually happening in the browser, when a
 user moves the cursor to a line above or below this viewing window, certain
-<span class="tagname">inputline</span> and <span
-class="tagname">lineno</span> elements become visible, and others become
+<span class="tagname">line</span> and <span
+class="tagname">num</span> elements become visible, and others become
 invisible.  At first I tried using CSS to accomplish this, using the
 "display:none" property, but ultimately I switched to jQuery's ".hide()" and
 ".show()" functions because they were easier to work with.
@@ -502,16 +502,16 @@ expect.
 <pre class="brush:js">
 function maintain_line_visibilities() {
     for (var i = 0; i &lt; num_lines; i++) {
-        var lineno = $(".lineno").get(i);
-        var inputline = $(".inputline").get(i);
+        var num = $(".num").get(i);
+        var line = $(".line").get(i);
         if (i &lt; top_visible_row || i &gt; (top_visible_row + num_display_lines - 1)) {
             // Assert this line is NOT in the visible range.
-            $(lineno).hide();
-            $(inputline).hide();
+            $(num).hide();
+            $(line).hide();
         } else {
             // Assert: this line IS in the visible range.
-            $(lineno).show();
-            $(inputline).show();
+            $(num).show();
+            $(line).show();
         }
     }
 }
@@ -563,7 +563,7 @@ function:
 </p>
 <pre class="brush:js">
 function maintain_line_visibilities() {
-    // This method iterates over ALL .lineno and .inputline elements and
+    // This method iterates over ALL .num and .line elements and
     // sets their visibilities accordingly.  Because it loops through all
     // lines, it is an expensive operation that should only be called when a
     // complete re-setting of line visiblities is needed.  For example, when
@@ -602,43 +602,43 @@ function set_line_visibilities() {
             // row that we know is already visible. (There are &lt;delta&gt; number of
             // these.)
             for (var i = current_row; i &lt; (current_row + delta); i++) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
+                var num = $(".num").get(i);
+                var line = $(".line").get(i);
                 // By design, we know these elements were outside the visible
                 // range but should now be set to visible.
-                $(lineno).show();
-                $(inputline).show();
+                $(num).show();
+                $(line).show();
             }
             // last_row represents the last previously visible row that should
             // be set to invisible.
             var last_row = top_visible_row + num_display_lines - 1;
             for (var i = last_row; i &gt; last_row - delta; i--) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
+                var num = $(".num").get(i);
+                var line = $(".line").get(i);
                 // By design, we know these elements were within the visible
                 // range but should now be set to invisible.
-                $(lineno).hide();
-                $(inputline).hide();
+                $(num).hide();
+                $(line).hide();
             }
             top_visible_row = current_row;
         } else {
             // Assert: we jumped so far that none of the old window is
             // visible.  We have to make a whole new window.
             for (var i = current_row; i &lt; (current_row + num_display_lines); i++) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
+                var num = $(".num").get(i);
+                var line = $(".line").get(i);
                 // By design, we know these elements were outside the visible
                 // range but should now be set to visible.
-                $(lineno).show();
-                $(inputline).show();
+                $(num).show();
+                $(line).show();
             }
             for (var i = top_visible_row; i &lt; (top_visible_row + num_display_lines); i++) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
+                var num = $(".num").get(i);
+                var line = $(".line").get(i);
                 // By design, we know these elements were within the visible
                 // range but should now be set to invisible.
-                $(lineno).hide();
-                $(inputline).hide();
+                $(num).hide();
+                $(line).hide();
             }
             top_visible_row = current_row;
         }
@@ -649,32 +649,32 @@ function set_line_visibilities() {
             // Assert: some of the old viewing window is still visible, so
             // we'll be adjusting some subset of the lines in this window.
             for (var i = current_row; i &gt; (current_row - delta); i--) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
-                $(lineno).show();
-                $(inputline).show();
+                var num = $(".num").get(i);
+                var line = $(".line").get(i);
+                $(num).show();
+                $(line).show();
             }
             for (var i = top_visible_row; i &lt; (top_visible_row + delta); i++) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
-                $(lineno).hide();
-                $(inputline).hide();
+                var num = $(".num").get(i);
+                var line = $(".line").get(i);
+                $(num).hide();
+                $(line).hide();
             }
             top_visible_row = current_row - num_display_lines + 1;
         } else {
             // Assert: we jumped so far that none of the old window is
             // visible.  We have to make a whole new window.
             for (var i = current_row; i &gt; (current_row - num_display_lines); i--) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
-                $(lineno).show();
-                $(inputline).show();
+                var num = $(".num").get(i);
+                var line = $(".line").get(i);
+                $(num).show();
+                $(line).show();
             }
             for (var i = top_visible_row; i &lt; (top_visible_row + num_display_lines); i++) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
-                $(lineno).hide();
-                $(inputline).hide();
+                var num = $(".num").get(i);
+                var line = $(".line").get(i);
+                $(num).hide();
+                $(line).hide();
             }
             top_visible_row = current_row - num_display_lines + 1;
         }
@@ -691,7 +691,7 @@ user tries a fast-repeating delete (by pressing <span class="tagname">dd</span> 
 <span class="tagname">.</span>) in a large file, the brute-force method will slow things down
 significantly.  I optimized this algorithm to only iterate over lines within
 the viewing window, so that when a user presses <span class="tagname">dd</span> to delete a line, the
-only <span class="tagname">lineno</span> elements affected are those between
+only <span class="tagname">num</span> elements affected are those between
 and including the current line and the bottom of the viewing window. This
 makes for an interesting situation because if you had a 100-line file and a
 20-line viewing window,  and deleted 25 lines by pressing <span class="tagname">dd</span> from Line 1,
@@ -700,17 +700,17 @@ you would end up with with HTML source that looks like this:
 
 <pre class="brush:xml">
 &lt;!-- This is the top of the viewing window. --&gt;
-&lt;pre class=&quot;lineno&quot;&gt;  1&lt;/pre&gt;&lt;pre class=&quot;inputline&quot;&gt;x = 2&lt;/pre&gt;
-&lt;pre class=&quot;lineno&quot;&gt;  2&lt;/pre&gt;&lt;pre class=&quot;inputline&quot;&gt;y = 5&lt;/pre&gt;
+&lt;pre class=&quot;num&quot;&gt;  1&lt;/pre&gt;&lt;pre class=&quot;line&quot;&gt;x = 2&lt;/pre&gt;
+&lt;pre class=&quot;num&quot;&gt;  2&lt;/pre&gt;&lt;pre class=&quot;line&quot;&gt;y = 5&lt;/pre&gt;
 
               &lt;!--     16 more lines         --&gt;
 
-&lt;pre class=&quot;lineno&quot;&gt; 19&lt;/pre&gt;&lt;pre class=&quot;inputline&quot;&gt;x = 2&lt;/pre&gt;
-&lt;pre class=&quot;lineno&quot;&gt; 20&lt;/pre&gt;&lt;pre class=&quot;inputline&quot;&gt;y = 5&lt;/pre&gt;
+&lt;pre class=&quot;num&quot;&gt; 19&lt;/pre&gt;&lt;pre class=&quot;line&quot;&gt;x = 2&lt;/pre&gt;
+&lt;pre class=&quot;num&quot;&gt; 20&lt;/pre&gt;&lt;pre class=&quot;line&quot;&gt;y = 5&lt;/pre&gt;
 &lt;!-- This is the bottom of the viewing window. --&gt;
-&lt;pre class=&quot;lineno&quot;&gt; 45&lt;/pre&gt;&lt;pre class=&quot;inputline&quot;&gt;x = 2&lt;/pre&gt;
-&lt;pre class=&quot;lineno&quot;&gt; 46&lt;/pre&gt;&lt;pre class=&quot;inputline&quot;&gt;y = 5&lt;/pre&gt;
-&lt;pre class=&quot;lineno&quot;&gt; 47&lt;/pre&gt;&lt;pre class=&quot;inputline&quot;&gt;print("hi")&lt;/pre&gt;
+&lt;pre class=&quot;num&quot;&gt; 45&lt;/pre&gt;&lt;pre class=&quot;line&quot;&gt;x = 2&lt;/pre&gt;
+&lt;pre class=&quot;num&quot;&gt; 46&lt;/pre&gt;&lt;pre class=&quot;line&quot;&gt;y = 5&lt;/pre&gt;
+&lt;pre class=&quot;num&quot;&gt; 47&lt;/pre&gt;&lt;pre class=&quot;line&quot;&gt;print("hi")&lt;/pre&gt;
 </pre>
 
 <p>
