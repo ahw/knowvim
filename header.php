@@ -104,3 +104,36 @@ if ($browser == 'mobile') {
 
 
 <body>
+
+<?php
+require("settings-panel.php");
+require("instruction-panel.php");
+require("basic-commands-panel.php");
+require("advanced-commands-panel.php");
+?>
+
+<div id="main" class="mainbox">
+<h1>
+<?php
+
+if ($_SERVER['SERVER_NAME'] == "dev.knowvim.com") {
+    echo '<span style="color:#c00; font-size:80%">dev .</span>';
+}
+?>
+
+<a id="homelink" href="/">know vim</a> <span id="beta">(beta)</span>
+</h1>
+<div id="file_links">
+    <a class="source_code_link" id="what" href="/">what</a>
+    <a class="source_code_link" id="explain" href="/explain.php">explain</a>
+    <a class="source_code_link" id="why" href="/why.php">why</a>
+    <a class="source_code_link" id="start" href="/start.php">start</a>
+    <!-- Is the advanced page necessary?
+    <a class="source_code_link" id="advanced" href="#">advanced</a>
+    -->
+    <a class="source_code_link" id="python" href="/python.php">python</a>
+    <a class="source_code_link" id="latex" href="/latex.php">latex</a>
+    <a class="source_code_link" id="java" href="/java.php">java</a>
+</div>
+<div id="vimwindow">
+<div id="source_code">

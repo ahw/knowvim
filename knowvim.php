@@ -1,4 +1,4 @@
-<?php require("header-global.php"); ?>
+<?php require("header.php"); ?>
 <p style="display:none">
 Try Vim, right in your browser!  Newbies can experiment and learn while
 veterans smile knowingly and try to use commands that break my code.
@@ -25,4 +25,4 @@ Enjoy!</p>
 <pre class="num"> 19</pre><pre class="line"> </pre>
 <pre class="num"> 20</pre><pre class="line"> </pre>
 
-<?php require("footer-global.php"); ?>
+<?php require("footer.php"); ?>
