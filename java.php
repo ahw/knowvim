@@ -1,4 +1,4 @@
-<?php require("header-global.php"); ?>
+<?php require("header.php"); ?>
 <pre class="num">  1</pre><pre class="line">/*</pre>
 <pre class="num">  2</pre><pre class="line"> *</pre>
 <pre class="num">  3</pre><pre class="line"> *       A shout out to Jerud J. Mead.</pre>
@@ -249,4 +249,4 @@
 <pre class="num">248</pre><pre class="line">      return expr;</pre>
 <pre class="num">249</pre><pre class="line">    }</pre>
 <pre class="num">250</pre><pre class="line">}</pre>
-<?php require("footer-global.php"); ?>
+<?php require("footer.php"); ?>

@@ -1,4 +1,4 @@
-<?php require("header-global.php"); ?>
+<?php require("header.php"); ?>
 <pre class="num">  1</pre><pre class="line">Assuming you're a newbie, Vim is very much unlike any editor you've used before.</pre>
 <pre class="num">  2</pre><pre class="line">It looks familiar enough, but as soon as you try typing anything, weird stuff</pre>
 <pre class="num">  3</pre><pre class="line">happens. Type 'Andrew' and you'll see what I mean (no really, try it).</pre>
@@ -18,4 +18,4 @@
 <pre class="num"> 17</pre><pre class="line">in, editing, and getting out of Vim. Now hit [ESC], type ":o second.html",</pre>
 <pre class="num"> 18</pre><pre class="line">(don't worry about typing at the bottom of the screen for now), breathe deeply,</pre>
 <pre class="num"> 19</pre><pre class="line">and hit ENTER.</pre>
-<?php require("footer-global.php"); ?>
+<?php require("footer.php"); ?>

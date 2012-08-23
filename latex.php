@@ -1,4 +1,4 @@
-<?php require("header-global.php"); ?>
+<?php require("header.php"); ?>
 <pre class="num">  1</pre><pre class="line">\documentclass{article}</pre>
 <pre class="num">  2</pre><pre class="line">\usepackage{graphicx}</pre>
 <pre class="num">  3</pre><pre class="line">\usepackage{enumerate}</pre>
@@ -28,4 +28,4 @@
 <pre class="num"> 27</pre><pre class="line">\end{enumerate}</pre>
 <pre class="num"> 28</pre><pre class="line"> </pre>
 <pre class="num"> 29</pre><pre class="line">\end{document}</pre>
-<?php require("footer-global.php"); ?>
+<?php require("footer.php"); ?>

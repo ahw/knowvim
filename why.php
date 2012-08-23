@@ -1,4 +1,4 @@
-<?php require("header-global.php"); ?>
+<?php require("header.php"); ?>
 
 <p style="display:none">Why should you know Vim? (1) Your dad knew Vim, (2)
 it is a chick magnet, and (3) people will respect you more.</p>
@@ -17,4 +17,4 @@ it is a chick magnet, and (3) people will respect you more.</p>
 <pre class="num"> 12</pre><pre class="line"> * Vim is free and open source software.</pre>
 <pre class="num"> 13</pre><pre class="line"> * You need to pick a side in the Vim versus Emacs religious wars, and Vim is</pre>
 <pre class="num"> 14</pre><pre class="line">   the right side.  (See http://en.wikipedia.org/wiki/Editor_war.)</pre>
-<?php require("footer-global.php"); ?>
+<?php require("footer.php"); ?>

@@ -1,4 +1,4 @@
-<?php require("header-global.php"); ?>
+<?php require("header.php"); ?>
 <pre class="num">  1</pre><pre class="line">knowvim.com is a place to learn and familiarize yourself with Vim, text editor</pre>
 <pre class="num">  2</pre><pre class="line">of the gods. More than a Vim tutorial, knowvim provides a partial Javascript</pre>
 <pre class="num">  3</pre><pre class="line">implementation of Vim* so that you can try it right in your browser. You're</pre>
@@ -19,4 +19,4 @@
 <pre class="num"> 18</pre><pre class="line">mean "college courses").</pre>
 <pre class="num"> 19</pre><pre class="line"> </pre>
 <pre class="num"> 20</pre><pre class="line">(*) I say "partial" because it implements just a subset of Vim functionality.</pre>
-<?php require("footer-global.php"); ?>
+<?php require("footer.php"); ?>

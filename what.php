@@ -1,4 +1,4 @@
-<?php require("header-global.php"); ?>
+<?php require("header.php"); ?>
 <p style="display:none">Here you can learn Vim.</p>
 
 <pre class="num">  1</pre><pre class="line"> </pre>
@@ -21,4 +21,4 @@
 <pre class="num"> 18</pre><pre class="line"> </pre>
 <pre class="num"> 19</pre><pre class="line"> </pre>
 <pre class="num"> 20</pre><pre class="line"> </pre>
-<?php require("footer-global.php"); ?>
+<?php require("footer.php"); ?>
