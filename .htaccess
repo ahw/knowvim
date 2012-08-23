@@ -1,2 +1,4 @@
-DirectoryIndex knowvim.php
-ErrorDocument 404 /
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule .* index.php/$0 [L]

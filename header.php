@@ -1,43 +1,9 @@
 <?php
 
-session_start();
-$browser = "";
-$iphone = strpos($_SERVER['HTTP_USER_AGENT'], "iPhone");
-$ipad = strpos($_SERVER['HTTP_USER_AGENT'], "iPad");
-$android = strpos($_SERVER['HTTP_USER_AGENT'], "Android");
-if ($iphone || $ipad || $android) {
-    // Assert: the browser is on an iPhone
-    $browser = 'mobile';
-}
+global $pagename;
+global $pagetitle;
+global $browser;
 
-$terminal_page = strpos($_SERVER['REQUEST_URI'], "terminal");
-$root = $_SERVER['REQUEST_URI'];
-if ($root == "/") {
-    $root = true;
-} else {
-    $root = false;
-}
-
-if (($terminal_page || $root) && $browser == 'mobile') {
-    // Assert: the user is requesting terminal.php, which is radically
-    // different from m.terminal.php.  We also know the user is on a mobile
-    // device, so we'll serve up m.terminal.php and stop. If they are NOT on
-    // a mobile device, then this code will get skipped and the page will
-    // load as usual.
-    $request_uri = "terminal.php";
-    require("m.terminal.php");
-    exit;
-}
-
-$pagename = $_SERVER['SCRIPT_NAME'];
-// Strip the leading "/" and the trailing ".php" off.
-$pagename = substr($pagename, 1, -4);
-$pagetitle = $pagename;
-if ($pagename == "terminal") {
-    $pagename = "";
-} else {
-    $pagename = $pagename . " | ";
-}
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -54,29 +20,32 @@ if ($pagename == "terminal") {
 <meta name="robots" content="index,follow"/>
 <meta name="author" content="Andrew W. Hallagan"/>
 <meta name="description" content="Try Vim, right in your browser!"/>
-<meta name="Description" content="Try Vim, right in your browser!"/>
-<meta name="abstract" content="Try Vim, right in your browser!"/>
-<meta name="Abstract" content="Try Vim, right in your browser!"/>
-<meta name="keywords" content="know, vim, browser, try, learn, vi, linux, unix, terminal, command, andrew, william, hallagan, bucknell, computer, science, engineering, awh"/>
+<meta name="keywords" content="know, vim, browser, try, learn, vi, linux,
+unix, terminal, command, andrew, william, hallagan, bucknell, computer,
+science, engineering, awh"/>
 
 <?php
 if ($browser == 'mobile') {
     // Assert: we need the meta viewport tag and the mobile CSS file.
-    echo '<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"/>';
-    echo '<link rel="stylesheet" type="text/css" href="/css/m.knowvim.css"/>';
+    echo '<meta name="viewport"
+                content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"/>';
+    echo '<link rel="stylesheet"
+                type="text/css"
+                href="/css/m.knowvim.css"/>';
 } else {
-    // Assert: it's a regular computer (hopefully), so use the regular CSS.
-    echo '<link rel="stylesheet" type="text/css" href="/css/knowvim.css"/>';
+    // Assert: it's a regular screen (hopefully).
+    echo '<link rel="stylesheet"
+                type="text/css"
+                href="/css/knowvim.css"/>';
 }
 ?>
 
 
 <link rel="stylesheet" type="text/css" href="/css/shCore.css"/>
 <link rel="stylesheet" type="text/css" href="/css/shThemeDefault.css"/>
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/js/jquery-ui.js"></script>
 
-
-<script type="text/javascript" src="/js/jquery-1.6.1.js"></script>
-<script type="text/javascript" src="/js/jquery-ui-1.8.16.custom.min.js"></script>
 <?php if (
     $pagetitle != "about"
     && $pagetitle != "faq"
