@@ -1,5 +1,6 @@
 // knowvim.js - a partial Javascript implementation of Vim for the browser.
-// Copyright (C) 2011 Andrew W. Hallagan
+// Copyright (C) 2011 Andrew W. Hallagan. Licensed under the GNU General
+// Public License, printed below.
 // 
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the

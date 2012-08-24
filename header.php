@@ -84,6 +84,7 @@ if ($browser == 'mobile') {
     && $pagetitle != "devnotes") { ?>
 <script type="text/javascript" src="/js/knowvim-ui.js"></script>
 <script type="text/javascript" src="/js/knowvim.js"></script>
+<script type="text/javascript" src="/js/VimWindow.js"></script>
 <?php } ?>
 
 <!-- ye olde Google Analytics -->
