@@ -303,7 +303,7 @@ function init() {
 
 function load_new_file_screen(filename) {
     var start_color = null;
-    var path = "/lessons/" + filename;
+    var path = "/files/" + filename;
     switch(colorscheme) {
         case 'minimal':
             start_color = "#AAA";
