@@ -1,48 +1,63 @@
-function VimWindow() {
-    this.mode = "NORMAL";
-    this.modified_since_last_write = false;
-    this.found_occurrence = false;
-    this.start_search_row = 0;
-    this.made_full_search_cycle = false;
-    this.num_search_terms_found = 0;
-    this.num_search_terms_total = 0;
-    this.start_search_col = 0;
-    this.next_search_index = 0;
-    this.num_substitutions = 0;
-    this.search_options = "";
-    this.last_pattern = "";
-    this.new_term = "";
-    this.current_sb_col = 0;
-    this.previous_key = "";
-    this.current_row = 0;
-    this.current_col = 0;
-    this.preferred_col = 0;
-    this.current_inputline = null;
-    this.num_lines = 0;
-    this.term_bg = "#DDF";
-    this.term_fg = "#555";
-    this.highlight_bg = "#d5d5f8";
-    this.highlight_fg = "#333";
-    this.lineno_bg = "#DDF";
-    this.lineno_fg = "green";
-    this.main_bg = "#DDF";
-    this.vimwindow_bg = "#DDF";
-    this.colorscheme = "default";
-    this.current_line_is_blank;
-    this.paste_reg = "";
-    this.last_command = "";
-    this.num_display_lines = 0;
-    this.top_visible_row = 0;
-    this.source_code_undo = [];
-    this.current_col_undo = [];
-    this.current_row_undo = [];
-    this.num_lines_undo = [];
-    this.write_output = false;
-    this.visual_line_start_row = 0;
-    this.hl_span_open = '<span class="visual_line" style="color:white; background-color:green">';
-    this.hl_span_close = '</span>';
-    this.visual_yank_buffer = [];
-    this.beta_color = "green";
-    this.marked_positions = {};
-    this.cancelkeypress = false;
-}
+var VimWindow = Backbone.Model.extend({
+
+    defaults : {
+        mode : "NORMAL",
+        modified_since_last_write : false,
+        found_occurrence : false,
+        start_search_row : 0,
+        made_full_search_cycle : false,
+        num_search_terms_found : 0,
+        num_search_terms_total : 0,
+        start_search_col : 0,
+        next_search_index : 0,
+        num_substitutions : 0,
+        search_options : "",
+        last_pattern : "",
+        new_term : "",
+        current_sb_col : 0,
+        previous_key : "",
+        current_row : 0,
+        current_col : 0,
+        preferred_col : 0,
+        current_inputline : null,
+        num_lines : 0,
+        term_bg : "#DDF",
+        term_fg : "#555",
+        highlight_bg : "#d5d5f8",
+        highlight_fg : "#333",
+        lineno_bg : "#DDF",
+        lineno_fg : "green",
+        main_bg : "#DDF",
+        vimwindow_bg : "#DDF",
+        colorscheme : "default",
+        current_line_is_blank : false,
+        paste_reg : "",
+        last_command : "",
+        num_display_lines : 0,
+        top_visible_row : 0,
+        source_code_undo : [],
+        current_col_undo : [],
+        current_row_undo : [],
+        num_lines_undo : [],
+        write_output : false,
+        visual_line_start_row : 0,
+        hl_span_open : '<span class="visual_line" style="color:white; background-color:green">',
+        hl_span_close : '</span>',
+        visual_yank_buffer : [],
+        beta_color : "green",
+        marked_positions : {},
+        cancelkeypress : false,
+        buffer : "empty"
+    },
+
+    initialize: function() {
+
+    },
+
+    loadBuffer: function(options) {
+
+        var buffer = new Buffer(options.name);
+
+    },
+        
+});
