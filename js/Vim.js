@@ -1,4 +1,4 @@
-var VimWindow = Backbone.Model.extend({
+var Vim = Backbone.Model.extend({
 
     defaults : {
         mode : "NORMAL",
@@ -47,17 +47,20 @@ var VimWindow = Backbone.Model.extend({
         beta_color : "green",
         marked_positions : {},
         cancelkeypress : false,
-        buffer : "empty"
+        buffer : new Buffer();
     },
 
-    initialize: function() {
+    initialize: function(options) {
+
+        if (options && options.buffer) {
+            this.set({buffer : options.buffer});
+        }
 
     },
 
     loadBuffer: function(options) {
 
         var buffer = new Buffer(options.name);
-
     },
         
 });

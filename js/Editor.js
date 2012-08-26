@@ -8,31 +8,32 @@ var EditorView = Backbone.View.extend({
 
     /**
      * @method initialize The EditorView constructor.  If
-     * <code>options.buffer</code> exists, then it assigns the
-     * corresponding value to <code>this.buffer</code>. If
-     * <code>options.buffer</code> does not exist then a new
-     * <code>Buffer</code> model is created and assigned to
-     * <code>this.buffer</code>
+     * <code>options.model</code> exists, then it assigns the
+     * corresponding value to <code>this.model</code>. If
+     * <code>options.model</code> does not exist then a new
+     * <code>Vim</code> model is created and assigned to
+     * <code>this.model</code>
      */
     initialize : function(options) {
 
-        if (options && options.buffer) {
-            this.buffer = options.buffer;
+        if (options && options.model) {
+            this.model = options.model;
         } else {
-            this.buffer = new Buffer();
+            this.model = new Vim();
         }
+
     },
 
     /**
      * @method render Renders the EditorView view. Iterates through
-     * <code>this.buffer.get('lines')</code>, wraps the contents with
-     * appropriate HTML markup tags, and inserts the entire chunk into
-     * <code>this.el</code>.
+     * <code>this.model.get('buffer').get('lines')</code>, wraps the
+     * contents with appropriate HTML markup tags, and inserts the entire
+     * chunk into <code>this.el</code>.
      */
     render : function() {
 
         var markup = "";
-        var lines = this.buffer.get('lines');
+        var lines = this.model.get('buffer').get('lines');
         for (var i = 0; i < lines.length; i++) {
             markup += sprintf("<pre class=\"num\">%3d</pre><pre class=\"line\">%s</pre>\n", i+1, lines[i]);
             console.log(sprintf("%3d %s", i+1, lines[i]));

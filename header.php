@@ -90,8 +90,8 @@ if ($browser == 'mobile') {
 <script type="text/javascript" src="/js/knowvim-ui.js"></script>
 <script type="text/javascript" src="/js/knowvim.js"></script>
 <script type="text/javascript" src="/js/Buffer.js"></script>
+<script type="text/javascript" src="/js/Vim.js"></script>
 <script type="text/javascript" src="/js/Editor.js"></script>
-<script type="text/javascript" src="/js/VimWindow.js"></script>
 <?php } ?>
 
 <!-- ye olde Google Analytics -->
