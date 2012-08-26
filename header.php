@@ -80,7 +80,6 @@ if ($browser == 'mobile') {
 <script type="text/javascript" src="/js/underscore.js"></script>
 <script type="text/javascript" src="/js/json2.js"></script>
 <script type="text/javascript" src="/js/backbone.js"></script>
-<script type="text/javascript" src="/js/deep-model.js"></script>
 <script type="text/javascript" src="/js/sprintf.js"></script>
 <?php if (
     $pagetitle != "about"

@@ -47,7 +47,7 @@ var Vim = Backbone.Model.extend({
         beta_color : "green",
         marked_positions : {},
         cancelkeypress : false,
-        buffer : new Buffer();
+        buffer : new Buffer()
     },
 
     initialize: function(options) {
