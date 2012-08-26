@@ -2,7 +2,7 @@
  * @class Buffer
  * @extends Backbone.Model
  */
-var Buffer = Backbone.Model.extend({
+var Buffer = Backbone.DeepModel.extend({
 
     defaults : {
         name : 'new.txt',
@@ -15,20 +15,15 @@ var Buffer = Backbone.Model.extend({
      */
     initialize: function(options) {
         
+        console.log("Buffer >>> initialize()");
         var model = this;
 
         if (options && options.name) {
             model.set({name : options.name});
         }
         model.fetch();
-    },
+        console.log("Buffer <<< initialize()");
 
-    /**
-     * @method open An alias for the <code>fetch</code> function. Named to
-     * more closely align with the notion of 'opening' a buffer in real Vim.
-     */
-    open : function() {
-        this.fetch();
     },
 
     /**
@@ -37,12 +32,15 @@ var Buffer = Backbone.Model.extend({
      * overrides the default Backbone <code>fetch</code> function.
      */
     fetch : function() {
+        console.log("Buffer >>> fetch()");
         var model = this;
         $.ajax({
-            url : '/files/' + this.get('name'),
+            url : '/files/' + model.get('name'),
             success : function(response) {
                 model.set({lines : response.split('\n')});
+                console.log("Buffer <<< fetch:success()");
             }
         });
+        console.log("Buffer <<< fetch()");
     }
 });

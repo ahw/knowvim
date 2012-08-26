@@ -16,12 +16,21 @@ var EditorView = Backbone.View.extend({
      */
     initialize : function(options) {
 
+        var view = this;
+        console.log("EditorView >>> initialize()");
         if (options && options.model) {
-            this.model = options.model;
+            view.model = options.model;
         } else {
-            this.model = new Vim();
+            view.model = new Vim();
         }
 
+        view.model.on('change', function() {
+            console.log("EditorView >>> change event");
+            view.render();
+            console.log("EditorView <<< change event");
+        });
+
+        console.log("EditorView <<< initialize()");
     },
 
     /**
@@ -32,6 +41,7 @@ var EditorView = Backbone.View.extend({
      */
     render : function() {
 
+        console.log("Editor >>> render()");
         var markup = "";
         var lines = this.model.get('buffer').get('lines');
         for (var i = 0; i < lines.length; i++) {
@@ -39,6 +49,7 @@ var EditorView = Backbone.View.extend({
             console.log(sprintf("%3d %s", i+1, lines[i]));
         }
         this.$el.html(markup);
+        console.log("Editor <<< render()");
         return this;
     }
 

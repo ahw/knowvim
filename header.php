@@ -80,17 +80,21 @@ if ($browser == 'mobile') {
 <script type="text/javascript" src="/js/underscore.js"></script>
 <script type="text/javascript" src="/js/json2.js"></script>
 <script type="text/javascript" src="/js/backbone.js"></script>
+<script type="text/javascript" src="/js/deep-model.js"></script>
 <script type="text/javascript" src="/js/sprintf.js"></script>
 <?php if (
     $pagetitle != "about"
     && $pagetitle != "faq"
     && $pagetitle != "contact"
     && $pagetitle != "devnotes") { ?>
+<!--
 <script type="text/javascript" src="/js/knowvim-ui.js"></script>
 <script type="text/javascript" src="/js/knowvim.js"></script>
+-->
 <script type="text/javascript" src="/js/Buffer.js"></script>
 <script type="text/javascript" src="/js/Vim.js"></script>
 <script type="text/javascript" src="/js/Editor.js"></script>
+<script type="text/javascript" src="/js/init.js"></script>
 <?php } ?>
 
 <!-- ye olde Google Analytics -->

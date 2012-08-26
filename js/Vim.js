@@ -1,4 +1,4 @@
-var Vim = Backbone.Model.extend({
+var Vim = Backbone.DeepModel.extend({
 
     defaults : {
         mode : "NORMAL",
@@ -58,9 +58,11 @@ var Vim = Backbone.Model.extend({
 
     },
 
-    loadBuffer: function(options) {
+    openBuffer : function(name) {
 
-        var buffer = new Buffer(options.name);
-    },
-        
+        console.log("Vim >>> openBuffer");
+        var buffer = new Buffer({name : name});
+        this.set({buffer : buffer});
+        console.log("Vim <<< openBuffer");
+    }
 });
