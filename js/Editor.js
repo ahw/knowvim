@@ -16,11 +16,17 @@ var EditorView = Backbone.View.extend({
      */
     initialize : function(options) {
 
+        var view = this;
         if (options && options.model) {
-            this.model = options.model;
+            view.model = options.model;
         } else {
-            this.model = new Vim();
+            view.model = new Vim();
         }
+
+        view.on('change', function() {
+            view.render();
+        });
+
 
     },
 

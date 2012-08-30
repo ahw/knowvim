@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{hyperref}
+\newcommand{\EQ}{& = &}
+
+\begin{document}
+
+\begin{enumerate}[(a)]
+\item Let $M$ be a Turing machine with two halting states, $y$ and $n$,
+that does not decide a language.  Since $y$ and $n$ are the only two
+halting states, we know that if $M$ halted for some input $w$ then
+it would either be accepting or rejecting $w$.  To ensure that there are
+some inputs $w$ in the universe of all possible inputs that \emph{cannot}
+be decided by $M$ we must ensure that $M$ does not halt on all inputs.
+The simplest way to do this of course it to define $M$ such that it never
+halts at all.  $M = (K, \Sigma, \delta, s, H)$ where
+
+\begin{eqnarray*}
+K \EQ \{q, y, n\} \\
+\Sigma \EQ \{\sqcup, \rhd\}\cup\{\text{ an alphabet }\} \\
+s \EQ q \\
+H \EQ \{y, n\} \\
+\delta \EQ \{(q,\alpha), (q,\alpha)\} \\
+\end{eqnarray*}
+
+\end{enumerate}
+
+\end{document}
