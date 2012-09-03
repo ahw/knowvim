@@ -93,6 +93,7 @@ if ($browser == 'mobile') {
 -->
 <script type="text/javascript" src="/js/Buffer.js"></script>
 <script type="text/javascript" src="/js/Vim.js"></script>
+<script type="text/javascript" src="/js/Application.js"></script>
 <script type="text/javascript" src="/js/Editor.js"></script>
 <script type="text/javascript" src="/js/init.js"></script>
 <?php } ?>
