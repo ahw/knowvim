@@ -58,11 +58,18 @@ var Vim = Backbone.DeepModel.extend({
 
     },
 
-    openBuffer : function(name) {
+    openBuffer : function(name, callback) {
 
         console.log("Vim >>> openBuffer");
+        var model = this;
         var buffer = new Buffer({name : name});
-        this.set({buffer : buffer});
+        model.set({buffer : buffer}, {silent: true});
+        buffer.fetch({
+            success : function() {
+                console.log("successful, calling Vim.change()");
+                model.change();
+            }
+        });
         console.log("Vim <<< openBuffer");
     }
 });
