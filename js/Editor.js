@@ -17,7 +17,6 @@ var EditorView = Backbone.View.extend({
     initialize : function(options) {
 
         var view = this;
-        console.log("EditorView >>> initialize()");
         if (options && options.model) {
             view.model = options.model;
         } else {

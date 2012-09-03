@@ -21,6 +21,11 @@ var Buffer = Backbone.DeepModel.extend({
         if (options && options.name) {
             model.set({name : options.name});
         }
+
+        model.on('change:name', function() {
+            model.fetch();
+        });
+
         model.fetch();
         console.log("Buffer <<< initialize()");
 
