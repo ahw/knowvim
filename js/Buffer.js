@@ -15,7 +15,6 @@ var Buffer = Backbone.DeepModel.extend({
      */
     initialize: function(options) {
         
-        console.log("Buffer >>> initialize()");
         var model = this;
 
         if (options && options.name) {
@@ -26,7 +25,6 @@ var Buffer = Backbone.DeepModel.extend({
             model.fetch();
         });
 
-        console.log("Buffer <<< initialize()");
 
     },
 
@@ -36,7 +34,6 @@ var Buffer = Backbone.DeepModel.extend({
      * overrides the default Backbone <code>fetch</code> function.
      */
     fetch : function(options) {
-        console.log("Buffer >>> fetch()");
         var model = this;
         $.ajax({
             url : '/files/' + model.get('name'),
@@ -47,6 +44,5 @@ var Buffer = Backbone.DeepModel.extend({
                 options.success();
             }
         });
-        console.log("Buffer <<< fetch()");
     }
 });

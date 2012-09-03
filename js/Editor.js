@@ -24,12 +24,9 @@ var EditorView = Backbone.View.extend({
         }
 
         view.model.on('change', function() {
-            console.log("EditorView >>> change event");
             view.render();
-            console.log("EditorView <<< change event");
         });
 
-        console.log("EditorView <<< initialize()");
     },
 
     /**
@@ -40,15 +37,12 @@ var EditorView = Backbone.View.extend({
      */
     render : function() {
 
-        console.log("Editor >>> render()");
         var markup = "";
         var lines = this.model.get('buffer').get('lines');
         for (var i = 0; i < lines.length; i++) {
             markup += sprintf("<pre class=\"num\">%3d</pre><pre class=\"line\">%s</pre>\n", i+1, lines[i]);
-            console.log(sprintf("%3d %s", i+1, lines[i]));
         }
         this.$el.html(markup);
-        console.log("Editor <<< render()");
         return this;
     }
 
