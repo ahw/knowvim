@@ -7,17 +7,86 @@
 var ApplicationView = Backbone.View.extend({
 
     el : 'body',
-    
+
+    disregardKey : true,
+
     events : {
-        keydown: function() {
-            console.log('keydown');
+        keydown: function(e) {
+            var key = null;
+            switch(e.which) {
+                case 190:
+                    // The dot '.'
+                    // Trying to cope with Opera.
+                    e.preventDefault();
+                    key = '.';
+                    break;
+                case 191:
+                    // The slash '/'
+                    // Trying to cope with Opera.
+                    e.preventDefault();
+                    key = '/';
+                    break;
+                case 32:
+                    // The space ' '
+                    // Stop page from centering.
+                    e.preventDefault();
+                    key = ' ';
+                    break;
+                case 37:
+                    key = 'LARROW';
+                    break;
+                case 38:
+                    key = 'UARROW';
+                    break;
+                case 39:
+                    key = 'RARROW';
+                    break;
+                case 40:
+                    key = 'DARROW';
+                    break;
+                case 27:
+                    key = 'ESC';
+                    break;
+                case 8:
+                    e.preventDefault();
+                    key = 'BACKSPACE';
+                    break;
+                case 13:
+                    e.preventDefault();
+                    key = 'ENTER';
+                    break;
+                case 46:
+                    key = 'DEL';
+                    break;
+                case 9:
+                    e.preventDefault();
+                    key = 'TAB';
+                    break;
+                default:
+                    key = null;
+                    this.disregardKey = false;
+            }
+            if (key) {
+                console.log('keydown = ' + key);
+                this.editorView.keyHandler(key);
+            }
         },
-        keypress: function() {
-            console.log('keypress');
+
+        keypress: function(e) {
+            if (this.disregardKey == false) {
+                // Assert: key was not handled by keydown handler.
+                this.disregardKey = true;
+                e.stopPropagation();
+                var key = String.fromCharCode(e.which);
+                if (e.which >= 32 && e.which <= 126) {
+                    // Assert: the char code corresponds to an ASCII character.
+                    key = String.fromCharCode(e.which);
+                    console.log('keypress: ' + key);
+                    this.editorView.keyHandler(key);
+                }
+            }
         },
-        keyup: function() {
-            console.log('keyup');
-        }
+
     },
 
     /**

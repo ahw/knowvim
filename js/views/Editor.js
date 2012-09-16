@@ -44,6 +44,19 @@ var EditorView = Backbone.View.extend({
         }
         this.$el.html(markup);
         return this;
+    },
+
+    /**
+     * @method keyHandler Handles character input events. Accepts normal
+     * alphanumeric characters as well as the special
+     * <code>BACKSPACE</code>, <code>DEL</code>, <code>TAB</code>, etc.,
+     * strings returned by the <code>ApplicationView</code>'s keydown
+     * handler. This function simply passes the <code>key</code> to
+     * <code>this.model.keyHandler(key)</code>. Recall that
+     * <code>this.model</code> is a <code>Vim</code> model.
+     */
+    keyHandler : function(key) {
+        this.model.keyHandler(key);
     }
 
 });

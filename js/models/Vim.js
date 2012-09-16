@@ -1,7 +1,7 @@
 var Vim = Backbone.DeepModel.extend({
 
     defaults : {
-        mode : "NORMAL",
+        mode : 'NORMAL',
         modified_since_last_write : false,
         found_occurrence : false,
         start_search_row : 0,
@@ -68,5 +68,77 @@ var Vim = Backbone.DeepModel.extend({
                 model.change();
             }
         });
+    },
+
+    keyHandler : function(key) {
+        switch(this.get('mode')) {
+            case 'NORMAL':
+                this.normal_handler(key);
+                break;
+            case 'INSERT':
+                this.insert_handler(key);
+                break;
+            case 'EXECUTE':
+                this.execute_handler(key);
+                break;
+            case 'NEWFILE':
+                this.newfile_handler(key);
+                break;
+            case 'SEARCH_AND_REPLACE':
+                this.searchreplace_handler(key);
+                break;
+            case 'VISUAL_LINE':
+                this.visual_line_handler(key);
+                break;
+            case 'REPLACE':
+                this.replace_handler(key);
+                break;
+            case 'REPLACE_SINGLE':
+                this.replace_single_handler(key);
+                break;
+            case 'FIND_SINGLE':
+                this.find_single_handler(key);
+                break;
+            case 'SET_MARK':
+                this.set_mark_handler(key);
+                break;
+            case 'GOTO_MARK':
+                this.goto_mark_handler(key);
+                break;
+        }
+    },
+
+    normal_handler : function(key) {
+    },
+
+    insert_handler : function(key) {
+    },
+
+    execute_handler : function(key) {
+    },
+
+    newfile_handler : function(key) {
+    },
+
+    searchreplace_handler : function(key) {
+    },
+
+    visual_line_handler : function(key) {
+    },
+
+    replace_handler : function(key) {
+    },
+
+    replace_single_handler : function(key) {
+    },
+
+    find_single_handler : function(key) {
+    },
+
+    set_mark_handler : function(key) {
+    },
+
+    goto_mark_handler : function(key) {
     }
+
 });
