@@ -67,7 +67,6 @@ var ApplicationView = Backbone.View.extend({
                     this.disregardKey = false;
             }
             if (key) {
-                console.log('keydown = ' + key);
                 this.editorView.keyHandler(key);
             }
         },
@@ -81,7 +80,6 @@ var ApplicationView = Backbone.View.extend({
                 if (e.which >= 32 && e.which <= 126) {
                     // Assert: the char code corresponds to an ASCII character.
                     key = String.fromCharCode(e.which);
-                    console.log('keypress: ' + key);
                     this.editorView.keyHandler(key);
                 }
             }

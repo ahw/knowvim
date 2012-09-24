@@ -148,5 +148,5 @@ if ($_SERVER['SERVER_NAME'] == "dev.knowvim.com") {
     <a class="source_code_link" id="java" href="/java.php">java</a>
 </div>
 <div id="vimwindow">
-<div id="source_code">
+<div id="buffer">
 

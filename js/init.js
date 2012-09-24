@@ -4,5 +4,5 @@ $(document).ready(function() {
     editor = new EditorView({model : vim});
     app = new ApplicationView({editorView : editor});
 
-    vim.openBuffer('students.txt');
+    vim.openBuffer('new.txt');
 });

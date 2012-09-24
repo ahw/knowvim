@@ -2,6 +2,7 @@ var Vim = Backbone.DeepModel.extend({
 
     defaults : {
         mode : 'NORMAL',
+        status_bar_text : '',
         modified_since_last_write : false,
         found_occurrence : false,
         start_search_row : 0,
@@ -81,6 +82,9 @@ var Vim = Backbone.DeepModel.extend({
             case 'EXECUTE':
                 this.execute_handler(key);
                 break;
+            case 'SEARCH':
+                this.search_handler(key);
+                break;
             case 'NEWFILE':
                 this.newfile_handler(key);
                 break;
@@ -108,13 +112,97 @@ var Vim = Backbone.DeepModel.extend({
         }
     },
 
+    change_mode : function(mode) {
+        // First change the status bar.
+        switch(mode) {
+            case 'INSERT':
+                this.set({status_bar_text : '-- INSERT --'});
+                break;
+            case  'EXECUTE':
+                this.set({status_bar_text : ': '});
+                break;
+            case 'SEARCH':
+                this.set({status_bar_text : '/'});
+                break;
+            case 'NORMAL':
+                this.set({status_bar_text : ''});
+                break;
+        }
+        // Now that the status bar has been updated, change the actual mode.
+        // This will trigger the view to change.
+        console.log('Mode change : ' + mode);
+        this.set({mode: mode});
+    },
+
+    action_handler : function(key) {
+        console.log("NORMAL action : " + key);
+    },
+
+    motion_handler : function(key) {
+        console.log("NORMAL motion : " + key);
+    },
+
     normal_handler : function(key) {
+        switch (key) {
+            case 'i':
+                this.change_mode('INSERT');
+                break;
+            case ':':
+                this.change_mode('EXECUTE');
+                break;
+            case '/':
+                this.change_mode('SEARCH');
+                break;
+            case 'h':
+            case 'j':
+            case 'k':
+            case 'l':
+            case 'w':
+            case 'b':
+            case '{':
+            case '}':
+            case '0':
+            case '$':
+            case 'G':
+            case 'H':
+            case 'L':
+                this.motion_handler(key);
+                break;
+            case 'd':
+            case 'y':
+            case 'c':
+            case 'x':
+            case 'p':
+                this.action_handler(key);
+                break;
+            case 'g':
+                special_handler(key);
+                break;
+        }
     },
 
     insert_handler : function(key) {
+        switch (key) {
+            case 'ESC':
+                this.change_mode('NORMAL');
+                break;
+        }
+    },
+
+    search_handler : function(key) {
+        switch (key) {
+            case 'ESC':
+                this.change_mode('NORMAL');
+                break;
+        }
     },
 
     execute_handler : function(key) {
+        switch (key) {
+            case 'ESC':
+                this.change_mode('NORMAL');
+                break;
+        }
     },
 
     newfile_handler : function(key) {

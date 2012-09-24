@@ -1,4 +1,4 @@
-</div> <!-- end #source_code -->
+</div> <!-- end #buffer -->
 
     <div id="bottom_bar">
         <pre id="statusbar"></pre><pre id="current_row">1</pre><pre>,</pre><pre id="current_col">1</pre>

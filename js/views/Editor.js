@@ -5,6 +5,8 @@
 var EditorView = Backbone.View.extend({
 
     el : '#vimwindow',
+    buffer : '#buffer',
+    statusBar : '#statusbar',
 
     /**
      * @method initialize The EditorView constructor.  If
@@ -24,25 +26,33 @@ var EditorView = Backbone.View.extend({
         }
 
         view.model.on('change', function() {
-            view.render();
+            view.renderBuffer();
+        });
+
+        view.model.on('change:mode', function() {
+            view.renderStatusBar();
         });
 
     },
 
+    renderStatusBar : function() {
+        $(this.statusBar).html(this.model.get('status_bar_text'));
+    },
+
     /**
-     * @method render Renders the EditorView view. Iterates through
-     * <code>this.model.get('buffer').get('lines')</code>, wraps the
-     * contents with appropriate HTML markup tags, and inserts the entire
-     * chunk into <code>this.el</code>.
+     * @method render Renders the "buffer" section of the EditorView.
+     * Iterates through <code>this.model.get('buffer').get('lines')</code>,
+     * wraps the contents with appropriate HTML markup tags, and inserts the
+     * entire chunk into <code>this.buffer</code>.
      */
-    render : function() {
+    renderBuffer : function() {
 
         var markup = "";
         var lines = this.model.get('buffer').get('lines');
         for (var i = 0; i < lines.length; i++) {
             markup += sprintf("<pre class=\"num\">%3d</pre><pre class=\"line\">%s</pre>\n", i+1, lines[i]);
         }
-        this.$el.html(markup);
+        $(this.buffer).html(markup);
         return this;
     },
 
