@@ -75,15 +75,27 @@ if ($browser == 'mobile') {
 <link rel="stylesheet" type="text/css" href="/css/shThemeDefault.css"/>
 
 
-<script type="text/javascript" src="/js/jquery-1.6.1.js"></script>
-<script type="text/javascript" src="/js/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="/js/lib/jquery.js"></script>
+<script type="text/javascript" src="/js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="/js/lib/underscore.js"></script>
+<script type="text/javascript" src="/js/lib/json2.js"></script>
+<script type="text/javascript" src="/js/lib/backbone.js"></script>
+<script type="text/javascript" src="/js/lib/deep-model.js"></script>
+<script type="text/javascript" src="/js/lib/sprintf.js"></script>
 <?php if (
     $pagetitle != "about"
     && $pagetitle != "faq"
     && $pagetitle != "contact"
     && $pagetitle != "devnotes") { ?>
+<!--
 <script type="text/javascript" src="/js/knowvim-ui.js"></script>
 <script type="text/javascript" src="/js/knowvim.js"></script>
+-->
+<script type="text/javascript" src="/js/models/Buffer.js"></script>
+<script type="text/javascript" src="/js/models/Vim.js"></script>
+<script type="text/javascript" src="/js/views/Application.js"></script>
+<script type="text/javascript" src="/js/views/Editor.js"></script>
+<script type="text/javascript" src="/js/init.js"></script>
 <?php } ?>
 
 <!-- ye olde Google Analytics -->
@@ -104,3 +116,37 @@ if ($browser == 'mobile') {
 
 
 <body>
+
+<?php
+require("settings-panel.php");
+require("instruction-panel.php");
+require("basic-commands-panel.php");
+require("advanced-commands-panel.php");
+?>
+
+<div id="main" class="mainbox">
+<h1>
+<?php
+
+if ($_SERVER['SERVER_NAME'] == "dev.knowvim.com") {
+    echo '<span style="color:#c00; font-size:80%">dev .</span>';
+}
+?>
+
+<a id="homelink" href="/">know vim</a> <span id="beta">(beta)</span>
+</h1>
+<div id="file_links">
+    <a class="source_code_link" id="what" href="/">what</a>
+    <a class="source_code_link" id="explain" href="/explain.php">explain</a>
+    <a class="source_code_link" id="why" href="/why.php">why</a>
+    <a class="source_code_link" id="start" href="/start.php">start</a>
+    <!-- Is the advanced page necessary?
+    <a class="source_code_link" id="advanced" href="#">advanced</a>
+    -->
+    <a class="source_code_link" id="python" href="/python.php">python</a>
+    <a class="source_code_link" id="latex" href="/latex.php">latex</a>
+    <a class="source_code_link" id="java" href="/java.php">java</a>
+</div>
+<div id="vimwindow">
+<div id="buffer">
+

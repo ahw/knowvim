@@ -1,5 +1,6 @@
 // knowvim.js - a partial Javascript implementation of Vim for the browser.
-// Copyright (C) 2011 Andrew W. Hallagan
+// Copyright (C) 2011 Andrew W. Hallagan. Licensed under the GNU General
+// Public License, printed below.
 // 
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the
@@ -41,7 +42,7 @@ var lineno_fg = "green";
 var main_bg = "#DDF";
 var vimwindow_bg = "#DDF";
 var colorscheme = "default";
-var current_line_is_blank;
+var current_line_is_blank = false;
 var paste_reg = "";
 var last_command = "";
 var num_display_lines = 0;
@@ -195,8 +196,8 @@ function init() {
     current_row = 0;
     current_col = 0;
     preferred_col = 0;
-    num_lines = $(".inputline").length;
-    current_inputline = $(".inputline")[0];
+    num_lines = $(".line").length;
+    current_inputline = $(".line")[0];
     last_command = "";
     paste_reg = "";
     if (num_display_lines == 0) {
@@ -257,17 +258,17 @@ function init() {
 
     // Take the set the background-color and color properties of each line,
     // just in case the CSS file is out of date.
-    $(".inputline").each(function() {
+    $(".line").each(function() {
         $(this).css("background-color", term_bg);
         $(this).css("color", term_fg);
     });
 
-    // Format each <pre class="lineno"> element so that numbers line up
+    // Format each <pre class="num"> element so that numbers line up
     // correctly using space padding.  E.g.,
     //        99
     //       100
     // Assume the HTML already has correctly-numbered lines.
-    $(".lineno").each(function() {
+    $(".num").each(function() {
         var n = parseInt($(this).html());
         formatted_n = get_formatted_lineno(n);
         $(this).html(formatted_n);
@@ -289,9 +290,9 @@ function init() {
     if (num_display_lines > 0) {
         for (var i = 0; i < num_lines; i++) {
             if (i < top_visible_row || i > (top_visible_row + num_display_lines - 1)) {
-                var lineno = $(".lineno").get(i);
+                var lineno = $(".num").get(i);
                 $(lineno).hide();
-                var inputline = $(".inputline").get(i);
+                var inputline = $(".line").get(i);
                 $(inputline).hide();
             }
         }
@@ -303,7 +304,7 @@ function init() {
 
 function load_new_file_screen(filename) {
     var start_color = null;
-    var path = "/lessons/" + filename;
+    var path = "/files/" + filename;
     switch(colorscheme) {
         case 'minimal':
             start_color = "#AAA";
@@ -316,10 +317,10 @@ function load_new_file_screen(filename) {
         // -- $("#vimwindow").animate({backgroundColor: vimwindow_bg}, 1000);
         // -- $("#main").css("background-color", start_color);
         // -- $("#main").animate({backgroundColor: main_bg}, 1000);
-        // -- $(".lineno").css("background-color", start_color);
-        // -- $(".lineno").animate({backgroundColor: lineno_bg}, 1000);
-        // -- $(".inputline").css("background-color", start_color);
-        // -- $(".inputline").animate({backgroundColor: term_bg}, 1000, function() {
+        // -- $(".num").css("background-color", start_color);
+        // -- $(".num").animate({backgroundColor: lineno_bg}, 1000);
+        // -- $(".line").css("background-color", start_color);
+        // -- $(".line").animate({backgroundColor: term_bg}, 1000, function() {
         // --     $(current_inputline).css("background-color", highlight_bg);
         // --     $(current_inputline).css("color", highlight_fg);
         // -- });
@@ -354,7 +355,7 @@ function flash_screen() {
         $("#cursor_char").css("background-color", "#CC0000");
         $("#cursor_char").css("color", "white");
     }, 50);
-    // $(".inputline").effect("highlight", {color:"white"}, 500);
+    // $(".line").effect("highlight", {color:"white"}, 500);
 }
 
 function change_status_bar(text) {
@@ -425,7 +426,7 @@ function update_rc_counters () {
 }
 
 function maintain_line_visibilities() {
-    // This method iterates over ALL .lineno and .inputline elements and
+    // This method iterates over ALL .num and .line elements and
     // sets their visibilities accordingly.  Because it loops through all
     // lines, it is an expensive operation that should only be called when a
     // complete re-setting of line visiblities is needed.  For example, when
@@ -434,8 +435,8 @@ function maintain_line_visibilities() {
     // visibilities because of cursor movements, use
     // set_line_visibilities().
     for (var i = 0; i < num_lines; i++) {
-        var lineno = $(".lineno").get(i);
-        var inputline = $(".inputline").get(i);
+        var lineno = $(".num").get(i);
+        var inputline = $(".line").get(i);
         if (num_display_lines == 0) {
             // Assert: a num_display_lines value of 0 means we want to show
             // all lines.
@@ -456,7 +457,7 @@ function maintain_line_visibilities() {
     // * if (num_lines + original_num_tilda_lines < num_display_lines) {
     // *     // Assert: we need to add tilda lines.
     // *     for (var i = 0; i < (num_display_lines - num_lines - original_num_tilda_lines); i++) {
-    // *         var last_inputline = $(".inputline").get(num_lines - 1);
+    // *         var last_inputline = $(".line").get(num_lines - 1);
     // *         var tilda_line = '<pre class="tilda_lineno">~  </pre><pre class="tilda_inputline"></pre>';
     // *         $(tilda_line).insertAfter($(last_inputline));
     // *     }
@@ -485,8 +486,8 @@ function in_visible_range(row) {
 
 function show_lines_in_range(start, end) {
     for (var i = start; i <= end; i++) {
-        var lineno = $(".lineno").get(i);
-        var inputline = $(".inputline").get(i);
+        var lineno = $(".num").get(i);
+        var inputline = $(".line").get(i);
         $(lineno).show();
         $(inputline).show();
     }
@@ -494,8 +495,8 @@ function show_lines_in_range(start, end) {
 
 function hide_lines_in_range(start, end) {
     for (var i = start; i <= end; i++) {
-        var lineno = $(".lineno").get(i);
-        var inputline = $(".inputline").get(i);
+        var lineno = $(".num").get(i);
+        var inputline = $(".line").get(i);
         $(lineno).hide();
         $(inputline).hide();
     }
@@ -518,8 +519,8 @@ function set_line_visibilities() {
             // row that we know is already visible. (There are <delta> number of
             // these.)
             for (var i = current_row; i < (current_row + delta); i++) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
+                var lineno = $(".num").get(i);
+                var inputline = $(".line").get(i);
                 // By design, we know these elements were outside the visible
                 // range but should now be set to visible.
                 $(lineno).show();
@@ -529,8 +530,8 @@ function set_line_visibilities() {
             // be set to invisible.
             var last_row = top_visible_row + num_display_lines - 1;
             for (var i = last_row; i > last_row - delta; i--) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
+                var lineno = $(".num").get(i);
+                var inputline = $(".line").get(i);
                 // By design, we know these elements were within the visible
                 // range but should now be set to invisible.
                 $(lineno).hide();
@@ -539,16 +540,16 @@ function set_line_visibilities() {
             top_visible_row = current_row;
         } else {
             for (var i = current_row; i < (current_row + num_display_lines); i++) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
+                var lineno = $(".num").get(i);
+                var inputline = $(".line").get(i);
                 // By design, we know these elements were outside the visible
                 // range but should now be set to visible.
                 $(lineno).show();
                 $(inputline).show();
             }
             for (var i = top_visible_row; i < (top_visible_row + num_display_lines); i++) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
+                var lineno = $(".num").get(i);
+                var inputline = $(".line").get(i);
                 // By design, we know these elements were within the visible
                 // range but should now be set to invisible.
                 $(lineno).hide();
@@ -563,28 +564,28 @@ function set_line_visibilities() {
         var delta = current_row - (top_visible_row + num_display_lines) + 1;
         if (delta < num_display_lines) {
             for (var i = current_row; i > (current_row - delta); i--) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
+                var lineno = $(".num").get(i);
+                var inputline = $(".line").get(i);
                 $(lineno).show();
                 $(inputline).show();
             }
             for (var i = top_visible_row; i < (top_visible_row + delta); i++) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
+                var lineno = $(".num").get(i);
+                var inputline = $(".line").get(i);
                 $(lineno).hide();
                 $(inputline).hide();
             }
             top_visible_row = current_row - num_display_lines + 1;
         } else {
             for (var i = current_row; i > (current_row - num_display_lines); i--) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
+                var lineno = $(".num").get(i);
+                var inputline = $(".line").get(i);
                 $(lineno).show();
                 $(inputline).show();
             }
             for (var i = top_visible_row; i < (top_visible_row + num_display_lines); i++) {
-                var lineno = $(".lineno").get(i);
-                var inputline = $(".inputline").get(i);
+                var lineno = $(".num").get(i);
+                var inputline = $(".line").get(i);
                 $(lineno).hide();
                 $(inputline).hide();
             }
@@ -598,9 +599,9 @@ function set_line_visibilities() {
 
 function get_next_lbracket_position() {
     var seen_nonempty_line = false;
-    var index = $(".inputline").index(current_inputline);
+    var index = $(".line").index(current_inputline);
     for (index; index > 0; index--) {
-        var e = $(".inputline")[index];
+        var e = $(".line")[index];
         var contents = $(e).html();
         contents = remove_span_tags(contents);
         if (contents != "" && contents != " ") {
@@ -616,9 +617,9 @@ function get_next_lbracket_position() {
 
 function get_next_rbracket_position() {
     var seen_nonempty_line = false;
-    var index = $(".inputline").index(current_inputline);
+    var index = $(".line").index(current_inputline);
     for (index; index < (num_lines - 1); index++) {
-        var e = $(".inputline")[index];
+        var e = $(".line")[index];
         var contents = $(e).html();
         contents = remove_span_tags(contents);
         if (contents != "" && contents != " ") {
@@ -1074,7 +1075,7 @@ function put_cursor_at_next_w_position() {
 }
 
 function v_cursor_move(offset) {
-    var current_index = $(".inputline").index(current_inputline);
+    var current_index = $(".line").index(current_inputline);
     var new_index = current_index + offset;
     if ((new_index + offset) < 0) {
         new_index = 0;
@@ -1126,7 +1127,7 @@ function put_cursor_at_row(index) {
     update_rc_counters();
     // console.debug("Putting cursor at row index " + index);
 
-    current_inputline = $(".inputline")[index];
+    current_inputline = $(".line")[index];
     $(current_inputline).css("background-color", highlight_bg);
     $(current_inputline).css("color", highlight_fg);
     contents = $(current_inputline).html();
@@ -1181,7 +1182,7 @@ function put_cursor_at_col(index, is_new_preferred_position) {
 }
 
 function open_blank_line_below() {
-    var new_line = '<pre class="lineno">  1</pre><pre class="inputline"> </pre>';
+    var new_line = '<pre class="num">  1</pre><pre class="line"> </pre>';
     $(new_line).insertAfter($(current_inputline));
     num_lines++;
     // adjust_num_lines(+1);
@@ -1324,7 +1325,7 @@ function renumber_lines(start, end) {
         end = end + 1;
     }
     for (var i = start; i < end; i++) {
-        var lineno = $(".lineno").get(i);
+        var lineno = $(".num").get(i);
         var n = get_formatted_lineno(i + 1);
         $(lineno).html(n);
         // Also, change the CSS of these lines.
@@ -1388,7 +1389,7 @@ function delete_D_command() {
 
 function delete_rbracket_motion() {
     var contents = get_clean_contents();
-    var next_contents = $(".inputline")[current_row + 1];
+    var next_contents = $(".line")[current_row + 1];
     next_contents = $(next_contents).html();
 
     var on_last_row = false; 
@@ -1472,7 +1473,7 @@ function delete_gg_motion() {
 }
 
 function paste_below() {
-    var new_line = '<pre class="lineno">  1</pre><pre class="inputline">';
+    var new_line = '<pre class="num">  1</pre><pre class="line">';
     new_line += paste_reg;
     new_line += '</pre>';
     $(new_line).insertAfter($(current_inputline));
@@ -1541,11 +1542,11 @@ function delete_G_motion() {
 
 function remove_line_elements(index) {
     // This method removes a logical "line" on the page.  This amounts to
-    // removing BOTH the <pre class="inputline"> element as well as the
-    // corresponding <pre class="lineno"> element.  It changes the global num_lines
+    // removing BOTH the <pre class="line"> element as well as the
+    // corresponding <pre class="num"> element.  It changes the global num_lines
     // variable but does not touch current_row.
-    var inputline = $(".inputline").get(index);
-    var lineno = $(".lineno").get(index);
+    var inputline = $(".line").get(index);
+    var lineno = $(".num").get(index);
     $(inputline).remove();
     $(lineno).remove();
     num_lines--;
@@ -1553,8 +1554,8 @@ function remove_line_elements(index) {
 }
 
 function remove_current_line_elements() {
-    var inputline = $(".inputline").get(current_row);
-    var lineno = $(".lineno").get(current_row);
+    var inputline = $(".line").get(current_row);
+    var lineno = $(".num").get(current_row);
     $(inputline).remove();
     $(lineno).remove();
     num_lines--;
@@ -1562,15 +1563,15 @@ function remove_current_line_elements() {
 }
 
 function show_line_elements(index) {
-    var inputline = $(".inputline").get(index);
-    var lineno = $(".lineno").get(index);
+    var inputline = $(".line").get(index);
+    var lineno = $(".num").get(index);
     $(inputline).show();
     $(lineno).show();
 }
 
 function hide_line_elements(index) {
-    var inputline = $(".inputline").get(index);
-    var lineno = $(".lineno").get(index);
+    var inputline = $(".line").get(index);
+    var lineno = $(".num").get(index);
     $(inputline).hide();
     $(lineno).hide();
 }
@@ -1721,9 +1722,9 @@ function load_undo_state() {
 function newfile_handler(key) {
     switch (key) {
         case 'i':
-            $(".inputline").remove();
-            $(".lineno").remove();
-            var newline = '<pre class="lineno">  1</pre><pre class="inputline"> </pre>';
+            $(".line").remove();
+            $(".num").remove();
+            var newline = '<pre class="num">  1</pre><pre class="line"> </pre>';
             $("#source_code").append($(newline));
             num_lines = 1;
             top_visible_row = 0;
@@ -1745,7 +1746,7 @@ function newfile_handler(key) {
 }
 
 function get_clean_contents_at_index(index) {
-    var inputline = $(".inputline").get(index);
+    var inputline = $(".line").get(index);
     var contents = $(inputline).html();
     contents = remove_span_tags(contents);
     // Just like get_clean_contents, if the contents string is empty, make
@@ -1993,13 +1994,13 @@ function change_colorscheme(scheme) {
     /* $("a.current_page:active").css("color", "white"); */
 
     // Set the background-color and color properties of each line,
-    $(".inputline").each(function() {
+    $(".line").each(function() {
         $(this).css("background-color", term_bg);
         $(this).css("color", term_fg);
     });
 
     // Set the background-color and color properties of each lineno.
-    $(".lineno").each(function() {
+    $(".num").each(function() {
         $(this).css("background-color", lineno_bg);
         $(this).css("color", lineno_fg);
     });
@@ -2093,7 +2094,7 @@ function execute_search_and_replace() {
         var left_side = contents.substring(0, search_col);
         var right_side = contents.substring(search_col);
         right_side = right_side.replace(last_pattern, new_term);
-        var inputline = $(".inputline").get(search_row);
+        var inputline = $(".line").get(search_row);
         $(inputline).html(left_side + right_side);
         // Note: every time this is called, it loops through EVERY line in
         // the file, which means after the last replacement, we'll do one
@@ -2209,7 +2210,7 @@ function refresh_write_output() {
     var buffer = "";
     if (write_output == true) {
         for (var i = 0; i < num_lines; i++) {
-            var inputline = $(".inputline").get(i);
+            var inputline = $(".line").get(i);
             var contents = $(inputline).html();
             contents = remove_span_tags(contents);
             buffer += contents + "\n";
@@ -2244,10 +2245,10 @@ function execute_command(command, args) {
             // -- $("#vimwindow").animate({backgroundColor: vimwindow_bg}, 1000);
             // -- $("#main").css("background-color", start_color);
             // -- $("#main").animate({backgroundColor: main_bg}, 1000);
-            // -- $(".lineno").css("background-color", start_color);
-            // -- $(".lineno").animate({backgroundColor: lineno_bg}, 1000);
-            // -- $(".inputline").css("background-color", start_color);
-            // -- $(".inputline").animate({backgroundColor: term_bg}, 1000, function() {
+            // -- $(".num").css("background-color", start_color);
+            // -- $(".num").animate({backgroundColor: lineno_bg}, 1000);
+            // -- $(".line").css("background-color", start_color);
+            // -- $(".line").animate({backgroundColor: term_bg}, 1000, function() {
             // --     $(current_inputline).css("background-color", highlight_bg);
             // --     $(current_inputline).css("color", highlight_fg)
             // -- });
@@ -2891,7 +2892,7 @@ function insert_handler(key) {
 }
 
 function add_visual_hl_current_row() {
-    var inputline = $(".inputline").get(current_row);
+    var inputline = $(".line").get(current_row);
     var contents = $(inputline).html();
     // We don't mind if these contents have the <span> cursor tags already.
     var hl_contents = hl_span_open + contents + hl_span_close;
@@ -2899,7 +2900,7 @@ function add_visual_hl_current_row() {
 }
 
 function remove_visual_hl_current_row() {
-    var inputline = $(".inputline").get(current_row);
+    var inputline = $(".line").get(current_row);
     var contents = $(inputline).html();
     // We don't mind if these contents have the <span> cursor tags already.
     var span_open = '<span class="visual_line" style="color:white; background-color:green">';
@@ -2936,14 +2937,14 @@ function visual_v_cursor_move(offset) {
         // Assert: want to move downwards AND we're on some line at or below
         // the line we entered VISUAL LINE mode from.
         v_cursor_move(+1);
-        var inputline = $(".inputline").get(current_row);
+        var inputline = $(".line").get(current_row);
         var contents = $(inputline).html(); // This will contain cursor span tags.
         var hl_contents = hl_span_open + contents + hl_span_close;
         $(inputline).html(hl_contents);
     } else if (offset > 0 && (current_row - visual_line_start_row  < 0)) {
         // Assert: want to move downwards AND we're on a line above the line
         // we entered VISUAL LINE mode from.
-        var inputline = $(".inputline").get(current_row);
+        var inputline = $(".line").get(current_row);
         var contents = $(inputline).html();
         contents = remove_visual_span_tags(contents);
         $(inputline).html(contents);
@@ -2961,7 +2962,7 @@ function visual_v_cursor_move(offset) {
     } else if (offset < 0 && (current_row - visual_line_start_row) > 0) {
         // Assert: want to move upwards AND we're on some line below the
         // line we entered VISUAL LINE mode from.
-        var inputline = $(".inputline").get(current_row);
+        var inputline = $(".line").get(current_row);
         var contents = $(inputline).html();
         contents = remove_visual_span_tags(contents);
         $(inputline).html(contents);
@@ -2979,7 +2980,7 @@ function visual_v_cursor_move(offset) {
         // Assert: want to move upwards AND we're on some line above the
         // line we entered VISUAL LINE mode from.
         v_cursor_move(-1)
-        var inputline = $(".inputline").get(current_row);
+        var inputline = $(".line").get(current_row);
         var contents = $(inputline).html(); // This will contain cursor span tags.
         var hl_contents = hl_span_open + contents + hl_span_close;
         $(inputline).html(hl_contents);
@@ -2990,7 +2991,7 @@ function visual_v_cursor_move(offset) {
 
 function remove_visual_span_tags_in_range(start, end) {
     for (var i = start; i <= end; i++) {
-        var inputline = $(".inputline").get(i);
+        var inputline = $(".line").get(i);
         var contents = $(inputline).html();
         contents = remove_visual_span_tags(contents);
         $(inputline).html(contents);
@@ -3017,7 +3018,7 @@ function yank_selected_lines() {
 
 function visual_paste_below() {
     for (var i = 0; i < visual_yank_buffer.length; i++) {
-        var new_line = '<pre class="lineno">  1</pre><pre class="inputline">';
+        var new_line = '<pre class="num">  1</pre><pre class="line">';
         new_line += visual_yank_buffer[i];
         new_line += '</pre>';
         $(new_line).insertAfter($(current_inputline));
