@@ -257,7 +257,7 @@ pre {
     border-style:solid;
 }
 
-.tilda_inputline {
+.tilda_line {
     font-size:12pt;
     border:none;
     color:#555;
@@ -266,7 +266,7 @@ pre {
     display:inline-block;
 }
 
-.inputline {
+.line {
     font-size:12pt;
     border:none;
     color:#555;
@@ -312,7 +312,7 @@ td.def {
     padding-left:5px;
 }
 
-.tilda_lineno {
+.tilda_num {
     font-size:12pt;
     border:none;
     color:#008;
@@ -321,7 +321,7 @@ td.def {
     display:inline-block;
 }
 
-.lineno {
+.num {
     font-size:12pt;
     border:none;
     color:green;

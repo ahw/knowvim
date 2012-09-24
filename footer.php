@@ -1,3 +1,28 @@
+</div> <!-- end #buffer -->
+
+    <div id="bottom_bar">
+        <pre id="statusbar"></pre><pre id="current_row">1</pre><pre>,</pre><pre id="current_col">1</pre>
+    </div> <!-- end #bottom_bar -->
+</div> <!-- end #vimwindow -->
+
+<div style="text-align:center">
+<a class="panel_link" id="settings_show_link" href="#">Show settings.</a>
+<a class="panel_link" id="basic_commands_panel_show_link" href="#">Show basic commands.</a>
+<a class="panel_link" id="advanced_commands_panel_show_link" href="#">Show advanced commands.</a>
+<!-- <a class="panel_link" id="instruction_panel_show_link" href="#">Show instructions.</a> -->
+</div>
+
+</div> <!-- end #main -->
+  
+<div id="write_output" class="mainbox">
+<span style="color:#D00; font-size:8pt">Use this panel to copy text.  Turn
+off with <span style="font-weight:bold">:writeoutput off</span></span>.  <a
+class="panel_link" id="write_output_panel_hide_link" href="#">Hide last
+write output.</a><br/> <pre>
+</pre>
+</div>
+
+
 <p style="padding-bottom:1em; font-size:8pt">
 &copy; 2012 Andrew W. Hallagan.
 
