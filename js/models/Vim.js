@@ -63,9 +63,11 @@ var Vim = Backbone.DeepModel.extend({
 
         var model = this;
         var buffer = new Buffer({name : name});
+        // Silently set the new buffer.
         model.set({buffer : buffer}, {silent: true});
         buffer.fetch({
             success : function() {
+                // Manually trigger the change event on success.
                 model.change();
             }
         });
