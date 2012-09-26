@@ -2,7 +2,43 @@ var Vim = Backbone.DeepModel.extend({
 
     defaults : {
         mode : 'NORMAL',
+        normal : {
+            action : null,
+            motion : null,
+            repeat : 1,
+            state : 'START',
+            actions : {
+                'd' : 'd',
+                'c' : 'c',
+                'y' : 'y'
+            },
+            motions : {
+                'w' : 'w',
+                'b' : 'b',
+                '{' : '{',
+                '}' : '}',
+                '0' : '0',
+                '$' : '$',
+                'H' : 'H',
+                'L' : 'L',
+                'G' : 'G',
+                'j' : 'j',
+                'k' : 'k',
+                'h' : 'h',
+                'l' : 'l'
+            }
+
+        },
+
+        // The lower left-hand corner text. Indicates the mode or error
+        // messages.
         status_bar_text : '',
+        // The command stack holds things like 'd' during a 'dw' command. In
+        // general, it contains the characters entered in a multi-character
+        // command, before the command is completed.
+        command_stack : [],
+        // The number of times to repeat a command. E.g., 5x.
+
         modified_since_last_write : false,
         found_occurrence : false,
         start_search_row : 0,
@@ -52,15 +88,12 @@ var Vim = Backbone.DeepModel.extend({
     },
 
     initialize: function(options) {
-
         if (options && options.buffer) {
             this.set({buffer : options.buffer});
         }
-
     },
 
     openBuffer : function(name, callback) {
-
         var model = this;
         var buffer = new Buffer({name : name});
         // Silently set the new buffer.
@@ -136,75 +169,114 @@ var Vim = Backbone.DeepModel.extend({
         this.set({mode: mode});
     },
 
-    action_handler : function(key) {
-        console.log("NORMAL action : " + key);
-    },
-
-    motion_handler : function(key) {
-        console.log("NORMAL motion : " + key);
-    },
-
     normal_handler : function(key) {
-        switch (key) {
-            case 'i':
-                this.change_mode('INSERT');
+        switch (this.get('normal.state')) {
+            case 'START':
+                if (this.get('normal.motions')[key]) {
+                    // Assert: motion command
+                    this.set({
+                        'normal.action' : null,
+                        'normal.motion' : key,
+                        'normal.repeat' : 1,
+                        'normal.state' : 'MOTION'
+                    });
+                    this.print_normal_expression();
+                } else if (this.get('normal.actions')[key]) {
+                    // Assert: action command
+                    this.set({
+                        'normal.motion' : null,
+                        'normal.action' : key,
+                        'normal.repeat' : 1,
+                        'normal.state' : 'ACTION'
+                    });
+                } else if (parseInt(key)) {
+                    // Assert: repetition prefix
+                    this.set({
+                        'normal.action' : null,
+                        'normal.motion' : null,
+                        'normal.repeat' : parseInt(key),
+                        'normal.state' : 'NUMBER'
+                    });
+                } else {
+                    console.log('Invalid key "' + key + '"');
+                }
                 break;
-            case ':':
-                this.change_mode('EXECUTE');
+
+            case 'NUMBER':
+                if (this.get('normal.motions')[key]) {
+                    // Assert: motion command
+                    this.set({
+                        'normal.action' : null,
+                        'normal.motion' : key,
+                        // normal.repeat remains the same
+                        'normal.state' : 'MOTION'
+                    });
+                    this.print_normal_expression();
+                } else if (this.get('normal.actions')[key]) {
+                    // Assert: action command
+                    this.set({
+                        'normal.action' : key,
+                        'normal.motion' : null,
+                        // normal.repeat remains the same
+                        'normal.state' : 'ACTION'
+                    });
+                } else if (parseInt(key)) {
+                    // Assert: repetition prefix
+                    var n = parseInt(key);
+                    var old_repeat = this.get('normal.repeat');
+                    this.set({
+                        'normal.action' : null,
+                        'normal.motion' : null,
+                        'normal.repeat' : 10 * old_repeat + n,
+                        'normal.state' : 'NUMBER'
+                    });
+                }
                 break;
-            case '/':
-                this.change_mode('SEARCH');
+
+            case 'ACTION':
+                if (this.get('normal.motions')[key]) {
+                    this.set({
+                        // normal.action remains the same
+                        'normal.motion' : key,
+                        // normal.repeat remains the same
+                        'normal.state' : 'MOTION'
+                    });
+                    this.print_normal_expression();
+                } else {
+                    console.log('Invalid key "' + key + '"');
+                }
                 break;
-            case 'h':
-            case 'j':
-            case 'k':
-            case 'l':
-            case 'w':
-            case 'b':
-            case '{':
-            case '}':
-            case '0':
-            case '$':
-            case 'G':
-            case 'H':
-            case 'L':
-                this.motion_handler(key);
-                break;
-            case 'd':
-            case 'y':
-            case 'c':
-            case 'x':
-            case 'p':
-                this.action_handler(key);
-                break;
-            case 'g':
-                special_handler(key);
+
+            case 'MOTION':
+                // Epsilon transition to starting state
+                this.set({
+                    'normal.state' : 'START'
+                });
+                // Re-start
+                this.normal_handler(key);
                 break;
         }
+    },
+
+    print_normal_expression : function() {
+        var a = this.get('normal.action');
+        var m = this.get('normal.motion');
+        var r = this.get('normal.repeat');
+
+        var s = sprintf('Command: "%d%s%s"', r, a, m);
+        s += sprintf('\n    Action = %s', a);
+        s += sprintf('\n    Motion = %s', m);
+        s += sprintf('\n    Repeat = %s', r);
+        console.log(s);
     },
 
     insert_handler : function(key) {
-        switch (key) {
-            case 'ESC':
-                this.change_mode('NORMAL');
-                break;
-        }
     },
 
     search_handler : function(key) {
-        switch (key) {
-            case 'ESC':
-                this.change_mode('NORMAL');
-                break;
-        }
     },
 
     execute_handler : function(key) {
-        switch (key) {
-            case 'ESC':
-                this.change_mode('NORMAL');
-                break;
-        }
     },
 
     newfile_handler : function(key) {
