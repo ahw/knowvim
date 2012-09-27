@@ -54,9 +54,6 @@ if ($pagename == "terminal") {
 <meta name="robots" content="index,follow"/>
 <meta name="author" content="Andrew W. Hallagan"/>
 <meta name="description" content="Try Vim, right in your browser!"/>
-<meta name="Description" content="Try Vim, right in your browser!"/>
-<meta name="abstract" content="Try Vim, right in your browser!"/>
-<meta name="Abstract" content="Try Vim, right in your browser!"/>
 <meta name="keywords" content="know, vim, browser, try, learn, vi, linux, unix, terminal, command, andrew, william, hallagan, bucknell, computer, science, engineering, awh"/>
 
 <?php
@@ -92,6 +89,7 @@ if ($browser == 'mobile') {
 <script type="text/javascript" src="/js/knowvim.js"></script>
 -->
 <script type="text/javascript" src="/js/models/Buffer.js"></script>
+<script type="text/javascript" src="/js/models/NormalHandler.js"></script>
 <script type="text/javascript" src="/js/models/Vim.js"></script>
 <script type="text/javascript" src="/js/views/Application.js"></script>
 <script type="text/javascript" src="/js/views/Editor.js"></script>
