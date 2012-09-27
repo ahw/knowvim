@@ -35,13 +35,41 @@ var NormalHandler = Backbone.DeepModel.extend({
         // the command.
         model.on('change:state', function() {
             if (model.get('state') == 'RUN') {
+                var mkey = model.get('motion');
+                var opkey = model.get('operator');
+                var repeat = model.get('repeat');
+
+                var m = getMotionResult(mkey, row, col, text);
+                for (var i = 0; i < repeat - 1; i++) {
+                    m = getMotionResult(mkey, m.row, m.col, text);
+                }
+
                 model.printCommandExpression();
             }
         });
     },
 
+    getMotionResult : function(motionKey, row, col, text) {
+
+        var result = {
+            type : null, // 'linewise' or 'characterwise'
+            startRow : row,
+            startCol : col,
+            endRow : null,
+            endCol : null,
+            inclusive : null, // 'inclusive' or 'exclusive'
+        };
+
+        switch(motionKey) {
+
+            default:
+                return result;
+        }
+    },
+
     input : function(key) {
         switch (this.get('state')) {
+
             case 'START':
                 if (this.get('motions')[key]) {
                     // Assert: motion command
