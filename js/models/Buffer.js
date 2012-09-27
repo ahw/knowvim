@@ -7,6 +7,7 @@ var Buffer = Backbone.DeepModel.extend({
     defaults : {
         name : 'new.txt',
         lines : [],
+        raw : null,
         mimetype : 'text'
     },
 
@@ -38,8 +39,14 @@ var Buffer = Backbone.DeepModel.extend({
         $.ajax({
             url : '/files/' + model.get('name'),
             success : function(response) {
-                // Split the text into an array of lines.
-                model.set({lines : response.split('\n')});
+                // Trim of the newline that gets appended.
+                response = response.trim();
+
+                model.set({
+                    raw : response,
+                    lines : response.split('\n')
+                });
+
                 // Make the "success" callback.
                 options.success();
             }
