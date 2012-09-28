@@ -1,14 +1,15 @@
 var Vim = Backbone.DeepModel.extend({
 
     defaults : {
+        buffer : null,
         mode : 'NORMAL',
-        normalHandler : new NormalHandler(),
-        col : 1,
-        row : 1,
+        normalHandler : null,
+        col : 0,
+        row : 0,
 
         // The lower left-hand corner text. Indicates the mode or error
         // messages.
-        status_bar_text : '',
+        statusBarText : '',
         // The command stack holds things like 'd' during a 'dw' command. In
         // general, it contains the characters entered in a multi-character
         // command, before the command is completed.
@@ -59,16 +60,23 @@ var Vim = Backbone.DeepModel.extend({
         visual_yank_buffer : [],
         beta_color : "green",
         marked_positions : {},
-        cancelkeypress : false,
-        buffer : new Buffer()
+        cancelkeypress : false
     },
 
     initialize : function(options) {
         var model = this;
 
+        // If there was a buffer option, set it.
         if (options && options.buffer) {
             model.set({buffer : options.buffer});
+        } else {
+            model.set({buffer : new Buffer()});
         }
+
+        // Initialize the NormalHandler.
+        model.set({
+            normalHandler : new NormalHandler({ vim : model })
+        });
 
     },
 
@@ -126,20 +134,20 @@ var Vim = Backbone.DeepModel.extend({
         }
     },
 
-    change_mode : function(mode) {
+    changeMode : function(mode) {
         // First change the status bar.
         switch(mode) {
             case 'INSERT':
-                this.set({status_bar_text : '-- INSERT --'});
+                this.set({statusBarText : '-- INSERT --'});
                 break;
             case  'EXECUTE':
-                this.set({status_bar_text : ': '});
+                this.set({statusBarText : ': '});
                 break;
             case 'SEARCH':
-                this.set({status_bar_text : '/'});
+                this.set({statusBarText : '/'});
                 break;
             case 'NORMAL':
-                this.set({status_bar_text : ''});
+                this.set({statusBarText : ''});
                 break;
         }
         // Now that the status bar has been updated, change the actual mode.

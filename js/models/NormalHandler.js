@@ -5,6 +5,7 @@ var NormalHandler = Backbone.DeepModel.extend({
         motion : null,
         repeat : 1,
         state : 'START',
+
         operators : {
             'd' : 'd',
             'c' : 'c',
@@ -25,47 +26,67 @@ var NormalHandler = Backbone.DeepModel.extend({
             'k' : 'k',
             'h' : 'h',
             'l' : 'l'
-        }
+        },
+
+        buffer : null,
+        vim : null
     },
 
-    initialize : function() {
+    initialize : function(options) {
+
         var model = this;
+        model.set({
+            vim : options.vim,
+            buffer : options.buffer
+        });
 
         // Listen for changes in state. When we hit the RUN state execute
-        // the command.
+        // the parsed command.
         model.on('change:state', function() {
             if (model.get('state') == 'RUN') {
+
+                model.printCommandExpression();
+
                 var mkey = model.get('motion');
                 var opkey = model.get('operator');
                 var repeat = model.get('repeat');
 
-                var m = getMotionResult(mkey, row, col, text);
+                var m = model.getMotionResult(mkey, model.row(), model.col());
                 for (var i = 0; i < repeat - 1; i++) {
-                    m = getMotionResult(mkey, m.row, m.col, text);
+                    m = model.getMotionResult(mkey, m.endRow, m.endCol);
                 }
-
-                model.printCommandExpression();
+                model.row(m.endRow);
+                model.col(m.endCol);
             }
         });
     },
 
-    getMotionResult : function(motionKey, row, col, text) {
 
-        var result = {
-            type : null, // 'linewise' or 'characterwise'
-            startRow : row,
-            startCol : col,
-            endRow : null,
-            endCol : null,
-            inclusive : null, // 'inclusive' or 'exclusive'
-        };
-
-        switch(motionKey) {
-
-            default:
-                return result;
+    // Helper function to get/set the current row.
+    row : function(newRow) {
+        if (newRow) {
+            this.get('vim').set({row : newRow});
+        } else {
+            return this.get('vim').get('row');
         }
     },
+
+
+    // Helper function to get/set the current col.
+    col : function(newCol) {
+        if (newCol) {
+            this.get('vim').set({col : newCol});
+        } else {
+            return this.get('vim').get('col');
+        }
+    },
+
+
+    // Helper for returning `this.get('buffer').get('lines')`
+    lines : function() {
+        return this.get('vim').get('buffer').get('lines');
+    },
+
 
     input : function(key) {
         switch (this.get('state')) {
@@ -82,8 +103,8 @@ var NormalHandler = Backbone.DeepModel.extend({
                 } else if (this.get('operators')[key]) {
                     // Assert: operator command
                     this.set({
-                        motion : null,
                         operator : key,
+                        motion : null,
                         repeat : 1,
                         state : 'OPERATOR'
                     });
@@ -107,27 +128,21 @@ var NormalHandler = Backbone.DeepModel.extend({
                 if (this.get('motions')[key]) {
                     // Assert: motion command
                     this.set({
-                        operator : null,
                         motion : key,
-                        // repeat remains the same
                         state : 'RUN'
                     });
                 } else if (this.get('operators')[key]) {
                     // Assert: operator command
                     this.set({
                         operator : key,
-                        motion : null,
-                        // repeat remains the same
                         state : 'OPERATOR'
                     });
                 } else if (parseInt(key)) {
                     // Assert: repetition prefix
                     var n = parseInt(key);
-                    var old_repeat = this.get('repeat');
+                    var oldRepeat = this.get('repeat');
                     this.set({
-                        operator : null,
-                        motion : null,
-                        repeat : 10 * old_repeat + n,
+                        repeat : 10 * oldRepeat + n,
                         state : 'NUMBER'
                     });
                 }
@@ -135,10 +150,9 @@ var NormalHandler = Backbone.DeepModel.extend({
 
             case 'OPERATOR':
                 if (this.get('motions')[key]) {
+                    // Assert: motion command
                     this.set({
-                        // operator remains the same
                         motion : key,
-                        // repeat remains the same
                         state : 'RUN'
                     });
                 } else {
@@ -158,6 +172,61 @@ var NormalHandler = Backbone.DeepModel.extend({
                 break;
         }
     },
+
+
+    // Returns the result of a `motionKey` motion, in the context of
+    // `startRow`, `startCol`, and, implicitly, the `Buffer` retrieved with
+    // `this.get('buffer')`.
+    getMotionResult : function(motionKey, startRow, startCol) {
+
+
+        console.log(sprintf('getMotionResult >>> motionKey = %s, startRow = %s, startCol = %s', motionKey, startRow, startCol));
+        var result = {
+            type : null, // 'linewise' or 'characterwise'
+            startRow : startRow,
+            startCol : startCol,
+            endRow : startRow, // Default is no row movement
+            endCol : startCol, // Default is no col movement
+            inclusive : null, // true if it includes last char towards end
+        };
+
+        switch(motionKey) {
+
+            case 'h':
+                var endCol = startCol == 0 ? 0 : startCol - 1;
+                result.type = 'characterwise';
+                result.endCol = endCol;
+                result.inclusive = false;
+                break;
+
+            case 'l':
+                var length = this.lines()[startRow].length;
+                var endCol = startCol == length - 1 ? startCol : startCol + 1;
+                result.type = 'characterwise';
+                result.endCol = endCol;
+                result.inclusive = false;
+                break;
+
+            case 'j':
+                var numRows = this.lines().length;
+                var endRow = startRow == numRows - 1 ? startRow : startRow + 1;
+                result.type = 'linewise';
+                result.endRow = endRow;
+                result.inclusive = true;
+                break;
+
+            case 'k':
+                var endRow = startRow == 0 ? 0 : startRow - 1;
+                result.type = 'linewise';
+                result.endRow = endRow;
+                result.inclusive = true;
+                break;
+        }
+
+        console.log(sprintf('getMotionResult >>> motionKey = %s, endRow = %s, end = %s', motionKey, result.endRow, result.endCol));
+        return result;
+    },
+
 
     printCommandExpression : function() {
         var o = this.get('operator') || "";
