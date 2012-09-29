@@ -7,6 +7,8 @@ var EditorView = Backbone.View.extend({
     el : '#vimwindow',
     buffer : '#buffer',
     statusBar : '#statusbar',
+    row : '#row',
+    col : '#col',
 
     /**
      * @method initialize The EditorView constructor.  If
@@ -20,7 +22,7 @@ var EditorView = Backbone.View.extend({
 
         var view = this;
         if (options && options.model) {
-            view.model = options.model;
+            view.model = options.model; // Assume model is a Vim.
         } else {
             view.model = new Vim();
         }
@@ -29,14 +31,81 @@ var EditorView = Backbone.View.extend({
             view.renderBuffer();
         });
 
+        view.model.on('change:row change:col', function() {
+            view.renderRowAndColCounters();
+            view.renderCursor();
+        });
+
         view.model.on('change:mode', function() {
             view.renderStatusBar();
         });
 
     },
 
+    /**
+     * @method renderCursor Renders the cursor block by first removing the
+     * `span` tags around the old  character and wrapping the current
+     * character in `span` tags.
+     */
+    renderCursor : function() {
+        var row = this.model.get('row');
+        var col = this.model.get('col');
+        var cursorRow = this.model.get('cursorRow');
+        var cursorCol = this.model.get('cursorCol');
+        var line = this.model.get('buffer').get('lines')[cursorRow];
+
+        // Write the cleaned line back to the buffer.
+        this.model.get('buffer').get('lines')[cursorRow] = line;
+
+        var newLine = this.model.get('bufer').get('lines')[row];
+        var left_side = newLine.substring(0, index);
+        var middle = newLine.charAt(index);
+        var right_side = newLine.substring(index + 1, newLine.length);
+        var new_contents = left_side
+                         + '<span id="cursor_char">' + middle + '</span>'
+                         + right_side;
+    },
+
+    /**
+     * @method removeCursorTags Helper function for removing the `span`
+     * tags from a `line` of text.
+     */
+    removeCursorTags : function(line) {
+
+        // TODO: Put this magic text in a variable.
+        var spanOpen = line.indexOf('<span id="cursor_char">');
+        if (spanOpen == -1) {
+            return line;
+        }
+
+        // Get all the text up until the `span` opening tag.
+        leftSide = line.substring(0, spanOpen);
+
+        // Get the single character sandwiched between `span` tags.
+        // Note: "<span id="cursor_char">".length = 23
+        // TODO: Put this magic number in a function.
+        middle = line.charAt(spanOpen + 23);
+
+        // Get the rest of the text after the <span> closing tag.
+        // Note: "</span>".length = 7
+        // TODO: Put this magic text and magic number in a variable and/or
+        // function.
+        spanClose = line.indexOf("</span>");
+        rightSide = line.substring(spanClose + 7, line.length);
+        return leftSide + middle + rightSide;
+    },
+
+    /**
+     * @method renderRowAndCol Renders the row and column position
+     * indicators at the bottom of the editor window.
+     */
+    renderRowAndColCounters : function() {
+        $(this.row).html(this.model.get('row') + 1);
+        $(this.col).html(this.model.get('col') + 1);
+    },
+
     renderStatusBar : function() {
-        $(this.statusBar).html(this.model.get('status_bar_text'));
+        $(this.statusBar).html(this.model.get('statusBarText'));
     },
 
     /**

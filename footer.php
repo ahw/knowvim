@@ -1,7 +1,7 @@
 </div> <!-- end #buffer -->
 
     <div id="bottom_bar">
-        <pre id="statusbar"></pre><pre id="current_row">1</pre><pre>,</pre><pre id="current_col">1</pre>
+        <pre id="statusbar"></pre><pre id="row">1</pre><pre>,</pre><pre id="col">1</pre>
     </div> <!-- end #bottom_bar -->
 </div> <!-- end #vimwindow -->
 

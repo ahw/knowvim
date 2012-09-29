@@ -45,14 +45,15 @@ var NormalHandler = Backbone.DeepModel.extend({
         model.on('change:state', function() {
             if (model.get('state') == 'RUN') {
 
-                model.printCommandExpression();
-
+                // model.printCommandExpression();
                 var mkey = model.get('motion');
                 var opkey = model.get('operator');
                 var repeat = model.get('repeat');
 
+                console.log('Movement iteration # 1');
                 var m = model.getMotionResult(mkey, model.row(), model.col());
                 for (var i = 0; i < repeat - 1; i++) {
+                    console.log('Movement iteration # ' + (i + 2));
                     m = model.getMotionResult(mkey, m.endRow, m.endCol);
                 }
                 model.row(m.endRow);
@@ -64,7 +65,8 @@ var NormalHandler = Backbone.DeepModel.extend({
 
     // Helper function to get/set the current row.
     row : function(newRow) {
-        if (newRow) {
+        if (typeof newRow == 'number') {
+            console.log('Old row = ' + this.get('vim').get('row') + ', new row = ' + newRow);
             this.get('vim').set({row : newRow});
         } else {
             return this.get('vim').get('row');
@@ -74,7 +76,7 @@ var NormalHandler = Backbone.DeepModel.extend({
 
     // Helper function to get/set the current col.
     col : function(newCol) {
-        if (newCol) {
+        if (typeof newCol == 'number') {
             this.get('vim').set({col : newCol});
         } else {
             return this.get('vim').get('col');
@@ -210,20 +212,24 @@ var NormalHandler = Backbone.DeepModel.extend({
             case 'j':
                 var numRows = this.lines().length;
                 var endRow = startRow == numRows - 1 ? startRow : startRow + 1;
+                var endCol = Math.min(this.lines()[startRow], this.lines()[endRow]);
                 result.type = 'linewise';
                 result.endRow = endRow;
+                result.endCol = endCol;
                 result.inclusive = true;
                 break;
 
             case 'k':
                 var endRow = startRow == 0 ? 0 : startRow - 1;
+                var endCol = Math.min(this.lines()[startRow], this.lines()[endRow]);
                 result.type = 'linewise';
                 result.endRow = endRow;
+                result.endCol = endCol;
                 result.inclusive = true;
                 break;
         }
 
-        console.log(sprintf('getMotionResult >>> motionKey = %s, endRow = %s, end = %s', motionKey, result.endRow, result.endCol));
+        console.log(sprintf('getMotionResult >>> motionKey = %s, endRow = %s, endCol = %s', motionKey, result.endRow, result.endCol));
         return result;
     },
 
