@@ -32,6 +32,7 @@ var EditorView = Backbone.View.extend({
         });
 
         view.model.on('change:row change:col', function() {
+            console.log("Changing row or column");
             view.updateRowAndColCounters();
             view.updateCursor();
         });
@@ -69,7 +70,7 @@ var EditorView = Backbone.View.extend({
             newLine = currentLine;
         }
         // Add cursor tags to the new line.
-        newLine = this.addCursorTags(newLine, col);
+        newLine = this.addCursorTags(newLine, row, col);
         $($('.line')[row]).html(newLine);
 
         // Make the current row and col positions the new cursorRow and
@@ -81,19 +82,30 @@ var EditorView = Backbone.View.extend({
     },
 
     /**
+     * @method convertEmptyToSpace Helper function for converting an empty
+     * string in a `Buffer` to a single space. This is done because the
+     * cursor needs at least one character to be visible.
+     */
+    convertEmptyToSpace : function(index) {
+        this.model.get('buffer').get('lines')[index] = " ";
+    },
+
+    /**
      * @method addCursorTags Helper function for adding the cursor's
      * `span` tags around the character at the current `col` position.
      */
-    addCursorTags : function(line, col) {
+    addCursorTags : function(line, row, col) {
 
-        console.log("Adding cursor tags at col : " + col);
-        var leftSide = line.substring(0, col);
-        var middle = line.charAt(col);
-        var rightSide = line.substring(col + 1, line.length);
-        var newContents = leftSide
-            + '<span id="cursor_char">' + middle + '</span>'
-            + rightSide;
-        return newContents;
+        if (line) {
+            var leftSide = line.substring(0, col);
+            var middle = line.charAt(col);
+            var rightSide = line.substring(col + 1, line.length);
+            var newContents = leftSide + '<span id="cursor_char">' + middle + '</span>' + rightSide;
+            return newContents;
+        } else {
+            this.convertEmptyToSpace(row);
+            return '<span id="cursor_char"> </span>';
+        }
     },
 
     /**

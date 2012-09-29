@@ -1,15 +1,15 @@
 hallagan
-william
+
 andrew
 william
 hallagan asdf asfd asd fas df
 31234
 
-+ dev                          know vim . com
-+ dev
-+ dev
-+ dev
-+ dev
+dev                          know vim . com
+
+dev
+dev
+
 + dev
 + dev                Press 'i' to enter INSERT mode.
 + dev

@@ -4,8 +4,8 @@ var Vim = Backbone.DeepModel.extend({
         buffer : null,
         mode : 'NORMAL',
         normalHandler : null,
-        row : 0, // The current row (not always where the cursor is)
-        col : 0, // The current col (not always where the cursor is)
+        row : null,
+        col : null,
         cursorRow : 0, // The row position of the cursor
         cursorCol : 0, // The column position of the cursor
 
@@ -77,17 +77,20 @@ var Vim = Backbone.DeepModel.extend({
 
         // Initialize the NormalHandler.
         model.set({
-            normalHandler : new NormalHandler({ vim : model })
+            normalHandler : new NormalHandler({ vim : model }),
         });
 
     },
-
 
     openBuffer : function(name, callback) {
         var model = this;
         var buffer = new Buffer({name : name});
         // Silently set the new buffer.
-        model.set({buffer : buffer}, {silent: true});
+        model.set({
+            buffer : buffer,
+            row : 0,
+            col : 0
+        }, { silent: true });
         buffer.fetch({
             success : function() {
                 // Manually trigger the change event on success.
