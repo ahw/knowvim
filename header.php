@@ -54,9 +54,6 @@ if ($pagename == "terminal") {
 <meta name="robots" content="index,follow"/>
 <meta name="author" content="Andrew W. Hallagan"/>
 <meta name="description" content="Try Vim, right in your browser!"/>
-<meta name="Description" content="Try Vim, right in your browser!"/>
-<meta name="abstract" content="Try Vim, right in your browser!"/>
-<meta name="Abstract" content="Try Vim, right in your browser!"/>
 <meta name="keywords" content="know, vim, browser, try, learn, vi, linux, unix, terminal, command, andrew, william, hallagan, bucknell, computer, science, engineering, awh"/>
 
 <?php
@@ -75,16 +72,28 @@ if ($browser == 'mobile') {
 <link rel="stylesheet" type="text/css" href="/css/shThemeDefault.css"/>
 
 
-<script type="text/javascript" src="/js/jquery.js"></script>
-<script type="text/javascript" src="/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/js/lib/jquery.js"></script>
+<script type="text/javascript" src="/js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="/js/lib/underscore.js"></script>
+<script type="text/javascript" src="/js/lib/json2.js"></script>
+<script type="text/javascript" src="/js/lib/backbone.js"></script>
+<script type="text/javascript" src="/js/lib/deep-model.js"></script>
+<script type="text/javascript" src="/js/lib/sprintf.js"></script>
 <?php if (
     $pagetitle != "about"
     && $pagetitle != "faq"
     && $pagetitle != "contact"
     && $pagetitle != "devnotes") { ?>
+<!--
 <script type="text/javascript" src="/js/knowvim-ui.js"></script>
 <script type="text/javascript" src="/js/knowvim.js"></script>
-<script type="text/javascript" src="/js/VimWindow.js"></script>
+-->
+<script type="text/javascript" src="/js/models/Buffer.js"></script>
+<script type="text/javascript" src="/js/models/NormalHandler.js"></script>
+<script type="text/javascript" src="/js/models/Vim.js"></script>
+<script type="text/javascript" src="/js/views/Application.js"></script>
+<script type="text/javascript" src="/js/views/Editor.js"></script>
+<script type="text/javascript" src="/js/init.js"></script>
 <?php } ?>
 
 <!-- ye olde Google Analytics -->
@@ -137,5 +146,5 @@ if ($_SERVER['SERVER_NAME'] == "dev.knowvim.com") {
     <a class="source_code_link" id="java" href="/java.php">java</a>
 </div>
 <div id="vimwindow">
-<div id="source_code">
+<div id="buffer">
 

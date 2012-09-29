@@ -1,20 +1,21 @@
+01234
+11234
+21234
+31234
 
-
-
-
-
-                               know vim . com
-
-
-
-
-
-                     Press 'i' to enter INSERT mode.
-
-
-
-
-
-
-
++ dev                          know vim . com
++ dev
++ dev
++ dev
++ dev
++ dev
++ dev                Press 'i' to enter INSERT mode.
++ dev
++ dev
++ dev
++ dev
++ dev
++ dev
++ dev
++ dev
 

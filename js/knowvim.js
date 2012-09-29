@@ -42,7 +42,7 @@ var lineno_fg = "green";
 var main_bg = "#DDF";
 var vimwindow_bg = "#DDF";
 var colorscheme = "default";
-var current_line_is_blank;
+var current_line_is_blank = false;
 var paste_reg = "";
 var last_command = "";
 var num_display_lines = 0;
