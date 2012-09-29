@@ -4,8 +4,10 @@ var Vim = Backbone.DeepModel.extend({
         buffer : null,
         mode : 'NORMAL',
         normalHandler : null,
-        col : 0,
         row : 0,
+        col : 0,
+        cursorRow : 0,
+        cursorCol : 0,
 
         // The lower left-hand corner text. Indicates the mode or error
         // messages.

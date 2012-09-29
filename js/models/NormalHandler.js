@@ -51,10 +51,8 @@ var NormalHandler = Backbone.DeepModel.extend({
                 var opkey = model.get('operator');
                 var repeat = model.get('repeat');
 
-                console.log('Movement iteration # 1');
                 var m = model.getMotionResult(mkey, model.row(), model.col());
                 for (var i = 0; i < repeat - 1; i++) {
-                    console.log('Movement iteration # ' + (i + 2));
                     m = model.getMotionResult(mkey, m.endRow, m.endCol);
                 }
                 model.row(m.endRow);
@@ -183,7 +181,7 @@ var NormalHandler = Backbone.DeepModel.extend({
     getMotionResult : function(motionKey, startRow, startCol) {
 
 
-        console.log(sprintf('getMotionResult >>> motionKey = %s, startRow = %s, startCol = %s', motionKey, startRow, startCol));
+        console.log(sprintf('NORMAL %s: startRow = %s, startCol = %s', motionKey, startRow, startCol));
         var result = {
             type : null, // 'linewise' or 'characterwise'
             startRow : startRow,
@@ -230,7 +228,7 @@ var NormalHandler = Backbone.DeepModel.extend({
                 break;
         }
 
-        console.log(sprintf('getMotionResult >>> motionKey = %s, endRow = %s, endCol = %s', motionKey, result.endRow, result.endCol));
+        console.log(sprintf('NORMAL %s: endRow = %s, endCol = %s', motionKey, result.endRow, result.endCol));
         return result;
     },
 

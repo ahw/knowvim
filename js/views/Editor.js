@@ -32,8 +32,8 @@ var EditorView = Backbone.View.extend({
         });
 
         view.model.on('change:row change:col', function() {
-            view.renderRowAndColCounters();
-            view.renderCursor();
+            view.updateRowAndColCounters();
+            // view.updateCursor();
         });
 
         view.model.on('change:mode', function() {
@@ -43,27 +43,49 @@ var EditorView = Backbone.View.extend({
     },
 
     /**
-     * @method renderCursor Renders the cursor block by first removing the
+     * @method updateCursor Renders the cursor block by first removing the
      * `span` tags around the old  character and wrapping the current
      * character in `span` tags.
      */
-    renderCursor : function() {
+    updateCursor : function() {
         var row = this.model.get('row');
         var col = this.model.get('col');
         var cursorRow = this.model.get('cursorRow');
         var cursorCol = this.model.get('cursorCol');
-        var line = this.model.get('buffer').get('lines')[cursorRow];
+        console.log("Old cursor position : " + cursorRow + ", " + cursorCol);
+        console.log("New cursor position : " + row + ", " + col);
 
-        // Write the cleaned line back to the buffer.
-        this.model.get('buffer').get('lines')[cursorRow] = line;
+        // Remove cursor tags from the current line.
+        var currentLine = $($('.line')[cursorRow]).html();
+        currentLine = this.removeCursorTags(currentLine);
+        $($('.line')[cursorRow]).html(currentLine);
 
-        var newLine = this.model.get('bufer').get('lines')[row];
-        var left_side = newLine.substring(0, index);
-        var middle = newLine.charAt(index);
-        var right_side = newLine.substring(index + 1, newLine.length);
-        var new_contents = left_side
+        // Add cursor tags to the new line.
+        var newLine = $($('.line')[row]).html();
+        newLine = this.addCursorTags(newLine, col);
+        $($('.line')[row]).html(newLine);
+
+        // Make the current row and col positions the new cursorRow and
+        // cursorCol positions.
+        this.model.set({
+            cursorRow : row,
+            cursorCol : col
+        });
+    },
+
+    /**
+     * @method addCursorTags Helper function for adding the cursor's
+     * `span` tags around the character at the current `col` position.
+     */
+    addCursorTags : function(line, col) {
+
+        var leftSide = line.substring(0, col);
+        var middle = line.charAt(col);
+        var rightSide = line.substring(col + 1, line.length);
+        var newContents = leftSide
                          + '<span id="cursor_char">' + middle + '</span>'
-                         + right_side;
+                         + rightSide;
+        return newContents;
     },
 
     /**
@@ -96,10 +118,10 @@ var EditorView = Backbone.View.extend({
     },
 
     /**
-     * @method renderRowAndCol Renders the row and column position
+     * @method updateRowAndColCounters Renders the row and column position
      * indicators at the bottom of the editor window.
      */
-    renderRowAndColCounters : function() {
+    updateRowAndColCounters : function() {
         $(this.row).html(this.model.get('row') + 1);
         $(this.col).html(this.model.get('col') + 1);
     },
