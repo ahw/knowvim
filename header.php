@@ -74,26 +74,15 @@ if ($browser == 'mobile') {
 
 <script type="text/javascript" src="/js/lib/jquery.js"></script>
 <script type="text/javascript" src="/js/lib/jquery-ui.js"></script>
-<script type="text/javascript" src="/js/lib/underscore.js"></script>
-<script type="text/javascript" src="/js/lib/json2.js"></script>
-<script type="text/javascript" src="/js/lib/backbone.js"></script>
-<script type="text/javascript" src="/js/lib/deep-model.js"></script>
-<script type="text/javascript" src="/js/lib/sprintf.js"></script>
 <?php if (
     $pagetitle != "about"
     && $pagetitle != "faq"
     && $pagetitle != "contact"
     && $pagetitle != "devnotes") { ?>
-<!--
+
 <script type="text/javascript" src="/js/knowvim-ui.js"></script>
 <script type="text/javascript" src="/js/knowvim.js"></script>
--->
-<script type="text/javascript" src="/js/models/Buffer.js"></script>
-<script type="text/javascript" src="/js/models/NormalHandler.js"></script>
-<script type="text/javascript" src="/js/models/Vim.js"></script>
-<script type="text/javascript" src="/js/views/Application.js"></script>
-<script type="text/javascript" src="/js/views/Editor.js"></script>
-<script type="text/javascript" src="/js/init.js"></script>
+
 <?php } ?>
 
 <!-- ye olde Google Analytics -->
