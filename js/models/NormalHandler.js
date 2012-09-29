@@ -1,5 +1,6 @@
 var NormalHandler = Backbone.DeepModel.extend({
 
+    // Defaults.
     defaults : {
         operator : null,
         motion : null,
