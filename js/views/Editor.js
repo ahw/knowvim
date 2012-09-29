@@ -27,13 +27,13 @@ var EditorView = Backbone.View.extend({
             view.model = new Vim();
         }
 
-        view.model.on('change', function() {
+        view.model.on('change:buffer', function() {
             view.renderBuffer();
         });
 
         view.model.on('change:row change:col', function() {
             view.updateRowAndColCounters();
-            // view.updateCursor();
+            view.updateCursor();
         });
 
         view.model.on('change:mode', function() {
@@ -52,16 +52,23 @@ var EditorView = Backbone.View.extend({
         var col = this.model.get('col');
         var cursorRow = this.model.get('cursorRow');
         var cursorCol = this.model.get('cursorCol');
-        console.log("Old cursor position : " + cursorRow + ", " + cursorCol);
-        console.log("New cursor position : " + row + ", " + col);
+        console.log("Updating cursor to (" + row + ", " + col + ")");
 
+        var currentLine, newLine;
         // Remove cursor tags from the current line.
-        var currentLine = $($('.line')[cursorRow]).html();
+        currentLine = $($('.line')[cursorRow]).html();
         currentLine = this.removeCursorTags(currentLine);
-        $($('.line')[cursorRow]).html(currentLine);
 
+        // If we're jumping to a new line, put the clean contents back into
+        // `cursorRow` and pull out the contents in `row`. Otherwise, just
+        // re-use the contents in `cursorRow`.
+        if (cursorRow != row) {
+            $($('.line')[cursorRow]).html(currentLine);
+            newLine = $($('.line')[row]).html();
+        } else {
+            newLine = currentLine;
+        }
         // Add cursor tags to the new line.
-        var newLine = $($('.line')[row]).html();
         newLine = this.addCursorTags(newLine, col);
         $($('.line')[row]).html(newLine);
 
@@ -79,12 +86,13 @@ var EditorView = Backbone.View.extend({
      */
     addCursorTags : function(line, col) {
 
+        console.log("Adding cursor tags at col : " + col);
         var leftSide = line.substring(0, col);
         var middle = line.charAt(col);
         var rightSide = line.substring(col + 1, line.length);
         var newContents = leftSide
-                         + '<span id="cursor_char">' + middle + '</span>'
-                         + rightSide;
+            + '<span id="cursor_char">' + middle + '</span>'
+            + rightSide;
         return newContents;
     },
 

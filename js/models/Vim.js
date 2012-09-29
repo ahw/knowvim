@@ -4,10 +4,10 @@ var Vim = Backbone.DeepModel.extend({
         buffer : null,
         mode : 'NORMAL',
         normalHandler : null,
-        row : 0,
-        col : 0,
-        cursorRow : 0,
-        cursorCol : 0,
+        row : 0, // The current row (not always where the cursor is)
+        col : 0, // The current col (not always where the cursor is)
+        cursorRow : 0, // The row position of the cursor
+        cursorCol : 0, // The column position of the cursor
 
         // The lower left-hand corner text. Indicates the mode or error
         // messages.
@@ -82,6 +82,7 @@ var Vim = Backbone.DeepModel.extend({
 
     },
 
+
     openBuffer : function(name, callback) {
         var model = this;
         var buffer = new Buffer({name : name});
@@ -99,39 +100,6 @@ var Vim = Backbone.DeepModel.extend({
         switch(this.get('mode')) {
             case 'NORMAL':
                 this.get('normalHandler').input(key);
-                break;
-            case 'INSERT':
-                this.insert_handler(key);
-                break;
-            case 'EXECUTE':
-                this.execute_handler(key);
-                break;
-            case 'SEARCH':
-                this.search_handler(key);
-                break;
-            case 'NEWFILE':
-                this.newfile_handler(key);
-                break;
-            case 'SEARCH_AND_REPLACE':
-                this.searchreplace_handler(key);
-                break;
-            case 'VISUAL_LINE':
-                this.visual_line_handler(key);
-                break;
-            case 'REPLACE':
-                this.replace_handler(key);
-                break;
-            case 'REPLACE_SINGLE':
-                this.replace_single_handler(key);
-                break;
-            case 'FIND_SINGLE':
-                this.find_single_handler(key);
-                break;
-            case 'SET_MARK':
-                this.set_mark_handler(key);
-                break;
-            case 'GOTO_MARK':
-                this.goto_mark_handler(key);
                 break;
         }
     },
@@ -156,39 +124,6 @@ var Vim = Backbone.DeepModel.extend({
         // This will trigger the view to change.
         console.log('Mode change : ' + mode);
         this.set({mode: mode});
-    },
-
-    insert_handler : function(key) {
-    },
-
-    search_handler : function(key) {
-    },
-
-    execute_handler : function(key) {
-    },
-
-    newfile_handler : function(key) {
-    },
-
-    searchreplace_handler : function(key) {
-    },
-
-    visual_line_handler : function(key) {
-    },
-
-    replace_handler : function(key) {
-    },
-
-    replace_single_handler : function(key) {
-    },
-
-    find_single_handler : function(key) {
-    },
-
-    set_mark_handler : function(key) {
-    },
-
-    goto_mark_handler : function(key) {
     }
 
 });

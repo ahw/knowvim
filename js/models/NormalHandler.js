@@ -47,39 +47,34 @@ var NormalHandler = Backbone.DeepModel.extend({
             if (model.get('state') == 'RUN') {
 
                 // model.printCommandExpression();
-                var mkey = model.get('motion');
-                var opkey = model.get('operator');
+                var motion = model.get('motion');
+                var operator = model.get('operator');
                 var repeat = model.get('repeat');
 
-                var m = model.getMotionResult(mkey, model.row(), model.col());
+                var m = model.getMotionResult(motion, model.row(), model.col());
                 for (var i = 0; i < repeat - 1; i++) {
-                    m = model.getMotionResult(mkey, m.endRow, m.endCol);
+                    m = model.getMotionResult(motion, m.endRow, m.endCol);
                 }
-                model.row(m.endRow);
-                model.col(m.endCol);
+
+                // Set the new row and column in Vim.
+                model.get('vim').set({
+                    row : m.endRow,
+                    col : m.endCol
+                });
             }
         });
     },
 
 
-    // Helper function to get/set the current row.
-    row : function(newRow) {
-        if (typeof newRow == 'number') {
-            console.log('Old row = ' + this.get('vim').get('row') + ', new row = ' + newRow);
-            this.get('vim').set({row : newRow});
-        } else {
-            return this.get('vim').get('row');
-        }
+    // Helper function to get the current row.
+    row : function() {
+        return this.get('vim').get('row');
     },
 
 
-    // Helper function to get/set the current col.
-    col : function(newCol) {
-        if (typeof newCol == 'number') {
-            this.get('vim').set({col : newCol});
-        } else {
-            return this.get('vim').get('col');
-        }
+    // Helper function to get the current col.
+    col : function() {
+        return this.get('vim').get('col');
     },
 
 
@@ -181,7 +176,6 @@ var NormalHandler = Backbone.DeepModel.extend({
     getMotionResult : function(motionKey, startRow, startCol) {
 
 
-        console.log(sprintf('NORMAL %s: startRow = %s, startCol = %s', motionKey, startRow, startCol));
         var result = {
             type : null, // 'linewise' or 'characterwise'
             startRow : startRow,
@@ -211,7 +205,15 @@ var NormalHandler = Backbone.DeepModel.extend({
             case 'j':
                 var numRows = this.lines().length;
                 var endRow = startRow == numRows - 1 ? startRow : startRow + 1;
-                var endCol = Math.min(this.lines()[startRow], this.lines()[endRow]);
+                // If the new row is shorter, put the column at the
+                // right-most position possible.
+                var endCol =
+                    startRow != endRow
+                    ? endCol = Math.min(this.lines()[endRow].length - 1, startCol)
+                    : startCol;
+                // End column can't be less than 0.
+                endCol = endCol == -1 ? 0 : endCol;
+
                 result.type = 'linewise';
                 result.endRow = endRow;
                 result.endCol = endCol;
@@ -220,7 +222,15 @@ var NormalHandler = Backbone.DeepModel.extend({
 
             case 'k':
                 var endRow = startRow == 0 ? 0 : startRow - 1;
-                var endCol = Math.min(this.lines()[startRow], this.lines()[endRow]);
+                // If the new row is shorter, put the column at the
+                // right-most position possible.
+                var endCol =
+                    startRow != endRow
+                    ? endCol = Math.min(this.lines()[endRow].length - 1, startCol)
+                    : startCol;
+                // End column can't be less than 0.
+                endCol = endCol == -1 ? 0 : endCol;
+
                 result.type = 'linewise';
                 result.endRow = endRow;
                 result.endCol = endCol;
@@ -228,7 +238,7 @@ var NormalHandler = Backbone.DeepModel.extend({
                 break;
         }
 
-        console.log(sprintf('NORMAL %s: endRow = %s, endCol = %s', motionKey, result.endRow, result.endCol));
+        console.log(sprintf('NORMAL %s: start (%s, %s) end (%s, %s)', motionKey, startRow, startCol, result.endRow, result.endCol));
         return result;
     },
 
