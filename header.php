@@ -83,7 +83,8 @@ if ($browser == 'mobile') {
     $pagetitle != "about"
     && $pagetitle != "faq"
     && $pagetitle != "contact"
-    && $pagetitle != "devnotes") { ?>
+    && $pagetitle != "devnotes"
+    && $pagetitle != "devnotes2") { ?>
 <!--
 <script type="text/javascript" src="/js/knowvim-ui.js"></script>
 <script type="text/javascript" src="/js/knowvim.js"></script>

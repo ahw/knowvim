@@ -14,13 +14,6 @@ $(document).ready(function() {
 </script>
 <?php } ?>
 
-<p style="display:none">Some brief discussion on what has gone into the
-implementation of knowvim.com.  A few interesting algorithmic problems with
-cycle detection and performance optimization.</p>
-
-<div id="about" class="mainbox">
-<h1><a id="homelink" href="/">know vim</a> <span id="beta">(beta)</span></h1>
-
 <div id="narrow">
 
 <h2 class="farleft">notes on development</h2>
@@ -720,6 +713,5 @@ out-of-sequence line numbering irrelevant.
 
 
 </div> <!-- end #narrow -->
-</div> <!-- end #main -->
 
 <?php require("footer.php"); ?>
