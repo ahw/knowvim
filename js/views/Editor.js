@@ -52,7 +52,7 @@ var EditorView = Backbone.View.extend({
         var col = this.model.get('col');
         var cursorRow = this.model.get('cursorRow');
         var cursorCol = this.model.get('cursorCol');
-        console.log("Updating cursor to (" + row + ", " + col + ")");
+        // console.log("Updating cursor to (" + row + ", " + col + ")");
 
         var currentLine, newLine;
         // Remove cursor tags from the current line.
