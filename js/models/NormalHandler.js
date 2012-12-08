@@ -78,7 +78,7 @@ var NormalHandler = Backbone.DeepModel.extend({
     },
 
 
-    // Helper for returning `this.get('buffer').get('lines')`
+    // Helper for returning this.get('buffer').get('lines')
     lines : function() {
         return this.get('vim').get('buffer').get('lines');
     },
@@ -170,9 +170,9 @@ var NormalHandler = Backbone.DeepModel.extend({
     },
 
 
-    // Returns the result of a `motionKey` motion, in the context of
-    // `startRow`, `startCol`, and, implicitly, the `Buffer` retrieved with
-    // `this.get('buffer')`.
+    // Returns the result of a motionKey motion, in the context of
+    // startRow, startCol, and, implicitly, the Buffer retrieved with
+    // this.get('buffer').
     getMotionResult : function(motionKey, startRow, startCol) {
 
 
@@ -236,10 +236,190 @@ var NormalHandler = Backbone.DeepModel.extend({
                 result.endCol = endCol;
                 result.inclusive = true;
                 break;
+
+            case 'w':
+                result = this.getWMotionResult(startRow, startCol);
+                break;
+
         }
 
         console.log(sprintf('NORMAL %s: start (%s, %s) end (%s, %s)', motionKey, startRow, startCol, result.endRow, result.endCol));
         return result;
+    },
+
+    getWMotionResult : function () {
+        var state = null;
+        var ch = null;
+        var category = null;
+        var pexp = /[\\\!@#\$%\^&\*\+-=<>:;|'"`~,\.\?\/\[\]\(\)\{\}]/;
+        var wexp = /\w/;
+        var bexp = /\ /;
+        var nexp = /\n/;
+        var row_offset = 0;
+        var col_offset = 0;
+        var contents = this.lines()[startRow];
+        var char_buffer = contents.substring(startCol);
+        // Says whether or not we have found the next spot to place the cursor
+        // for a 'w' movement.
+        var found_position = false;
+        ch = contents.charAt(startCol);
+
+        if (wexp.test(ch) == true) {
+            // Assert: this is a WORD character.
+            category = 'W';
+            state = 'WORD';
+        } else if (pexp.test(ch) == true) {
+            // Assert: this is a PUNCTUATION character.
+            category = 'P';
+            state = 'PUNCT';
+        } else if (bexp.test(ch) == true) {
+            // Assert: this is a blank space.
+            category = 'B';
+            state = 'BLANK';
+        } else if (nexp.test(ch) == true) {
+            category = 'N';
+            state = 'NEWLINE';
+        } else {
+            // Assert: this is something I haven't accounted for.
+            // E = Error.
+            category = 'E';
+            state = 'ERROR';
+        }
+
+        while (found_position == false) {
+
+            if (char_buffer == "") {
+                // Assert: character buffer is empty.
+                if (startRow == this.lines().length - 1) {
+                    // Assert: we're on the last row.
+                    found_position = true;
+                    col_offset--;
+                    break;
+                } else {
+                    put_cursor_at_row(current_row + 1);
+                    put_cursor_at_col(0, true);
+                    var contents = get_clean_contents();
+                    char_buffer += '\n';
+                    char_buffer += contents;
+                }
+            }
+
+            ch = char_buffer.charAt(0);
+            category = get_character_category(ch);
+            char_buffer = char_buffer.substring(1);
+
+            switch (state) {
+                case 'WORD':
+                    if (category == 'W') {
+                        state = 'WORD';
+                        found_position = false;
+                        col_offset++;
+                    } else if (category == 'P') {
+                        state = 'PUNCT';
+                        found_position = true;
+                    } else if (category == 'B') {
+                        state = 'BLANK';
+                        found_position = false;
+                        col_offset++;
+                    } else if (category == 'N') {
+                        col_offset = 0;
+                        state = 'NEWLINE';
+                        found_position = false;
+                    } else {
+                        state = 'ERROR';
+                    }
+                    break;
+                case 'PUNCT':
+                    if (category == 'W') {
+                        state = 'WORD';
+                        found_position = true;
+                    } else if (category == 'P') {
+                        state = 'PUNCT';
+                        found_position = false;
+                        col_offset++;
+                    } else if (category == 'B') {
+                        state = 'BLANK';
+                        found_position = false;
+                        col_offset++;
+                    } else if (category == 'N') {
+                        col_offset = 0;
+                        state = 'NEWLINE';
+                        found_position = false;
+                    } else {
+                        state = 'ERROR';
+                    }
+                    break;
+                case 'BLANK':
+                    if (category == 'W') {
+                        state = 'WORD';
+                        found_position = true;
+                    } else if (category == 'P') {
+                        state = 'PUNCT';
+                        found_position = true;
+                    } else if (category == 'B') {
+                        state = 'BLANK';
+                        found_position = false;
+                        col_offset++;
+                    } else if (category == 'N') {
+                        col_offset = 0;
+                        state = 'NEWLINE';
+                        found_position = false;
+                    } else {
+                        state = 'ERROR';
+                    }
+                    break;
+                case 'NEWLINE':
+                    if (category == 'W') {
+                        state = 'WORD';
+                        found_position = true;
+                    } else if (category == 'P') {
+                        state = 'PUNCT';
+                        found_position = true;
+                    } else if (category == 'B') {
+                        state = 'NEWLINE_BLANK';
+                        found_position = false;
+                        col_offset++;
+                    } else if (category == 'N') {
+                        col_offset = 0;
+                        state = 'NEWLINE';
+                        found_position = true;
+                    } else {
+                        state = 'ERROR';
+                    }
+                    break;
+                case 'NEWLINE_BLANK':
+                    if (category == 'W') {
+                        state = 'WORD';
+                        found_position = true;
+                    } else if (category == 'P') {
+                        state = 'PUNCT';
+                        found_position = true;
+                    } else if (category == 'B') {
+                        state = 'BLANK';
+                        found_position = false;
+                        col_offset++;
+                    } else if (category == 'N') {
+                        col_offset = 0;
+                        state = 'NEWLINE';
+                        found_position = true;
+                        // Ugly.
+                        put_cursor_at_row(current_row - 1);
+                        put_cursor_at_col(0, true);
+                    } else {
+                        state = 'ERROR';
+                    }
+                    break;
+                case 'ERROR':
+                    // console.debug('Error parsing character <' + ch + '> under cursor.');
+                    alert('Error parsing character under cursor.');
+                    found_position = true;
+                    break;
+                default:
+                    // Nothing.
+                    break;
+            }
+        }
+        put_cursor_at_col(current_col + col_offset, true);
     },
 
 

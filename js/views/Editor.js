@@ -32,7 +32,6 @@ var EditorView = Backbone.View.extend({
         });
 
         view.model.on('change:row change:col', function() {
-            console.log("Changing row or column");
             view.updateRowAndColCounters();
             view.updateCursor();
         });

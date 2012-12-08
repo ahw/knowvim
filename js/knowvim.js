@@ -955,10 +955,6 @@ function put_cursor_at_next_w_position() {
         category = get_character_category(ch);
         char_buffer = char_buffer.substring(1);
 
-        // console.debug("put_cursor_at_next_w_position(): state = " + state);
-        // console.debug("put_cursor_at_next_w_position(): char  = " + ch + " ( " + category + " )");
-        // console.debug("put_cursor_at_next_w_position(): col_offset = " + col_offset);
-        // console.debug("----------------------------------------------------");
         switch (state) {
             case 'WORD':
                 if (category == 'W') {
@@ -1070,7 +1066,6 @@ function put_cursor_at_next_w_position() {
                 break;
         }
     }
-    // console.debug("put_cursor_at_next_w_position(): next w position found.");
     put_cursor_at_col(current_col + col_offset, true);
 }
 
