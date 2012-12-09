@@ -11,7 +11,6 @@ var NormalHandler = Backbone.DeepModel.extend({
             'd' : 'd',
             'c' : 'c',
             'y' : 'y',
-            '~' : '~'
         },
         motions : {
             'w' : 'w',
@@ -45,22 +44,12 @@ var NormalHandler = Backbone.DeepModel.extend({
         // the parsed command.
         model.on('change:state', function() {
             if (model.get('state') == 'RUN') {
-
                 // model.printCommandExpression();
                 var motion = model.get('motion');
                 var operator = model.get('operator');
                 var repeat = model.get('repeat');
+                model.applyOperator(motion, operator, repeat);
 
-                var m = model.getMotionResult(motion, model.row(), model.col());
-                for (var i = 0; i < repeat - 1; i++) {
-                    m = model.getMotionResult(motion, m.endRow, m.endCol);
-                }
-
-                // Set the new row and column in Vim.
-                model.get('vim').set({
-                    row : m.endRow,
-                    col : m.endCol
-                });
             }
         });
     },
@@ -140,6 +129,11 @@ var NormalHandler = Backbone.DeepModel.extend({
                     this.set({
                         repeat : 10 * oldRepeat + n,
                         state : 'NUMBER'
+                    });
+                } else {
+                    console.log('Invalid key "' + key + '". Resetting to START state.');
+                    this.set({
+                        state : 'START'
                     });
                 }
                 break;
@@ -245,6 +239,41 @@ var NormalHandler = Backbone.DeepModel.extend({
 
         console.log(sprintf('NORMAL %s: start (%s, %s) end (%s, %s)', motionKey, startRow, startCol, result.endRow, result.endCol));
         return result;
+    },
+
+    applyOperator : function(motion, operator, repeat) {
+
+        var model = this;
+
+        // Get the result of the motion applied [repeat] times.
+        var result = model.getMotionResult(motion, model.row(), model.col());
+        for (var i = 0; i < repeat - 1; i++) {
+            result = model.getMotionResult(motion, result.endRow, result.endCol);
+        }
+        console.log('NORMAL Motion result = ' + JSON.stringify(result, null, '   '));
+
+        // Apply the operator.
+        switch(operator) {
+
+            case 'd':
+                console.log(sprintf('NORMAL No implementation for operator "%s"', operator));
+                break;
+            case 'c':
+                console.log(sprintf('NORMAL No implementation for operator "%s"', operator));
+                break;
+            case 'y':
+                console.log(sprintf('NORMAL No implementation for operator "%s"', operator));
+                break;
+            default:
+                // Assert: no operator given; just set the new row and
+                // column in Vim.
+                model.get('vim').set({
+                    row : result.endRow,
+                    col : result.endCol
+                });
+                break;
+        }
+
     },
 
     getWMotionResult : function (startRow, startCol) {

@@ -7,6 +7,7 @@ var Buffer = Backbone.DeepModel.extend({
     defaults : {
         name : 'new.txt',
         lines : [],
+        outOfSyncLineIndices : [],
         raw : null,
         mimetype : 'text'
     },

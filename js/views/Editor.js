@@ -150,12 +150,13 @@ var EditorView = Backbone.View.extend({
     },
 
     /**
-     * @method render Renders the "buffer" section of the EditorView.
-     * Iterates through <code>this.model.get('buffer').get('lines')</code>,
-     * wraps the contents with appropriate HTML markup tags, and inserts the
-     * entire chunk into <code>this.buffer</code>.
+     * @method renderEntireBuffer Renders the "buffer" section of the
+     * EditorView.  Iterates through
+     * <code>this.model.get('buffer').get('lines')</code>, wraps the
+     * contents with appropriate HTML markup tags, and inserts the entire
+     * chunk into <code>this.buffer</code>.
      */
-    renderBuffer : function() {
+    renderEntireBuffer : function() {
 
         var markup = "";
         var lines = this.model.get('buffer').get('lines');
@@ -164,6 +165,18 @@ var EditorView = Backbone.View.extend({
         }
         $(this.buffer).html(markup);
         return this;
+    },
+
+    /**
+     * @method renderBuffer Renders the "buffer" section of the EditorView,
+     * changing only those lines identified in the Buffer's
+     * outOfSyncLineIndices property.
+     */
+    renderBuffer : function() {
+
+        this.model.get('buffer').get('outOfSyncLineIndices').forEach(function(lineIndex) {
+            console.log(sprintf('EDITOR VIEW re-rendering line %s: %s', lineIndex, this.model.get('buffer').get('lines')[lineIndex]));
+        });
     },
 
     /**
