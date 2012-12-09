@@ -27,11 +27,6 @@ var Buffer = Backbone.DeepModel.extend({
             model.fetch();
         });
 
-        model.on('change:lines', function() {
-            console.log('BUFFER: Lines changed');
-        });
-
-
     },
 
     /**

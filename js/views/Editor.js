@@ -23,7 +23,6 @@ var EditorView = Backbone.View.extend({
         var view = this;
         if (options && options.model) {
             view.model = options.model; // Assume model is a Vim.
-            view.bufferModel = options.model.get('buffer');
         } else {
             view.model = new Vim();
         }
@@ -31,6 +30,7 @@ var EditorView = Backbone.View.extend({
         view.model.on('change:buffer', function() {
             // TODO: call renderBuffer instead.
             view.renderEntireBuffer();
+            view.updateCursor();
         });
 
         view.model.on('change:row change:col', function() {
