@@ -27,6 +27,10 @@ var Buffer = Backbone.DeepModel.extend({
             model.fetch();
         });
 
+        model.on('change:lines', function() {
+            console.log('BUFFER: Lines changed');
+        });
+
 
     },
 
@@ -52,5 +56,12 @@ var Buffer = Backbone.DeepModel.extend({
                 options.success();
             }
         });
+    },
+
+    /**
+     * @method toString Overrides Backbone's toString function.
+     */
+    toString : function() {
+        return lines.join('\n');
     }
 });

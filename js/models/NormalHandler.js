@@ -237,7 +237,7 @@ var NormalHandler = Backbone.DeepModel.extend({
 
         }
 
-        console.log(sprintf('NORMAL %s: start (%s, %s) end (%s, %s)', motionKey, startRow, startCol, result.endRow, result.endCol));
+        // console.log(sprintf('NORMAL %s: start (%s, %s) end (%s, %s)', motionKey, startRow, startCol, result.endRow, result.endCol));
         return result;
     },
 
@@ -250,19 +250,45 @@ var NormalHandler = Backbone.DeepModel.extend({
         for (var i = 0; i < repeat - 1; i++) {
             result = model.getMotionResult(motion, result.endRow, result.endCol);
         }
-        console.log('NORMAL Motion result = ' + JSON.stringify(result, null, '   '));
+        // Set the initial position of result to the current position.
+        result.startRow = model.row();
+        result.startCol = model.col();
+
+        var command = sprintf('%s%s%s', repeat > 1 ? repeat : "", operator ? operator : "", motion);
+        console.log('NORMAL: ' + command + "\n" + JSON.stringify(result));
 
         // Apply the operator.
         switch(operator) {
 
             case 'd':
-                console.log(sprintf('NORMAL No implementation for operator "%s"', operator));
+                if (result.type == 'characterwise') {
+                    var line = model.lines()[result.startRow];
+                    var startIndex = result.startCol;
+                    // If the motion is inclusive, then add 1 to the end index.
+                    var endIndex = result.inclusive ? result.endCol + 1 : result.endCol;
+
+                    // Repeatedly remove whatever character is at startIndex.
+                    for (var i = startIndex;  i < endIndex; i++) {
+                        line = line.substr(0, startIndex) + line.substr(startIndex + 1);
+                    }
+                    console.log('final line = ', line);
+
+                    var key = sprintf('lines.%s', result.startRow);
+                    model.lines()[result.startRow] = line;
+                    // Manually fire a change event.
+                    model.get('vim').change('buffer');
+                } else if (result.type == 'linewise') {
+                    console.log(sprintf('NORMAL: No implementation for "%s"', command));
+                } else {
+                    // Should never get here.
+                    console.log('Invalid motion type: ' + JSON.stringify(result) + '. Doing nothing');
+                }
                 break;
             case 'c':
-                console.log(sprintf('NORMAL No implementation for operator "%s"', operator));
+                console.log(sprintf('NORMAL: No implementation for operator "%s"', operator));
                 break;
             case 'y':
-                console.log(sprintf('NORMAL No implementation for operator "%s"', operator));
+                console.log(sprintf('NORMAL: No implementation for operator "%s"', operator));
                 break;
             default:
                 // Assert: no operator given; just set the new row and

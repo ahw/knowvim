@@ -23,12 +23,14 @@ var EditorView = Backbone.View.extend({
         var view = this;
         if (options && options.model) {
             view.model = options.model; // Assume model is a Vim.
+            view.bufferModel = options.model.get('buffer');
         } else {
             view.model = new Vim();
         }
 
         view.model.on('change:buffer', function() {
-            view.renderBuffer();
+            // TODO: call renderBuffer instead.
+            view.renderEntireBuffer();
         });
 
         view.model.on('change:row change:col', function() {
@@ -158,6 +160,7 @@ var EditorView = Backbone.View.extend({
      */
     renderEntireBuffer : function() {
 
+        console.log('Rendering entire buffer...');
         var markup = "";
         var lines = this.model.get('buffer').get('lines');
         for (var i = 0; i < lines.length; i++) {
