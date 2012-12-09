@@ -4,8 +4,10 @@ var NormalHandler = Backbone.DeepModel.extend({
     defaults : {
         operator : null,
         motion : null,
-        repeat : 1,
+        count : 1, // Used to hold [count] values temporarily.
         state : 'START',
+        operatorCount : 1,
+        motionCount : 1,
 
         operators : {
             'd' : 'd',
@@ -17,7 +19,7 @@ var NormalHandler = Backbone.DeepModel.extend({
             'b' : 'b',
             '{' : '{',
             '}' : '}',
-            '0' : '0',
+            // '0' : '0',
             '$' : '$',
             'H' : 'H',
             'L' : 'L',
@@ -47,8 +49,17 @@ var NormalHandler = Backbone.DeepModel.extend({
                 // model.printCommandExpression();
                 var motion = model.get('motion');
                 var operator = model.get('operator');
-                var repeat = model.get('repeat');
-                model.applyOperator(motion, operator, repeat);
+                var motionCount = model.get('motionCount');
+                var operatorCount = model.get('operatorCount');
+
+                for (var i = 0; i < operatorCount; i++) {
+                    model.applyOperator({
+                        motion : motion,
+                        operator : operator,
+                        motionCount : motionCount,
+                        operatorCount : operatorCount
+                    });
+                }
 
             }
         });
@@ -82,7 +93,9 @@ var NormalHandler = Backbone.DeepModel.extend({
                     this.set({
                         operator : null,
                         motion : key,
-                        repeat : 1,
+                        count : 1,
+                        operatorCount : 1,
+                        motionCount : 1,
                         state : 'RUN'
                     });
                 } else if (this.get('operators')[key]) {
@@ -90,19 +103,23 @@ var NormalHandler = Backbone.DeepModel.extend({
                     this.set({
                         operator : key,
                         motion : null,
-                        repeat : 1,
+                        count : 1,
+                        operatorCount : 1,
+                        motionCount : 1,
                         state : 'OPERATOR'
                     });
-                } else if (parseInt(key)) {
+                } else if (isNaN(parseInt(key)) == false) {
                     // Assert: repetition prefix
                     this.set({
                         operator : null,
                         motion : null,
-                        repeat : parseInt(key),
+                        count : parseInt(key),
+                        operatorCount : 1,
+                        motionCount : 1,
                         state : 'NUMBER'
                     });
                 } else {
-                    console.log('Invalid key "' + key + '". Resetting to START state.');
+                    console.log('Invalid key "' + key + '" in ' + this.get('state') + ' state. Resetting to START state.');
                     this.set({
                         state : 'START'
                     });
@@ -114,24 +131,26 @@ var NormalHandler = Backbone.DeepModel.extend({
                     // Assert: motion command
                     this.set({
                         motion : key,
+                        motionCount : this.get('count'), // The [count] pertains to a motion
                         state : 'RUN'
                     });
                 } else if (this.get('operators')[key]) {
                     // Assert: operator command
                     this.set({
                         operator : key,
+                        operatorCount : this.get('count'), // The [count] pertains to an operator
                         state : 'OPERATOR'
                     });
-                } else if (parseInt(key)) {
+                } else if (isNaN(parseInt(key)) == false) {
                     // Assert: repetition prefix
                     var n = parseInt(key);
-                    var oldRepeat = this.get('repeat');
+                    var oldCount = this.get('count');
                     this.set({
-                        repeat : 10 * oldRepeat + n,
+                        count : 10 * oldCount + n,
                         state : 'NUMBER'
                     });
                 } else {
-                    console.log('Invalid key "' + key + '". Resetting to START state.');
+                    console.log('Invalid key "' + key + '" in ' + this.get('state') + ' state. Resetting to START state.');
                     this.set({
                         state : 'START'
                     });
@@ -145,8 +164,37 @@ var NormalHandler = Backbone.DeepModel.extend({
                         motion : key,
                         state : 'RUN'
                     });
+                } else if (isNaN(parseInt(key)) == false) {
+                    // Assert: repetition prefix
+                    this.set({
+                        motionCount : parseInt(key),
+                        state : 'MOTION_COUNT'
+                    });
                 } else {
-                    console.log('Invalid key "' + key + '". Resetting to START state.');
+                    console.log('Invalid key "' + key + '" in ' + this.get('state') + ' state. Resetting to START state.');
+                    this.set({
+                        state : 'START'
+                    });
+                }
+                break;
+
+            case 'MOTION_COUNT':
+                if (this.get('motions')[key]) {
+                    // Assert: motion command
+                    this.set({
+                        motion : key,
+                        state : 'RUN'
+                    });
+                } else if (isNaN(parseInt(key)) == false) {
+                    // Assert: repetition prefix
+                    var n = parseInt(key);
+                    var oldMotionCount = this.get('motionCount');
+                    this.set({
+                        motionCount : 10 * oldMotionCount + n,
+                        state : 'MOTION_COUNT'
+                    });
+                } else {
+                    console.log('Invalid key "' + key + '" in ' + this.get('state') + ' state. Resetting to START state.');
                     this.set({
                         state : 'START'
                     });
@@ -243,21 +291,29 @@ var NormalHandler = Backbone.DeepModel.extend({
         return result;
     },
 
-    applyOperator : function(motion, operator, repeat) {
+    applyOperator : function(args) {
 
         var model = this;
+        var motion = args.motion;
+        var operator = args.operator;
+        var motionCount = args.motionCount;
+        var operatorCount = args.operatorCount;
 
-        // Get the motionResult of the motion applied [repeat] times.
+        // Get the motionResult of the motion applied [motionCount] times.
         var motionResult = model.getMotionResult(motion, model.row(), model.col());
-        for (var i = 0; i < repeat - 1; i++) {
+        for (var i = 0; i < motionCount - 1; i++) {
             motionResult = model.getMotionResult(motion, motionResult.endRow, motionResult.endCol);
         }
         // Set the initial position of motionResult to the current position.
         motionResult.startRow = model.row();
         motionResult.startCol = model.col();
 
-        var command = sprintf('%s%s%s', repeat > 1 ? repeat : "", operator ? operator : "", motion);
-        console.log('NORMAL: ' + command + "\n" + JSON.stringify(motionResult));
+        var command = sprintf('%s%s%s%s',
+            operatorCount > 1 ? operatorCount : "",
+            operator ? operator : "",
+            motionCount > 1 ? motionCount : "",
+            motion);
+        console.log('NORMAL: ' + command + ' ' + JSON.stringify(motionResult));
 
         // Apply the operator.
         switch(operator) {
@@ -286,7 +342,7 @@ var NormalHandler = Backbone.DeepModel.extend({
                         });
                     }
                     
-                    // If this is a [count]dl delete whose [count]l motion
+                    // If this is a d[count]l delete whose [count]l motion
                     // was cut short by the end of line, then we must delete
                     // the last character of the line.
                     if (motionResult.hitEol) {
@@ -352,14 +408,16 @@ var NormalHandler = Backbone.DeepModel.extend({
 
 
     printCommandExpression : function() {
-        var o = this.get('operator') || "";
-        var m = this.get('motion') || "";
-        var r = this.get('repeat') || "";
+        var operator = this.get('operator') || "";
+        var motion = this.get('motion') || "";
+        var operatorCount = this.get('operatorCount') || "";
+        var motionCount = this.get('motionCount') || "";
 
-        var s = sprintf('Command: "%d%s%s"', r, o, m);
-        s += sprintf('\n    Operator = %s', o);
-        s += sprintf('\n    Motion   = %s', m);
-        s += sprintf('\n    Repeat   = %s', r);
+        var s = sprintf('Command: "%s%s%s%s"', operatorCount, operator, motionCount, motion);
+        s += sprintf('\nOperatorCount = %s', operatorCount);
+        s += sprintf('\n     Operator = %s', operator);
+        s += sprintf('\n  MotionCount = %s', motionCount);
+        s += sprintf('\n       Motion = %s', motion);
         console.log(s);
     }
 
