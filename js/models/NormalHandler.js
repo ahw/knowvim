@@ -2,6 +2,7 @@ var NormalHandler = Backbone.DeepModel.extend({
 
     // Defaults.
     defaults : {
+        tokenizer : new Tokenizer(),
         operator : null,
         motion : null,
         count : 1, // Used to hold [count] values temporarily.
@@ -83,8 +84,11 @@ var NormalHandler = Backbone.DeepModel.extend({
         return this.get('vim').get('buffer').get('lines');
     },
 
-
     input : function(key) {
+        this.get('tokenizer').receiveChar(key);
+    },
+
+    oldInput : function(key) {
         switch (this.get('state')) {
 
             case 'START':

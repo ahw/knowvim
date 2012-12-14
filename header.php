@@ -89,6 +89,8 @@ if ($browser == 'mobile') {
 <script type="text/javascript" src="/js/knowvim-ui.js"></script>
 <script type="text/javascript" src="/js/knowvim.js"></script>
 -->
+<script type="text/javascript" src="/js/models/Token.js"></script>
+<script type="text/javascript" src="/js/models/Tokenizer.js"></script>
 <script type="text/javascript" src="/js/models/Buffer.js"></script>
 <script type="text/javascript" src="/js/models/NormalHandler.js"></script>
 <script type="text/javascript" src="/js/models/Vim.js"></script>
