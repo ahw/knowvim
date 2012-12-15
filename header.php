@@ -91,6 +91,8 @@ if ($browser == 'mobile') {
 -->
 <script type="text/javascript" src="/js/models/Token.js"></script>
 <script type="text/javascript" src="/js/models/Tokenizer.js"></script>
+<script type="text/javascript" src="/js/models/Parser.js"></script>
+
 <script type="text/javascript" src="/js/models/Buffer.js"></script>
 <script type="text/javascript" src="/js/models/NormalHandler.js"></script>
 <script type="text/javascript" src="/js/models/Vim.js"></script>
