@@ -22,6 +22,8 @@ var Tokenizer = function(options) {
      */
     this.receiveChar = function(ch) {
 
+        // TODO: Remove the magin strings here and use some sort of
+        // enum-like construct.
         switch(this.state) {
             case 'DELETE':
                 if (ch == deleteOperator) {
@@ -100,6 +102,7 @@ var Tokenizer = function(options) {
                         type : 'letter',
                         value : ch
                     });
+                    this.parser.receiveToken(t);
                 } else {
                     console.warn('Illegal character ' + ch);
                 }
