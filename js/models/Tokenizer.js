@@ -16,6 +16,14 @@ var Tokenizer = function(options) {
     var searchTerm = "";
     var countValue = 0;
 
+    var warn = function(ch) {
+        console.warn('TOKENIZER: Illegal character ' + ch + ' from ' + this.state + ' state');
+    };
+
+    var reset = function(ch) {
+        console.warn('Unknown character "' + ch + '". Resetting to READY state.');
+    };
+
     /**
      * The heart of the Tokenizer object. Implementes a finite state machine
      * for tokenizing a character input stream.
@@ -62,17 +70,15 @@ var Tokenizer = function(options) {
                     });
                     this.parser.receiveToken(t);
                 } else {
-                    console.warn('Illegal character ' + ch);
+                    warn(ch);
+                    this.state = 'READY';
                 }
                 this.state = 'READY';
                 break;
 
             case 'SEARCH':
                 // TODO: Sanitize input better.
-                if (ch != '\n') {
-                    searchTerm += ch;
-                    this.state = 'SEARCH';
-                } else {
+                if (ch == '\n') {
                     var t = new Token({
                         type : 'word',
                         value : searchTerm
@@ -80,6 +86,12 @@ var Tokenizer = function(options) {
                     this.state = 'READY';
                     searchTerm = "";
                     this.parser.receiveToken(t);
+                } else if (ch.length == 1) {
+                    searchTerm += ch;
+                    this.state = 'SEARCH';
+                } else {
+                    warn(ch);
+                    this.state = 'READY';
                 }
                 break;
 
@@ -214,7 +226,7 @@ var Tokenizer = function(options) {
                     countValue = parseInt(ch);
                     this.state = 'COUNT';
 
-                } else if (ch == '<ESC>') {
+                } else if (ch == 'ESC') {
                     var t = new Token({
                         type : 'escape',
                         value : ch
@@ -223,7 +235,7 @@ var Tokenizer = function(options) {
                     this.parser.receiveToken(t);
 
                 } else {
-                    console.warn('Unknown character "' + ch + '". Resetting to READY state.');
+                    reset(ch);
                 }
                 break;
 

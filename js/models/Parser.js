@@ -151,7 +151,7 @@ var Parser = function() {
                         this.state = states.YANK;
                         break;
                     default:
-                        logError();
+                        logError(token);
                         tokenStack.pop(); // Remove the last item.
                 }
                 break;
