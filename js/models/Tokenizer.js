@@ -15,13 +15,24 @@ var Tokenizer = function(options) {
     var regOperator = '"';
     var searchTerm = "";
     var countValue = 0;
+    var states = {
+        FIND : 'FIND',
+        MARK : 'MARK',
+        YANK : 'YANK',
+        COUNT : 'COUNT',
+        READY : 'READY',
+        DELETE : 'DELETE',
+        SEARCH : 'SEARCH',
+        REGISTER : 'REGISTER',
+        GOTO_MARK : 'GOTO_MARK',
+    }
 
     var warn = function(ch) {
         console.warn('TOKENIZER: Illegal character ' + ch + ' from ' + this.state + ' state');
     };
 
     var reset = function(ch) {
-        console.warn('Unknown character "' + ch + '". Resetting to READY state.');
+        console.warn('TOKENIZER: Unknown character "' + ch + '". Resetting to READY state.');
     };
 
     /**
@@ -33,35 +44,35 @@ var Tokenizer = function(options) {
         // TODO: Remove the magin strings here and use some sort of
         // enum-like construct.
         switch(this.state) {
-            case 'DELETE':
+            case states.DELETE:
                 if (ch == deleteOperator) {
                     var t = new Token({
                         type : 'special',
                         value : ch
                     });
-                    this.state = 'READY';
+                    this.state = states.READY;
                     this.parser.receiveToken(t);
                 } else {
-                    this.state = 'READY';
+                    this.state = states.READY;
                     this.receiveChar(ch); // Re-run
                 }
                 break;
 
-            case 'YANK':
+            case states.YANK:
                 if (ch == yankOperator) {
                     var t = new Token({
                         type : 'special',
                         value : ch
                     });
-                    this.state = 'READY';
+                    this.state = states.READY;
                     this.parser.receiveToken(t);
                 } else {
-                    this.state = 'READY';
+                    this.state = states.READY;
                     this.receiveChar(ch); // Re-run
                 }
                 break;
-            
-            case 'FIND':
+
+            case states.FIND:
                 // TODO: sanitize this input better.
                 if (ch.length == 1) {
                     var t = new Token({
@@ -71,31 +82,31 @@ var Tokenizer = function(options) {
                     this.parser.receiveToken(t);
                 } else {
                     warn(ch);
-                    this.state = 'READY';
+                    this.state = states.READY;
                 }
-                this.state = 'READY';
+                this.state = states.READY;
                 break;
 
-            case 'SEARCH':
+            case states.SEARCH:
                 // TODO: Sanitize input better.
                 if (ch == '\n') {
                     var t = new Token({
                         type : 'word',
                         value : searchTerm
                     });
-                    this.state = 'READY';
+                    this.state = states.READY;
                     searchTerm = "";
                     this.parser.receiveToken(t);
                 } else if (ch.length == 1) {
                     searchTerm += ch;
-                    this.state = 'SEARCH';
+                    this.state = states.SEARCH;
                 } else {
                     warn(ch);
-                    this.state = 'READY';
+                    this.state = states.READY;
                 }
                 break;
 
-            case 'GOTO_MARK':
+            case states.GOTO_MARK:
                 if (/^[a-z]$/.test(ch)) {
                     var t = new Token({
                         type : 'letter',
@@ -103,12 +114,12 @@ var Tokenizer = function(options) {
                     });
                     this.parser.receiveToken(t);
                 } else {
-                    console.warn('Illegal character ' + ch);
+                    warn(ch);
                 }
-                this.state = 'READY';
+                this.state = states.READY;
                 break;
 
-            case 'MARK':
+            case states.MARK:
                 if (/^[a-z]$/.test(ch)) {
                     var t = new Token({
                         type : 'letter',
@@ -116,12 +127,12 @@ var Tokenizer = function(options) {
                     });
                     this.parser.receiveToken(t);
                 } else {
-                    console.warn('Illegal character ' + ch);
+                    warn(ch);
                 }
-                this.state = 'READY';
+                this.state = states.READY;
                 break;
 
-            case 'REG':
+            case states.REGISTER:
                 if (/^[a-zA-Z0-9\.%#\:\-"]$/.test(ch)) {
                     var t = new Token({
                         type : 'letter',
@@ -129,41 +140,41 @@ var Tokenizer = function(options) {
                     });
                     this.parser.receiveToken(t);
                 } else {
-                    console.warn('Illegal character ' + ch);
+                    warn(ch);
                 }
-                this.state = 'READY';
+                this.state = states.READY;
                 break;
 
-            case 'COUNT':
+            case states.COUNT:
                 if (/^[0123456789]$/.test(ch)) {
                     countValue = 10 * countValue + parseInt(ch);
-                    this.state = 'COUNT';
+                    this.state = states.COUNT;
                 } else {
                     var t = new Token({
                         type : 'count',
                         value : countValue
                     });
                     countValue = 0;
-                    this.state = 'READY';
+                    this.state = states.READY;
                     this.parser.receiveToken(t);
                     this.receiveChar(ch); // Re-run
                 }
                 break;
 
-            case 'READY':
+            case states.READY:
                 if (motionKeys.test(ch)) {
                     var t = new Token({
                         type : 'motion',
                         value : ch
                     });
-                    this.state = 'READY';
+                    this.state = states.READY;
                     this.parser.receiveToken(t);
                 } else if (findKeys.test(ch)) {
                     var t = new Token({
                         type : 'find',
                         value : ch
                     });
-                    this.state = 'FIND';
+                    this.state = states.FIND;
                     this.parser.receiveToken(t);
 
                 } else if (ch == deleteOperator) {
@@ -171,7 +182,7 @@ var Tokenizer = function(options) {
                         type : 'delete',
                         value : ch
                     });
-                    this.state = 'DELETE';
+                    this.state = states.DELETE;
                     this.parser.receiveToken(t);
 
                 } else if (ch == yankOperator) {
@@ -179,7 +190,7 @@ var Tokenizer = function(options) {
                         type : 'yank',
                         value : ch
                     });
-                    this.state = 'YANK';
+                    this.state = states.YANK;
                     this.parser.receiveToken(t);
 
                 } else if (ch == putOperator) {
@@ -187,7 +198,7 @@ var Tokenizer = function(options) {
                         type : 'put',
                         value : ch
                     });
-                    this.state = 'READY';
+                    this.state = states.READY;
                     this.parser.receiveToken(t);
 
                 } else if (searchKeys.test(ch)) {
@@ -195,7 +206,7 @@ var Tokenizer = function(options) {
                         type : 'search',
                         value : ch
                     });
-                    this.state = 'SEARCH';
+                    this.state = states.SEARCH;
                     this.parser.receiveToken(t);
 
                 } else if (ch == gotoMarkOperator) {
@@ -203,7 +214,7 @@ var Tokenizer = function(options) {
                         type : 'gotoMark',
                         value : ch
                     });
-                    this.state = 'GOTO_MARK';
+                    this.state = states.GOTO_MARK;
                     this.parser.receiveToken(t);
 
                 } else if (ch == markOperator) {
@@ -211,7 +222,7 @@ var Tokenizer = function(options) {
                         type : 'mark',
                         value : ch
                     });
-                    this.state = 'MARK';
+                    this.state = states.MARK;
                     this.parser.receiveToken(t);
 
                 } else if (ch == regOperator) {
@@ -219,19 +230,19 @@ var Tokenizer = function(options) {
                         type : 'register',
                         value : ch
                     });
-                    this.state = 'REG';
+                    this.state = states.REGISTER;
                     this.parser.receiveToken(t);
 
                 } else if (/^[123456789]$/.test(ch)) {
                     countValue = parseInt(ch);
-                    this.state = 'COUNT';
+                    this.state = states.COUNT;
 
                 } else if (ch == 'ESC') {
                     var t = new Token({
                         type : 'escape',
                         value : ch
                     });
-                    this.state = 'READY';
+                    this.state = states.READY;
                     this.parser.receiveToken(t);
 
                 } else {
@@ -240,7 +251,7 @@ var Tokenizer = function(options) {
                 break;
 
                 default:
-                    this.state = 'READY';
+                    this.state = states.READY;
         }
     };
 
