@@ -1,9 +1,8 @@
-var Tokenizer = function() {
+var Tokenizer = function(options) {
 
+    this.parser = options.parser;
     this.state = 'READY';
-
     this.currentToken = null;
-
     var motionKeys = /^[hjkl0\$wb\{\}HL]$/;
     var findKeys = /^[ftFT]$/;
     var searchKeys = /^[/\?]$/;
@@ -17,6 +16,10 @@ var Tokenizer = function() {
     var searchTerm = "";
     var countValue = 0;
 
+    /**
+     * The heart of the Tokenizer object. Implementes a finite state machine
+     * for tokenizing a character input stream.
+     */
     this.receiveChar = function(ch) {
 
         switch(this.state) {
@@ -27,7 +30,7 @@ var Tokenizer = function() {
                         value : ch
                     });
                     this.state = 'READY';
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
                 } else {
                     this.state = 'READY';
                     this.receiveChar(ch); // Re-run
@@ -41,7 +44,7 @@ var Tokenizer = function() {
                         value : ch
                     });
                     this.state = 'READY';
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
                 } else {
                     this.state = 'READY';
                     this.receiveChar(ch); // Re-run
@@ -55,7 +58,7 @@ var Tokenizer = function() {
                         type : 'letter',
                         value : ch
                     });
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
                 } else {
                     console.warn('Illegal character ' + ch);
                 }
@@ -74,7 +77,7 @@ var Tokenizer = function() {
                     });
                     this.state = 'READY';
                     searchTerm = "";
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
                 }
                 break;
 
@@ -84,7 +87,7 @@ var Tokenizer = function() {
                         type : 'letter',
                         value : ch
                     });
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
                 } else {
                     console.warn('Illegal character ' + ch);
                 }
@@ -109,7 +112,7 @@ var Tokenizer = function() {
                         type : 'letter',
                         value : ch
                     });
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
                 } else {
                     console.warn('Illegal character ' + ch);
                 }
@@ -127,7 +130,7 @@ var Tokenizer = function() {
                     });
                     countValue = 0;
                     this.state = 'READY';
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
                     this.receiveChar(ch); // Re-run
                 }
                 break;
@@ -139,14 +142,14 @@ var Tokenizer = function() {
                         value : ch
                     });
                     this.state = 'READY';
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
                 } else if (findKeys.test(ch)) {
                     var t = new Token({
                         type : 'find',
                         value : ch
                     });
                     this.state = 'FIND';
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
 
                 } else if (ch == deleteOperator) {
                     var t = new Token({
@@ -154,7 +157,7 @@ var Tokenizer = function() {
                         value : ch
                     });
                     this.state = 'DELETE';
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
 
                 } else if (ch == yankOperator) {
                     var t = new Token({
@@ -162,7 +165,7 @@ var Tokenizer = function() {
                         value : ch
                     });
                     this.state = 'YANK';
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
 
                 } else if (ch == putOperator) {
                     var t = new Token({
@@ -170,7 +173,7 @@ var Tokenizer = function() {
                         value : ch
                     });
                     this.state = 'READY';
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
 
                 } else if (searchKeys.test(ch)) {
                     var t = new Token({
@@ -178,7 +181,7 @@ var Tokenizer = function() {
                         value : ch
                     });
                     this.state = 'SEARCH';
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
 
                 } else if (ch == gotoMarkOperator) {
                     var t = new Token({
@@ -186,7 +189,7 @@ var Tokenizer = function() {
                         value : ch
                     });
                     this.state = 'GOTO_MARK';
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
 
                 } else if (ch == markOperator) {
                     var t = new Token({
@@ -194,7 +197,7 @@ var Tokenizer = function() {
                         value : ch
                     });
                     this.state = 'MARK';
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
 
                 } else if (ch == regOperator) {
                     var t = new Token({
@@ -202,7 +205,7 @@ var Tokenizer = function() {
                         value : ch
                     });
                     this.state = 'REG';
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
 
                 } else if (/^[123456789]$/.test(ch)) {
                     countValue = parseInt(ch);
@@ -214,7 +217,7 @@ var Tokenizer = function() {
                         value : ch
                     });
                     this.state = 'READY';
-                    this.logToken(t);
+                    this.parser.receiveToken(t);
 
                 } else {
                     console.warn('Unknown character "' + ch + '". Resetting to READY state.');
@@ -226,6 +229,9 @@ var Tokenizer = function() {
         }
     };
 
+    /**
+     * Helper method.
+     */
     this.logToken = function(token) {
         console.log('TOKEN: ' + token);
     };
