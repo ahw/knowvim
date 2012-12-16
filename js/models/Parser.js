@@ -13,14 +13,14 @@ var Parser = function() {
 
     this.state = states.READY;
 
-    var logError = function(token) {
-        console.warn('PARSER: No implementation to handle token ' + token + ' from ' + this.state + ' state');
+    this.error = function(token) {
+        console.warn('PARSER: No implementation to handle token ' + token + ' from ' + this.state + ' state.');
     };
 
     this.reset = function() {
-        console.log('Resetting to READY state with no token stack.');
+        console.log('PARSER: Resetting to READY state. Clearing token stack.');
         this.state = states.READY;
-        this.tokenStack = [];
+        tokenStack = [];
     };
 
     this.done = function() {
@@ -46,7 +46,7 @@ var Parser = function() {
                     this.state = states.READY;
                     this.done();
                 } else {
-                    logError(token);
+                    this.error(token);
                     this.reset();
                 }
                 break;
@@ -57,7 +57,7 @@ var Parser = function() {
                     this.state = states.READY;
                     this.done();
                 } else {
-                    logError(token);
+                    this.error(token);
                     this.reset();
                 }
                 break;
@@ -68,7 +68,7 @@ var Parser = function() {
                     this.state = states.READY;
                     this.done();
                 } else {
-                    logError(token);
+                    this.error(token);
                     this.reset();
                 }
                 break;
@@ -77,9 +77,9 @@ var Parser = function() {
                 if (token.type == 'letter') {
                     tokenStack.push(token);
                     this.state = states.READY;
-                    this.done();
+                    // this.done();
                 } else {
-                    logError(token);
+                    this.error(token);
                     this.reset();
                 }
                 break;
@@ -151,7 +151,8 @@ var Parser = function() {
                         this.state = states.YANK;
                         break;
                     default:
-                        logError(token);
+                        this.error(token);
+                        console.warn('PARSER: Not adding token ' + token + ' to tokenStack.');
                         tokenStack.pop(); // Remove the last item.
                 }
                 break;

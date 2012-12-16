@@ -27,12 +27,14 @@ var Tokenizer = function(options) {
         GOTO_MARK : 'GOTO_MARK',
     }
 
-    var warn = function(ch) {
+    this.warn = function(ch) {
         console.warn('TOKENIZER: Illegal character ' + ch + ' from ' + this.state + ' state');
     };
 
-    var reset = function(ch) {
-        console.warn('TOKENIZER: Unknown character "' + ch + '". Resetting to READY state.');
+    this.reset = function() {
+        console.warn('TOKENIZER: Resetting to READY state.');
+        this.parser.reset();
+        this.state = states.READY;
     };
 
     /**
@@ -81,8 +83,8 @@ var Tokenizer = function(options) {
                     });
                     this.parser.receiveToken(t);
                 } else {
-                    warn(ch);
-                    this.state = states.READY;
+                    this.warn(ch);
+                    this.reset();
                 }
                 this.state = states.READY;
                 break;
@@ -101,8 +103,8 @@ var Tokenizer = function(options) {
                     searchTerm += ch;
                     this.state = states.SEARCH;
                 } else {
-                    warn(ch);
-                    this.state = states.READY;
+                    this.warn(ch);
+                    this.reset();
                 }
                 break;
 
@@ -113,10 +115,11 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     this.parser.receiveToken(t);
+                    this.state = states.READY;
                 } else {
-                    warn(ch);
+                    this.warn(ch);
+                    this.reset();
                 }
-                this.state = states.READY;
                 break;
 
             case states.MARK:
@@ -126,10 +129,11 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     this.parser.receiveToken(t);
+                    this.state = states.READY;
                 } else {
-                    warn(ch);
+                    this.warn(ch);
+                    this.reset();
                 }
-                this.state = states.READY;
                 break;
 
             case states.REGISTER:
@@ -139,10 +143,11 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     this.parser.receiveToken(t);
+                    this.state = states.READY;
                 } else {
-                    warn(ch);
+                    this.warn(ch);
+                    this.reset();
                 }
-                this.state = states.READY;
                 break;
 
             case states.COUNT:
@@ -246,7 +251,8 @@ var Tokenizer = function(options) {
                     this.parser.receiveToken(t);
 
                 } else {
-                    reset(ch);
+                    this.warn(ch);
+                    this.reset();
                 }
                 break;
 
