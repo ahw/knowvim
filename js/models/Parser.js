@@ -1,35 +1,73 @@
 var Parser = function() {
 
-    var tokenStack = [];
-    var states = {
-        MARK   : 'MARK',
-        FIND   : 'FIND',
-        YANK   : 'YANK',
-        READY  : 'READY',
-        SEARCH : 'SEARCH',
-        DELETE : 'DELETE',
-        REGISTER : 'REGISTER'
+    var mostRecentCountToken = null;
+    var vimCommand = {};
+    // -- var states = {
+    // --     MARK   : 'MARK',
+    // --     FIND   : 'FIND',
+    // --     YANK   : 'YANK',
+    // --     READY  : 'READY',
+    // --     SEARCH : 'SEARCH',
+    // --     DELETE : 'DELETE',
+    // --     REGISTER : 'REGISTER'
+    // -- };
+
+    /**
+     *
+     * validNextTokens has as its keys the set of all valid token types
+     * which might be passed to this.receiveToken. Initially, this data
+     * structure contains many keys since there are many tokens which can be
+     * passed to this.receiveToken. After receiving a "Find" token however,
+     * this data structure should be changed to reflect that only "Letter"
+     * tokens are acceptable as validNextTokens.
+     *
+     * The values in validNextTokens are the key names used in assembling
+     * the final VimCommand object. They should be interpreted as such:
+     *
+     * If validNextTokens = {
+     *  word : 'searchWord'
+     * }
+     *
+     * Then the only valid next token is a 'word' token. Once received, it
+     * should be inpreted as the 'searchWord' within a 'search' command,
+     * which itself is a particular 'motionName'. See example below.
+     *
+     * var p = new Parser();
+     * p.receiveToken(new Token({type : 'register', value : 'a'});
+     * // => validNextTokens = {
+     * //  count : 'operationCount',
+     * //  delete : 'operationName',
+     * //  yank : 'operationName',
+     * //  put : 'operationName'
+     * // }
+     *
+     * p.receiveToken(new Token({type : 'delete', value : 'd'});
+     * // => validNextTokens = {
+     * //  count : 'motionCount',
+     * //  motion : 'motionName',
+     * //  find : 'motionName',
+     * //  search : 'motionName',
+     * //  gotoMark : 'motionName',
+     * //  sameLine : 'motionName'
+     * // }
+     */
+    this.validNextTokens = {
+        register : 'DUMMY',
+        count : 'operationCount'
     };
 
-    this.state = states.READY;
-
     this.error = function(token) {
-        console.warn('PARSER: No implementation to handle token ' + token + ' from ' + this.state + ' state.');
+        console.warn('PARSER: No implementation to handle token ' + token);
     };
 
     this.reset = function() {
         console.log('PARSER: Resetting to READY state. Clearing token stack.');
-        this.state = states.READY;
-        tokenStack = [];
     };
 
     this.done = function() {
         console.log('PARSER : Completed command');
         console.log('--------------------------');
-        tokenStack.forEach(function(token) {
-            console.log(token.toString());
-        });
-        tokenStack = [];
+        console.log(JSON.stringify(vimCommand, null, '    '));
     };
 
     this.receiveToken = function(token) {
@@ -38,127 +76,92 @@ var Parser = function() {
 
         // TODO: Remove the magic strings here and use some sort of
         // enum-like construct.
-        switch(this.state) {
-
-            case states.MARK:
-                if (token.type == 'letter') {
-                    tokenStack.push(token);
-                    this.state = states.READY;
-                    this.done();
-                } else {
-                    this.error(token);
-                    this.reset();
+        switch(token.type) {
+            case 'motion':
+                if (mostRecentCountToken && typeof vimCommand.motionCount == 'undefined') {
+                    // Assert: the mostRecentCountToken (if there is
+                    // one) should be used as the motionCount.
+                    // TODO: implement this.
+                    vimCommand.motionCount = this.mostRecentCountToken;
+                    this.mostRecentCountToken = null;
                 }
+                // LEFTT OFF HERE
+                this.validNextTokens = {};
+                this.done();
                 break;
-
-            case states.FIND:
-                if (token.type == 'letter') {
-                    tokenStack.push(token);
-                    this.state = states.READY;
-                    this.done();
-                } else {
-                    this.error(token);
-                    this.reset();
+            case 'count':
+                this.mostRecentCountToken = token;
+                this.validNextTokens = {
+                    'find' : 'motionName',
+                    'motion' : 'motionName',
+                    'search' : 'motionName',
+                    'gotoMark' : 'motionName',
+                    'put' : 'operationName',
+                    'mark' : 'operationName',
+                    'yank' : 'operationName',
+                    'delete' : 'operationName'
+                };
+                break;
+            case 'mark':
+            case 'gotoMark':
+                this.validNextTokens = {
+                    'letter' : 'markName'
+                };
+                // Mark and gotoMark can go to the same state.
+                break;
+            case 'find':
+                this.validNextTokens = {
+                    'letter' : 'findLetter'
+                };
+                break;
+            case 'search':
+                this.validNextTokens = {
+                    'word' : 'searchWord'
+                };
+                break;
+            case 'delete':
+                if (typeof vimCommand.operationCount == 'undefined') {
+                    // Assert: the mostRecentCountToken (if there is
+                    // one) should be used as the operationCount.
+                    // TODO: do this.
                 }
+                this.validNextTokens = {
+                    'find' : 'motionName',
+                    'count' : 'motionCount',
+                    'search' : 'motionName',
+                    'motion' : 'motionName',
+                    'gotoMark' : 'motionName',
+                    'sameLine' : 'motionName'
+                };
                 break;
-
-            case states.SEARCH:
-                if (token.type == 'word') {
-                    tokenStack.push(token);
-                    this.state = states.READY;
-                    this.done();
-                } else {
-                    this.error(token);
-                    this.reset();
-                }
+            case 'register':
+                this.validNextTokens = {
+                    'put' : 'operationName',
+                    'yank' : 'operationName',
+                    'letter' : 'registerName',
+                    'count' : 'operationCount',
+                    'delete' : 'operationName'
+                };
                 break;
-
-            case states.REGISTER:
-                if (token.type == 'letter') {
-                    tokenStack.push(token);
-                    this.state = states.READY;
-                    // this.done();
-                } else {
-                    this.error(token);
-                    this.reset();
-                }
+            case 'put':
+                this.validNextTokens = {};
+                this.done();
                 break;
-
-            case states.DELETE:
-                // TODO come up with a better name than 'special'
-                if (token.type == 'special') {
-                    tokenStack.push(token);
-                    this.state = states.READY;
-                    this.done();
-                } else if (token.type == 'count') {
-                    tokenStack.push(token);
-                    this.state = states.READY;
-                } else {
-                    // Epsilon transition to READY state.
-                    this.state = states.READY;
-                    this.receiveToken(token);
-                }
+            case 'yank':
+                this.validNextTokens = {
+                    'find' : 'motionName',
+                    'count' : 'motionCount',
+                    'search' : 'motionName',
+                    'motion' : 'motionName',
+                    'gotoMark' : 'motionName',
+                    'sameLine' : 'motionName'
+                };
                 break;
-
-            case states.YANK:
-                // TODO come up with a better name than 'special'
-                if (token.type == 'special') {
-                    tokenStack.push(token);
-                    this.state = states.READY;
-                    this.done();
-                } else if (token.type == 'count') {
-                    tokenStack.push(token);
-                    this.state = states.READY;
-                } else {
-                    // Epsilon transition to READY state.
-                    this.state = states.READY;
-                    this.receiveToken(token);
-                }
-                break;
-
-            case states.READY:
-                tokenStack.push(token);
-                switch(token.type) {
-                    case 'motion':
-                        this.state = states.READY; // Remain in READY state.
-                        this.done();
-                        break;
-                    case 'count':
-                        this.state = states.READY; // Remain in READY state.
-                        break;
-                    case 'mark':
-                    case 'gotoMark':
-                        // Mark and gotoMark can go to the same state.
-                        this.state = states.MARK;
-                        break;
-                    case 'find':
-                        this.state = states.FIND;
-                        break;
-                    case 'search':
-                        this.state = states.SEARCH;
-                        break;
-                    case 'delete':
-                        this.state = states.DELETE;
-                        break;
-                    case 'register':
-                        this.state = states.REGISTER;
-                        break;
-                    case 'put':
-                        this.state = states.READY;
-                        this.done();
-                        break;
-                    case 'yank':
-                        this.state = states.YANK;
-                        break;
-                    default:
-                        this.error(token);
-                        console.warn('PARSER: Not adding token ' + token + ' to tokenStack.');
-                        tokenStack.pop(); // Remove the last item.
-                }
-                break;
-
-
-                
+            default:
+                this.validNextTokens = {};
+                this.error(token);
+                console.warn('PARSER: Not adding token ' + token + ' to tokenStack.');
+                tokenStack.pop(); // Remove the last item.
         }
     };
 
