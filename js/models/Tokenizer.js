@@ -49,7 +49,7 @@ var Tokenizer = function(options) {
             case states.DELETE:
                 if (ch == deleteOperator) {
                     var t = new Token({
-                        type : 'special',
+                        type : 'sameLine',
                         value : ch
                     });
                     this.state = states.READY;
@@ -63,7 +63,7 @@ var Tokenizer = function(options) {
             case states.YANK:
                 if (ch == yankOperator) {
                     var t = new Token({
-                        type : 'special',
+                        type : 'sameLine',
                         value : ch
                     });
                     this.state = states.READY;
@@ -78,7 +78,7 @@ var Tokenizer = function(options) {
                 // TODO: sanitize this input better.
                 if (ch.length == 1) {
                     var t = new Token({
-                        type : 'letter',
+                        type : 'findLetter',
                         value : ch
                     });
                     this.parser.receiveToken(t);
@@ -93,7 +93,7 @@ var Tokenizer = function(options) {
                 // TODO: Sanitize input better.
                 if (ch == '\n') {
                     var t = new Token({
-                        type : 'word',
+                        type : 'searchWord',
                         value : searchTerm
                     });
                     this.state = states.READY;
@@ -111,7 +111,7 @@ var Tokenizer = function(options) {
             case states.GOTO_MARK:
                 if (/^[a-z]$/.test(ch)) {
                     var t = new Token({
-                        type : 'letter',
+                        type : 'markName',
                         value : ch
                     });
                     this.parser.receiveToken(t);
@@ -125,7 +125,7 @@ var Tokenizer = function(options) {
             case states.MARK:
                 if (/^[a-z]$/.test(ch)) {
                     var t = new Token({
-                        type : 'letter',
+                        type : 'markName',
                         value : ch
                     });
                     this.parser.receiveToken(t);
@@ -139,7 +139,7 @@ var Tokenizer = function(options) {
             case states.REGISTER:
                 if (/^[a-zA-Z0-9\.%#\:\-"]$/.test(ch)) {
                     var t = new Token({
-                        type : 'letter',
+                        type : 'registerName',
                         value : ch
                     });
                     this.parser.receiveToken(t);
