@@ -1,27 +1,12 @@
-hallagan
+V -> [C] M | F | S | A
+  -> D
+  -> Y
+  -> P
 
-andrew
-william
-hallagan asdf asfd asd fas df
-31234
+D -> [R] [C] d [C] M | F | S | A | d
+M -> h | j | k | l | ...
+Y -> [R] [C] y [C] M | F | S | A | y
+P -> [C] p
+K -> mL
 
-dev                          know vim . com
-
-dev
-dev
-
-+ dev
-+ dev                Press 'i' to enter INSERT mode.
-+ dev
-+ dev
-+ dev
-+ dev
-+ dev
-+ dev
-+ dev
-+ dev
-
-
-
-
-oh hai
+                   know vim . com

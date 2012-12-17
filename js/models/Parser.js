@@ -45,6 +45,7 @@ var Parser = function() {
      */
     var validNextTokens = {
         'count' : 'count',
+        'escape' : 'escape',
         'register' : 'register',
         'find' : 'motionName',
         'motion' : 'motionName',
@@ -60,6 +61,7 @@ var Parser = function() {
         console.log('PARSER: Resetting to initial state.');
         validNextTokens = {
             'count' : 'count',
+            'escape' : 'escape',
             'register' : 'register',
             'find' : 'motionName',
             'motion' : 'motionName',
@@ -134,8 +136,18 @@ var Parser = function() {
                 };
                 break;
 
-            case 'mark':
             case 'gotoMark':
+                if (mostRecentCountToken && typeof vimCommand.motionCount == 'undefined') {
+                    // Assert: the mostRecentCountToken (if there is
+                    // one) should be used as the motionCount. The 'count'
+                    // property of vimCommand should be deleted now that we
+                    // know this is a motionCount.
+                    delete vimCommand.count;
+                    vimCommand.motionCount = mostRecentCountToken.value;
+                    mostRecentCountToken = null;
+                }
+                // Drop through to 'mark' since they share the same code...
+            case 'mark':
                 validNextTokens = {
                     'markName' : 'markName'
                 };
@@ -148,6 +160,15 @@ var Parser = function() {
                 break;
 
             case 'find':
+                if (mostRecentCountToken && typeof vimCommand.motionCount == 'undefined') {
+                    // Assert: the mostRecentCountToken (if there is
+                    // one) should be used as the motionCount. The 'count'
+                    // property of vimCommand should be deleted now that we
+                    // know this is a motionCount.
+                    delete vimCommand.count;
+                    vimCommand.motionCount = mostRecentCountToken.value;
+                    mostRecentCountToken = null;
+                }
                 validNextTokens = {
                     'findLetter' : 'findLetter'
                 };
@@ -159,6 +180,15 @@ var Parser = function() {
                 break;
 
             case 'search':
+                if (mostRecentCountToken && typeof vimCommand.motionCount == 'undefined') {
+                    // Assert: the mostRecentCountToken (if there is
+                    // one) should be used as the motionCount. The 'count'
+                    // property of vimCommand should be deleted now that we
+                    // know this is a motionCount.
+                    delete vimCommand.count;
+                    vimCommand.motionCount = mostRecentCountToken.value;
+                    mostRecentCountToken = null;
+                }
                 validNextTokens = {
                     'searchWord' : 'searchWord'
                 };
@@ -225,6 +255,15 @@ var Parser = function() {
                 break;
 
             case 'yank':
+                if (mostRecentCountToken && typeof vimCommand.operationCount == 'undefined') {
+                    // Assert: the mostRecentCountToken (if there is
+                    // one) should be used as the operationCount. Delete the
+                    // 'count' property of vimCommand now that we know this
+                    // is an operationCount.
+                    delete vimCommand.count;
+                    vimCommand.operationCount = mostRecentCountToken.value;
+                    mostRecentCountToken = null;
+                }
                 validNextTokens = {
                     'find' : 'motionName',
                     'count' : 'motionCount',
@@ -235,9 +274,14 @@ var Parser = function() {
                 };
                 break;
 
-            default:
+            case 'escape':
+                console.log('PARSER: Escaping from Normal mode by resetting everything.');
                 this.reset();
+                break;
+
+            default:
                 this.error(token);
+                this.reset();
         }
     };
 
