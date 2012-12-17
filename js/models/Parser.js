@@ -44,29 +44,45 @@ var Parser = function() {
      * // }
      */
     var validNextTokens = {
+        'count' : 'count',
+        'register' : 'register',
         'find' : 'motionName',
         'motion' : 'motionName',
         'search' : 'motionName',
         'gotoMark' : 'motionName',
         'put' : 'operationName',
         'yank' : 'operationName',
+        'mark' : 'operationName',
         'delete' : 'operationName'
     };
 
     this.reset = function() {
+        console.log('PARSER: Resetting to initial state.');
         validNextTokens = {
+            'count' : 'count',
+            'register' : 'register',
             'find' : 'motionName',
             'motion' : 'motionName',
             'search' : 'motionName',
             'gotoMark' : 'motionName',
             'put' : 'operationName',
             'yank' : 'operationName',
+            'mark' : 'operationName',
             'delete' : 'operationName'
         };
     };
 
     this.error = function(token) {
         console.warn('PARSER: No implementation to handle token ' + token);
+    };
+
+    this.invalidToken = function(token) {
+        var expectedTokenTypes = "";
+        Object.keys(validNextTokens).forEach(function(tokenType) {
+            expectedTokenTypes += tokenType + ', ';
+        });
+        expectedTokenTypes.substr(0, expectedTokenTypes.length - 1);
+        console.warn('PARSER: Invalid token ' + token + '. Expected one of ' + expectedTokenTypes);
     };
 
     this.done = function() {
@@ -77,13 +93,15 @@ var Parser = function() {
     };
 
     this.receiveToken = function(token) {
-        // -- console.log('    PARSER: Received token ' + token);
-        // -- console.log('    PARSER: Valid next tokens ', validNextTokens);
+
+        console.log('PARSER: Received token ' + token);
         if (validNextTokens[token.type]) {
             // If this token type is valid, assign the appropriate property
             // in the vimCommand structure. Remember that the values of
             // validNextTokens are the keys used in vimCommand.
             vimCommand[validNextTokens[token.type]] = token.value;
+        } else {
+            this.invalidToken(token);
         }
 
         // TODO: Remove the magic strings here and use some sort of
@@ -92,17 +110,19 @@ var Parser = function() {
             case 'motion':
                 if (mostRecentCountToken && typeof vimCommand.motionCount == 'undefined') {
                     // Assert: the mostRecentCountToken (if there is
-                    // one) should be used as the motionCount.
-                    // TODO: implement this.
-                    vimCommand.motionCount = this.mostRecentCountToken;
-                    this.mostRecentCountToken = null;
+                    // one) should be used as the motionCount. The 'count'
+                    // property of vimCommand should be deleted now that we
+                    // know this is a motionCount.
+                    delete vimCommand.count;
+                    vimCommand.motionCount = mostRecentCountToken.value;
+                    mostRecentCountToken = null;
                 }
                 this.reset();
                 this.done();
                 break;
 
             case 'count':
-                this.mostRecentCountToken = token;
+                mostRecentCountToken = token;
                 validNextTokens = {
                     'find' : 'motionName',
                     'motion' : 'motionName',
@@ -152,9 +172,12 @@ var Parser = function() {
             case 'delete':
                 if (mostRecentCountToken && typeof vimCommand.operationCount == 'undefined') {
                     // Assert: the mostRecentCountToken (if there is
-                    // one) should be used as the operationCount..
-                    vimCommand.operationCount = this.mostRecentCountToken;
-                    this.mostRecentCountToken = null;
+                    // one) should be used as the operationCount. Delete the
+                    // 'count' property of vimCommand now that we know this
+                    // is an operationCount.
+                    delete vimCommand.count;
+                    vimCommand.operationCount = mostRecentCountToken.value;
+                    mostRecentCountToken = null;
                 }
 
                 validNextTokens = {
@@ -189,6 +212,14 @@ var Parser = function() {
                 break;
 
             case 'put':
+                if (mostRecentCountToken && typeof vimCommand.operationCount == 'undefined') {
+                    // Assert: the mostRecentCountToken (if there is
+                    // one) should be used as the operationCount. Delete the
+                    // 'count' property of vimCommand now that we know this
+                    // is an operationCount..
+                    vimCommand.operationCount = mostRecentCountToken.value;
+                    mostRecentCountToken = null;
+                }
                 this.reset();
                 this.done();
                 break;
