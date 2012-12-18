@@ -1,12 +1,19 @@
-V -> [C] M | F | S | A
-  -> D
-  -> Y
-  -> P
+                             know vim . com
 
-D -> [R] [C] d [C] M | F | S | A | d
-M -> h | j | k | l | ...
-Y -> [R] [C] y [C] M | F | S | A | y
-P -> [C] p
-K -> mL
+V => [C] (M | F | S | A)
+  => D
+  => Y
+  => P
 
-                   know vim . com
+C => [1-9][0-9]*
+
+M => h | j | k | l | ...
+
+D => [R] [C] d [C] (M | F | S | A | d)
+Y => [R] [C] y [C] (M | F | S | A | y)
+
+P => [C] p
+K => mL
+A => 'L
+F => fL | tL | "F"L | TL
+S => /W | ?W

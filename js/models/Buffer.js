@@ -40,7 +40,7 @@ var Buffer = Backbone.DeepModel.extend({
             url : '/files/' + model.get('name'),
             success : function(response) {
                 // Trim of the newline that gets appended.
-                response = response.trim();
+                response = response.trimRight();
 
                 model.set({
                     raw : response,

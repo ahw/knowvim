@@ -43,22 +43,16 @@ var Parser = function() {
      * //  sameLine : 'motionName'
      * // }
      */
-    var validNextTokens = {
-        'count' : 'count',
-        'escape' : 'escape',
-        'register' : 'register',
-        'find' : 'motionName',
-        'motion' : 'motionName',
-        'search' : 'motionName',
-        'gotoMark' : 'motionName',
-        'put' : 'operationName',
-        'yank' : 'operationName',
-        'mark' : 'operationName',
-        'delete' : 'operationName'
-    };
+    var validNextTokens = {};
 
+    /**
+     * This function is used to initialize/reset the validNextTokens object.
+     * It is called when a new Parser object is created.
+     */
     this.reset = function() {
-        console.log('PARSER: Resetting to initial state.');
+        console.warn('PARSER: Resetting to initial state.');
+        mostRecentCountToken = null;
+        vimCommand = {};
         validNextTokens = {
             'count' : 'count',
             'escape' : 'escape',
@@ -73,6 +67,7 @@ var Parser = function() {
             'delete' : 'operationName'
         };
     };
+    this.reset(); // Call reset when creating a new Parser.
 
     this.error = function(token) {
         console.warn('PARSER: No implementation to handle token ' + token);
@@ -92,10 +87,36 @@ var Parser = function() {
         console.log('--------------------------');
         console.log(JSON.stringify(vimCommand, null, '    '));
         vimCommand = {};
+        this.reset();
+    };
+
+    this.tryToAssignOperationCount = function () {
+        if (mostRecentCountToken && typeof vimCommand.operationCount == 'undefined') {
+            // Assert: we recently accepted a count token of some kind, and
+            // the operationCount property of vimCommand has not been set.
+            // Thus, the mostRecentCountToken should be used as the
+            // operationCount. The 'count' property of vimCommand should be
+            // deleted now that we know this is a motionCount.
+            delete vimCommand.count;
+            vimCommand.operationCount = mostRecentCountToken.value;
+            mostRecentCountToken = null;
+        }
+    };
+
+    this.tryToAssignMotionCount = function() {
+        if (mostRecentCountToken && typeof vimCommand.motionCount == 'undefined') {
+            // Assert: we recently accepted a count token of some kind, and
+            // the motionCount property of vimCommand has not been set.
+            // Thus, the mostRecentCountToken should be used as the
+            // motionCount. The 'count' property of vimCommand should be
+            // deleted now that we know this is a motionCount.
+            delete vimCommand.count;
+            vimCommand.motionCount = mostRecentCountToken.value;
+            mostRecentCountToken = null;
+        }
     };
 
     this.receiveToken = function(token) {
-
         console.log('PARSER: Received token ' + token);
         if (validNextTokens[token.type]) {
             // If this token type is valid, assign the appropriate property
@@ -106,23 +127,7 @@ var Parser = function() {
             this.invalidToken(token);
         }
 
-        // TODO: Remove the magic strings here and use some sort of
-        // enum-like construct.
         switch(token.type) {
-            case 'motion':
-                if (mostRecentCountToken && typeof vimCommand.motionCount == 'undefined') {
-                    // Assert: the mostRecentCountToken (if there is
-                    // one) should be used as the motionCount. The 'count'
-                    // property of vimCommand should be deleted now that we
-                    // know this is a motionCount.
-                    delete vimCommand.count;
-                    vimCommand.motionCount = mostRecentCountToken.value;
-                    mostRecentCountToken = null;
-                }
-                this.reset();
-                this.done();
-                break;
-
             case 'count':
                 mostRecentCountToken = token;
                 validNextTokens = {
@@ -136,93 +141,38 @@ var Parser = function() {
                 };
                 break;
 
-            case 'gotoMark':
-                if (mostRecentCountToken && typeof vimCommand.motionCount == 'undefined') {
-                    // Assert: the mostRecentCountToken (if there is
-                    // one) should be used as the motionCount. The 'count'
-                    // property of vimCommand should be deleted now that we
-                    // know this is a motionCount.
-                    delete vimCommand.count;
-                    vimCommand.motionCount = mostRecentCountToken.value;
-                    mostRecentCountToken = null;
-                }
-                // Drop through to 'mark' since they share the same code...
-            case 'mark':
-                validNextTokens = {
-                    'markName' : 'markName'
-                };
-                // Mark and gotoMark can go to the same state.
-                break;
-
-            case 'markName':
-                this.reset();
+            case 'motion':
+                this.tryToAssignMotionCount();
                 this.done();
                 break;
 
             case 'find':
-                if (mostRecentCountToken && typeof vimCommand.motionCount == 'undefined') {
-                    // Assert: the mostRecentCountToken (if there is
-                    // one) should be used as the motionCount. The 'count'
-                    // property of vimCommand should be deleted now that we
-                    // know this is a motionCount.
-                    delete vimCommand.count;
-                    vimCommand.motionCount = mostRecentCountToken.value;
-                    mostRecentCountToken = null;
-                }
+                this.tryToAssignMotionCount();
                 validNextTokens = {
                     'findLetter' : 'findLetter'
                 };
                 break;
 
-            case 'findLetter':
-                this.reset();
-                this.done();
-                break;
-
             case 'search':
-                if (mostRecentCountToken && typeof vimCommand.motionCount == 'undefined') {
-                    // Assert: the mostRecentCountToken (if there is
-                    // one) should be used as the motionCount. The 'count'
-                    // property of vimCommand should be deleted now that we
-                    // know this is a motionCount.
-                    delete vimCommand.count;
-                    vimCommand.motionCount = mostRecentCountToken.value;
-                    mostRecentCountToken = null;
-                }
+                this.tryToAssignMotionCount();
                 validNextTokens = {
                     'searchWord' : 'searchWord'
                 };
                 break;
 
-            case 'searchWord':
-                this.reset();
-                this.done();
-                break;
-
-            case 'delete':
-                if (mostRecentCountToken && typeof vimCommand.operationCount == 'undefined') {
-                    // Assert: the mostRecentCountToken (if there is
-                    // one) should be used as the operationCount. Delete the
-                    // 'count' property of vimCommand now that we know this
-                    // is an operationCount.
-                    delete vimCommand.count;
-                    vimCommand.operationCount = mostRecentCountToken.value;
-                    mostRecentCountToken = null;
-                }
-
+            case 'gotoMark':
+                this.tryToAssignMotionCount();
+                // Drop through to 'mark' since they share the same code...
+            case 'mark':
                 validNextTokens = {
-                    'find' : 'motionName',
-                    'count' : 'motionCount',
-                    'search' : 'motionName',
-                    'motion' : 'motionName',
-                    'gotoMark' : 'motionName',
-                    'sameLine' : 'motionName'
+                    'markName' : 'markName'
                 };
                 break;
 
-
+            case 'markName':
+            case 'findLetter':
+            case 'searchWord':
             case 'sameLine':
-                this.reset();
                 this.done();
                 break;
 
@@ -241,29 +191,9 @@ var Parser = function() {
                 };
                 break;
 
-            case 'put':
-                if (mostRecentCountToken && typeof vimCommand.operationCount == 'undefined') {
-                    // Assert: the mostRecentCountToken (if there is
-                    // one) should be used as the operationCount. Delete the
-                    // 'count' property of vimCommand now that we know this
-                    // is an operationCount..
-                    vimCommand.operationCount = mostRecentCountToken.value;
-                    mostRecentCountToken = null;
-                }
-                this.reset();
-                this.done();
-                break;
-
+            case 'delete':
             case 'yank':
-                if (mostRecentCountToken && typeof vimCommand.operationCount == 'undefined') {
-                    // Assert: the mostRecentCountToken (if there is
-                    // one) should be used as the operationCount. Delete the
-                    // 'count' property of vimCommand now that we know this
-                    // is an operationCount.
-                    delete vimCommand.count;
-                    vimCommand.operationCount = mostRecentCountToken.value;
-                    mostRecentCountToken = null;
-                }
+                this.tryToAssignOperationCount();
                 validNextTokens = {
                     'find' : 'motionName',
                     'count' : 'motionCount',
@@ -272,6 +202,11 @@ var Parser = function() {
                     'gotoMark' : 'motionName',
                     'sameLine' : 'motionName'
                 };
+                break;
+
+            case 'put':
+                this.tryToAssignOperationCount();
+                this.done();
                 break;
 
             case 'escape':
