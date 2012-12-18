@@ -72,8 +72,8 @@ if ($browser == 'mobile') {
 <link rel="stylesheet" type="text/css" href="/css/shThemeDefault.css"/>
 
 
-<script type="text/javascript" src="/js/lib/jquery.js"></script>
-<script type="text/javascript" src="/js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="/js/lib/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="/js/lib/jquery-ui-1.9.1.custom.min.js"></script>
 <script type="text/javascript" src="/js/lib/underscore.js"></script>
 <script type="text/javascript" src="/js/lib/json2.js"></script>
 <script type="text/javascript" src="/js/lib/backbone.js"></script>

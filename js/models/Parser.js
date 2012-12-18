@@ -88,6 +88,8 @@ var Parser = function() {
         console.log(JSON.stringify(vimCommand, null, '    '));
         vimCommand = {};
         this.reset();
+        $("body").css("background-color", "yellow");
+        $("body").animate({backgroundColor: "#DDF"}, 1000);
     };
 
     this.tryToAssignOperationCount = function () {
