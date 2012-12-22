@@ -27,8 +27,8 @@ var Tokenizer = function(options) {
         GOTO_MARK : 'GOTO_MARK',
     }
 
-    this.warn = function(ch) {
-        console.warn('TOKENIZER: Illegal character ' + ch + ' from ' + this.state + ' state');
+    this.warnAboutIllegalCharacter = function(ch, expectedCharDescription) {
+        console.warn('TOKENIZER: Illegal character ' + ch + ' from ' + this.state + ' state. Expected ' + expectedCharDescription);
     };
 
     this.reset = function() {
@@ -83,7 +83,7 @@ var Tokenizer = function(options) {
                     });
                     this.parser.receiveToken(t);
                 } else {
-                    this.warn(ch);
+                    this.warnAboutIllegalCharacter(ch, ' a single letter or symbol.');
                     this.reset();
                 }
                 this.state = states.READY;
@@ -103,7 +103,7 @@ var Tokenizer = function(options) {
                     searchTerm += ch;
                     this.state = states.SEARCH;
                 } else {
-                    this.warn(ch);
+                    this.warnAboutIllegalCharacter(ch, ' a word followed by <ENTER>');
                     this.reset();
                 }
                 break;
@@ -117,7 +117,7 @@ var Tokenizer = function(options) {
                     this.parser.receiveToken(t);
                     this.state = states.READY;
                 } else {
-                    this.warn(ch);
+                    this.warnAboutIllegalCharacter(ch, ' a valid mark identifier (something which matches [a-z])');
                     this.reset();
                 }
                 break;
@@ -131,7 +131,7 @@ var Tokenizer = function(options) {
                     this.parser.receiveToken(t);
                     this.state = states.READY;
                 } else {
-                    this.warn(ch);
+                    this.warnAboutIllegalCharacter(ch, ' a valid mark identifier (something which matches [a-z])');
                     this.reset();
                 }
                 break;
@@ -145,7 +145,7 @@ var Tokenizer = function(options) {
                     this.parser.receiveToken(t);
                     this.state = states.READY;
                 } else {
-                    this.warn(ch);
+                    this.warnAboutIllegalCharacter(ch, ' a valid register identifier (something which matches [a-zA-Z0-9\\.%#\\:\\-"] )');
                     this.reset();
                 }
                 break;
@@ -251,7 +251,7 @@ var Tokenizer = function(options) {
                     this.parser.receiveToken(t);
 
                 } else {
-                    this.warn(ch);
+                    this.warnAboutIllegalCharacter(ch, ' one of the Motion types or Operators that have been implemented. It is possible your input is a valid Vim Motion and/or Operator and it just isn\'t implemented here.');
                     this.reset();
                 }
                 break;

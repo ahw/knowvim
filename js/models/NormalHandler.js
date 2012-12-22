@@ -39,7 +39,7 @@ var NormalHandler = Backbone.DeepModel.extend({
     initialize : function(options) {
 
         var model = this;
-        var parser = new Parser();
+        var parser = new Parser({ normalHandler : model });
         var tokenizer = new Tokenizer({ parser : parser });
         model.set({
             vim : options.vim,
@@ -48,27 +48,6 @@ var NormalHandler = Backbone.DeepModel.extend({
             parser : parser
         });
 
-        // Listen for changes in state. When we hit the RUN state execute
-        // the parsed command.
-        model.on('change:state', function() {
-            if (model.get('state') == 'RUN') {
-                // model.printCommandExpression();
-                var motion = model.get('motion');
-                var operator = model.get('operator');
-                var motionCount = model.get('motionCount');
-                var operatorCount = model.get('operatorCount');
-
-                for (var i = 0; i < operatorCount; i++) {
-                    model.applyOperator({
-                        motion : motion,
-                        operator : operator,
-                        motionCount : motionCount,
-                        operatorCount : operatorCount
-                    });
-                }
-
-            }
-        });
     },
 
 
@@ -90,143 +69,19 @@ var NormalHandler = Backbone.DeepModel.extend({
     },
 
     input : function(key) {
+        // Send the input to the tokenizer.
         this.get('tokenizer').receiveChar(key);
     },
 
-    oldInput : function(key) {
-        switch (this.get('state')) {
-
-            case 'START':
-                if (this.get('motions')[key]) {
-                    // Assert: motion command
-                    this.set({
-                        operator : null,
-                        motion : key,
-                        count : 1,
-                        operatorCount : 1,
-                        motionCount : 1,
-                        state : 'RUN'
-                    });
-                } else if (this.get('operators')[key]) {
-                    // Assert: operator command
-                    this.set({
-                        operator : key,
-                        motion : null,
-                        count : 1,
-                        operatorCount : 1,
-                        motionCount : 1,
-                        state : 'OPERATOR'
-                    });
-                } else if (isNaN(parseInt(key)) == false) {
-                    // Assert: repetition prefix
-                    this.set({
-                        operator : null,
-                        motion : null,
-                        count : parseInt(key),
-                        operatorCount : 1,
-                        motionCount : 1,
-                        state : 'NUMBER'
-                    });
-                } else {
-                    console.log('Invalid key "' + key + '" in ' + this.get('state') + ' state. Resetting to START state.');
-                    this.set({
-                        state : 'START'
-                    });
-                }
-                break;
-
-            case 'NUMBER':
-                if (this.get('motions')[key]) {
-                    // Assert: motion command
-                    this.set({
-                        motion : key,
-                        motionCount : this.get('count'), // The [count] pertains to a motion
-                        state : 'RUN'
-                    });
-                } else if (this.get('operators')[key]) {
-                    // Assert: operator command
-                    this.set({
-                        operator : key,
-                        operatorCount : this.get('count'), // The [count] pertains to an operator
-                        state : 'OPERATOR'
-                    });
-                } else if (isNaN(parseInt(key)) == false) {
-                    // Assert: repetition prefix
-                    var n = parseInt(key);
-                    var oldCount = this.get('count');
-                    this.set({
-                        count : 10 * oldCount + n,
-                        state : 'NUMBER'
-                    });
-                } else {
-                    console.log('Invalid key "' + key + '" in ' + this.get('state') + ' state. Resetting to START state.');
-                    this.set({
-                        state : 'START'
-                    });
-                }
-                break;
-
-            case 'OPERATOR':
-                if (this.get('motions')[key]) {
-                    // Assert: motion command
-                    this.set({
-                        motion : key,
-                        state : 'RUN'
-                    });
-                } else if (isNaN(parseInt(key)) == false) {
-                    // Assert: repetition prefix
-                    this.set({
-                        motionCount : parseInt(key),
-                        state : 'MOTION_COUNT'
-                    });
-                } else {
-                    console.log('Invalid key "' + key + '" in ' + this.get('state') + ' state. Resetting to START state.');
-                    this.set({
-                        state : 'START'
-                    });
-                }
-                break;
-
-            case 'MOTION_COUNT':
-                if (this.get('motions')[key]) {
-                    // Assert: motion command
-                    this.set({
-                        motion : key,
-                        state : 'RUN'
-                    });
-                } else if (isNaN(parseInt(key)) == false) {
-                    // Assert: repetition prefix
-                    var n = parseInt(key);
-                    var oldMotionCount = this.get('motionCount');
-                    this.set({
-                        motionCount : 10 * oldMotionCount + n,
-                        state : 'MOTION_COUNT'
-                    });
-                } else {
-                    console.log('Invalid key "' + key + '" in ' + this.get('state') + ' state. Resetting to START state.');
-                    this.set({
-                        state : 'START'
-                    });
-                }
-                break;
-
-            case 'RUN':
-                // Epsilon transition to START state.
-                this.set({
-                    state : 'START'
-                });
-                this.input(key);
-                break;
-        }
+    receiveNormalCommand : function(vimCommand) {
+        console.log('NORMAL : Received vimCommand');
+        console.log(JSON.stringify(vimCommand, null, '    '));
     },
-
 
     // Returns the result of a motionKey motion, in the context of
     // startRow, startCol, and, implicitly, the Buffer retrieved with
     // this.get('buffer').
     getMotionResult : function(motionKey, startRow, startCol) {
-
-
         var result = {
             type : null, // 'linewise' or 'characterwise'
             startRow : startRow,
@@ -301,7 +156,6 @@ var NormalHandler = Backbone.DeepModel.extend({
     },
 
     applyOperator : function(args) {
-
         var model = this;
         var motion = args.motion;
         var operator = args.operator;
@@ -400,34 +254,6 @@ var NormalHandler = Backbone.DeepModel.extend({
                 break;
         }
 
-    },
-
-    getWMotionResult : function (startRow, startCol) {
-        var result = {
-            type : 'characterwise', // 'linewise' or 'characterwise'
-            startRow : startRow,
-            startCol : startCol,
-            endRow : startRow, // Default is no row movement
-            endCol : startCol, // Default is no col movement
-            inclusive : null, // true if it includes last char towards end
-        };
-        return result;
-
-    },
-
-
-    printCommandExpression : function() {
-        var operator = this.get('operator') || "";
-        var motion = this.get('motion') || "";
-        var operatorCount = this.get('operatorCount') || "";
-        var motionCount = this.get('motionCount') || "";
-
-        var s = sprintf('Command: "%s%s%s%s"', operatorCount, operator, motionCount, motion);
-        s += sprintf('\nOperatorCount = %s', operatorCount);
-        s += sprintf('\n     Operator = %s', operator);
-        s += sprintf('\n  MotionCount = %s', motionCount);
-        s += sprintf('\n       Motion = %s', motion);
-        console.log(s);
     }
 
 });

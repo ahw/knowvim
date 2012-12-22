@@ -1,7 +1,8 @@
-var Parser = function() {
+var Parser = function(options) {
 
     var mostRecentCountToken = null;
     var vimCommand = {};
+    this.normalHandler = options.normalHandler;
 
     /**
      *
@@ -73,15 +74,6 @@ var Parser = function() {
         console.warn('PARSER: No implementation to handle token ' + token);
     };
 
-    this.invalidToken = function(token) {
-        var expectedTokenTypes = "";
-        Object.keys(validNextTokens).forEach(function(tokenType) {
-            expectedTokenTypes += tokenType + ', ';
-        });
-        expectedTokenTypes.substr(0, expectedTokenTypes.length - 1);
-        console.warn('PARSER: Invalid token ' + token + '. Expected one of ' + expectedTokenTypes);
-    };
-
     this.done = function() {
         console.log('PARSER : Completed command');
         console.log('--------------------------');
@@ -126,7 +118,16 @@ var Parser = function() {
             // validNextTokens are the keys used in vimCommand.
             vimCommand[validNextTokens[token.type]] = token.value;
         } else {
-            this.invalidToken(token);
+            // Note: if Tokenizer is designed correctly, we should never get
+            // here; Tokenizer will error out saying it received an illegal
+            // character. This is because Tokenizer keeps track of state and
+            // knows what characters to expect next.
+            var expectedTokenTypes = "";
+            Object.keys(validNextTokens).forEach(function(tokenType) {
+                expectedTokenTypes += tokenType + ', ';
+            });
+            expectedTokenTypes.substr(0, expectedTokenTypes.length - 1);
+            console.warn('PARSER: Invalid token ' + token + '. Expected one of ' + expectedTokenTypes);
         }
 
         switch(token.type) {
