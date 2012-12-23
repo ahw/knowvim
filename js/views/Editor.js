@@ -57,16 +57,16 @@ var EditorView = Backbone.View.extend({
         // console.log("Updating cursor to (" + row + ", " + col + ")");
 
         var currentLine, newLine;
-        // Remove cursor tags from the current line.
-        currentLine = $($('.line')[cursorRow]).html();
-        currentLine = this.removeCursorTags(currentLine);
+        // Get the text of the current line. Note that <span> tags will be
+        // automatically removed using jQuery's text() function.
+        currentLine = $($('.line')[cursorRow]).text();
 
         // If we're jumping to a new line, put the clean contents back into
         // `cursorRow` and pull out the contents in `row`. Otherwise, just
         // re-use the contents in `cursorRow`.
         if (cursorRow != row) {
             $($('.line')[cursorRow]).html(currentLine);
-            newLine = $($('.line')[row]).html();
+            newLine = $($('.line')[row]).text();
         } else {
             newLine = currentLine;
         }
