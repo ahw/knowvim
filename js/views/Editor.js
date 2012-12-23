@@ -50,10 +50,10 @@ var EditorView = Backbone.View.extend({
      * character in `span` tags.
      */
     updateCursor : function() {
-        var row = this.model.get('row');
-        var col = this.model.get('col');
-        var cursorRow = this.model.get('cursorRow');
-        var cursorCol = this.model.get('cursorCol');
+        var row = this.model.get('row'); // The row we're moving to
+        var col = this.model.get('col'); // The col we're moving to
+        var cursorRow = this.model.get('cursorRow'); // The current row position of the cursor
+        var cursorCol = this.model.get('cursorCol'); // The current col position of the cursor
         // console.log("Updating cursor to (" + row + ", " + col + ")");
 
         var currentLine, newLine;

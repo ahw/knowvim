@@ -1,7 +1,7 @@
 var Parser = function(options) {
 
     var mostRecentCountToken = null;
-    var vimCommand = {};
+    var normalCommand = {};
     this.normalHandler = options.normalHandler;
 
     /**
@@ -51,9 +51,9 @@ var Parser = function(options) {
      * It is called when a new Parser object is created.
      */
     this.reset = function() {
-        console.warn('PARSER: Resetting to initial state.');
+        console.log('PARSER: Resetting to initial state.');
         mostRecentCountToken = null;
-        vimCommand = {};
+        normalCommand = {};
         validNextTokens = {
             'count' : 'count',
             'escape' : 'escape',
@@ -75,37 +75,39 @@ var Parser = function(options) {
     };
 
     this.done = function() {
-        console.log('PARSER : Completed command');
-        console.log('--------------------------');
-        console.log(JSON.stringify(vimCommand, null, '    '));
-        vimCommand = {};
+        // console.log('PARSER : Completed command');
+        // console.log('--------------------------');
+        // console.log(JSON.stringify(normalCommand, null, '    '));
+        this.normalHandler.receiveNormalCommand(normalCommand);
+        normalCommand = {};
         this.reset();
+        // TODO: Remove this.
         $("body").css("background-color", "yellow");
         $("body").animate({backgroundColor: "#DDF"}, 1000);
     };
 
     this.tryToAssignOperationCount = function () {
-        if (mostRecentCountToken && typeof vimCommand.operationCount == 'undefined') {
+        if (mostRecentCountToken && typeof normalCommand.operationCount == 'undefined') {
             // Assert: we recently accepted a count token of some kind, and
-            // the operationCount property of vimCommand has not been set.
+            // the operationCount property of normalCommand has not been set.
             // Thus, the mostRecentCountToken should be used as the
-            // operationCount. The 'count' property of vimCommand should be
+            // operationCount. The 'count' property of normalCommand should be
             // deleted now that we know this is a motionCount.
-            delete vimCommand.count;
-            vimCommand.operationCount = mostRecentCountToken.value;
+            delete normalCommand.count;
+            normalCommand.operationCount = mostRecentCountToken.value;
             mostRecentCountToken = null;
         }
     };
 
     this.tryToAssignMotionCount = function() {
-        if (mostRecentCountToken && typeof vimCommand.motionCount == 'undefined') {
+        if (mostRecentCountToken && typeof normalCommand.motionCount == 'undefined') {
             // Assert: we recently accepted a count token of some kind, and
-            // the motionCount property of vimCommand has not been set.
+            // the motionCount property of normalCommand has not been set.
             // Thus, the mostRecentCountToken should be used as the
-            // motionCount. The 'count' property of vimCommand should be
+            // motionCount. The 'count' property of normalCommand should be
             // deleted now that we know this is a motionCount.
-            delete vimCommand.count;
-            vimCommand.motionCount = mostRecentCountToken.value;
+            delete normalCommand.count;
+            normalCommand.motionCount = mostRecentCountToken.value;
             mostRecentCountToken = null;
         }
     };
@@ -114,9 +116,17 @@ var Parser = function(options) {
         console.log('PARSER: Received token ' + token);
         if (validNextTokens[token.type]) {
             // If this token type is valid, assign the appropriate property
-            // in the vimCommand structure. Remember that the values of
-            // validNextTokens are the keys used in vimCommand.
-            vimCommand[validNextTokens[token.type]] = token.value;
+            // in the normalCommand structure. Remember that the values of
+            // validNextTokens are the keys used in normalCommand.
+            normalCommand[validNextTokens[token.type]] = token.value;
+
+            // Append this token onto the normalCommand.commandString
+            // property.
+            if (normalCommand.commandString) {
+                normalCommand.commandString += token.value;
+            } else {
+                normalCommand.commandString = token.value;
+            }
         } else {
             // Note: if Tokenizer is designed correctly, we should never get
             // here; Tokenizer will error out saying it received an illegal

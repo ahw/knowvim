@@ -37,7 +37,6 @@ var NormalHandler = Backbone.DeepModel.extend({
     },
 
     initialize : function(options) {
-
         var model = this;
         var parser = new Parser({ normalHandler : model });
         var tokenizer = new Tokenizer({ parser : parser });
@@ -47,9 +46,17 @@ var NormalHandler = Backbone.DeepModel.extend({
             tokenizer : tokenizer,
             parser : parser
         });
-
     },
 
+    // Helper function to get the cursorRow.
+    cursorRow : function() {
+        return this.get('vim').get('cursorRow');
+    },
+
+    // Helper function to get the cursorCol.
+    cursorCol : function() {
+        return this.get('vim').get('cursorCol');
+    },
 
     // Helper function to get the current row.
     row : function() {
@@ -73,15 +80,67 @@ var NormalHandler = Backbone.DeepModel.extend({
         this.get('tokenizer').receiveChar(key);
     },
 
-    receiveNormalCommand : function(vimCommand) {
-        console.log('NORMAL : Received vimCommand');
-        console.log(JSON.stringify(vimCommand, null, '    '));
+    receiveNormalCommand : function(normalCommand) {
+        console.log('NORMAL: Received normalCommand');
+        console.log(JSON.stringify(normalCommand, null, '    '));
+
+        // If there is a motion component to the command, get the motion
+        // result. If normalCommand.motionCount exists, the motion result
+        // will reflect this repetition.
+        var motionResult;
+        if (normalCommand.motionName) {
+            // Get the motionResult of the motion applied [motionCount] times.
+            var motionCount = normalCommand.motionCount ? normalCommand.motionCount : 1;
+            motionResult = this.getMotionResult({
+                motionName : normalCommand.motionName
+            });
+            for (var i = 0; i < motionCount - 1; i++) {
+                // For each iteration, compute the motionResult starting
+                // from the previous motion's end positions.
+                motionResult = this.getMotionResult({
+                    motionName : normalCommand.motionName,
+                    endRow : motionResult.endRow,
+                    endCol : motionResult.endCol
+                });
+            }
+
+            // Reset the starting position to the original starting
+            // position (if there was any motionCount iteration, the
+            // starting position values change with each iteration).
+            motionResult.startRow = this.cursorRow();
+            motionResult.starCol = this.cursorRow();
+
+            console.log('NORMAL: Computed motion result');
+            console.log(JSON.stringify(motionResult, null, '    '));
+        }
+
+        // If there is an operator, apply it. If
+        // normalCommand.operationCount exists, the operation will be
+        // applied that many times.
+        if (normalCommand.operationName) {
+            this.applyOperator({
+                motionResult : motionResult,
+                operationName : normalCommand.operationName,
+                operationCount : normalCommand.operationCount
+            });
+
+        } else {
+            // Assert: no operator. Just apply the motion.
+            this.get('vim').set({
+                row : motionResult.endRow,
+                col : motionResult.endCol
+            });
+        }
     },
 
-    // Returns the result of a motionKey motion, in the context of
+    // Returns the result of a motionName motion, in the context of
     // startRow, startCol, and, implicitly, the Buffer retrieved with
-    // this.get('buffer').
-    getMotionResult : function(motionKey, startRow, startCol) {
+    // this.get('buffer'). If startRow and startCol are undefined it assumed
+    // that Vim.get('cursorRow') and Vim.get('cursorCol') are to be used.
+    getMotionResult : function(args) {
+        motionName = args.motionName;
+        startRow = args.startRow ? args.startRow : this.cursorRow();
+        startCol = args.startCol ? args.startCol : this.cursorCol();
         var result = {
             type : null, // 'linewise' or 'characterwise'
             startRow : startRow,
@@ -92,7 +151,7 @@ var NormalHandler = Backbone.DeepModel.extend({
             hitEol : false // True if characterwise motion is stopped short due to end of line
         };
 
-        switch(motionKey) {
+        switch(motionName) {
 
             case 'h':
                 var endCol = startCol == 0 ? 0 : startCol - 1;
@@ -145,41 +204,35 @@ var NormalHandler = Backbone.DeepModel.extend({
                 result.inclusive = true;
                 break;
 
+            case 'd':
+            case 'y':
+                // If "d" or "y" are given as the motionName we'll assume
+                // they were in the context of a "dd" or "yy" command. In
+                // this case, the intent is to delete or yank the current
+                // line.
+                result.type = 'linewise';
+                break;
+
             case 'w':
                 result = this.getWMotionResult(startRow, startCol);
                 break;
 
+            default:
+                console.warn('NORMAL: The "' + motionName + '" motion has been been implemented. Defaulting to no motion.');
         }
 
-        // console.log(sprintf('NORMAL %s: start (%s, %s) end (%s, %s)', motionKey, startRow, startCol, result.endRow, result.endCol));
+        // console.log(sprintf('NORMAL %s: start (%s, %s) end (%s, %s)', motionName, startRow, startCol, result.endRow, result.endCol));
         return result;
     },
 
     applyOperator : function(args) {
         var model = this;
-        var motion = args.motion;
-        var operator = args.operator;
-        var motionCount = args.motionCount;
-        var operatorCount = args.operatorCount;
+        var motionResult = args.motionResult;
+        var operationName = args.operationName;
+        var operationCount = args.operationCount;
 
-        // Get the motionResult of the motion applied [motionCount] times.
-        var motionResult = model.getMotionResult(motion, model.row(), model.col());
-        for (var i = 0; i < motionCount - 1; i++) {
-            motionResult = model.getMotionResult(motion, motionResult.endRow, motionResult.endCol);
-        }
-        // Set the initial position of motionResult to the current position.
-        motionResult.startRow = model.row();
-        motionResult.startCol = model.col();
-
-        var command = sprintf('%s%s%s%s',
-            operatorCount > 1 ? operatorCount : "",
-            operator ? operator : "",
-            motionCount > 1 ? motionCount : "",
-            motion);
-        console.log('NORMAL: ' + command + ' ' + JSON.stringify(motionResult));
-
-        // Apply the operator.
-        switch(operator) {
+        // Apply the operationName.
+        switch(operationName) {
 
             case 'd':
                 if (motionResult.type == 'characterwise') {
@@ -231,7 +284,7 @@ var NormalHandler = Backbone.DeepModel.extend({
                     model.get('vim').trigger('change:buffer');
 
                 } else if (motionResult.type == 'linewise') {
-                    console.log(sprintf('NORMAL: No implementation for "%s"', command));
+                    console.warn('NORMAL: No implementation to handle linewise delete commands');
 
                 } else {
                     // Should never get here.
@@ -239,21 +292,14 @@ var NormalHandler = Backbone.DeepModel.extend({
                 }
                 break;
             case 'c':
-                console.log(sprintf('NORMAL: No implementation for operator "%s"', operator));
+                console.log(sprintf('NORMAL: No implementation for operationName "%s"', operationName));
                 break;
             case 'y':
-                console.log(sprintf('NORMAL: No implementation for operator "%s"', operator));
+                console.log(sprintf('NORMAL: No implementation for operationName "%s"', operationName));
                 break;
             default:
-                // Assert: no operator given; just set the new row and
-                // column in Vim.
-                model.get('vim').set({
-                    row : motionResult.endRow,
-                    col : motionResult.endCol
-                });
+                console.warn('NORMAL: No implementation for operationName "' + operationName + '"');
                 break;
         }
-
     }
-
 });

@@ -4,14 +4,37 @@ var Vim = Backbone.DeepModel.extend({
         buffer : null,
         mode : 'NORMAL',
         normalHandler : null,
+
+        // Where the row position _should_ be. This is not always the same
+        // as cursorRow, which represents the row position of the cursor.
+        // While computing the result of a "j" motion, for example, the row
+        // position will be different than cursorRow until the view is
+        // updated the cursor is actually moved.
         row : null,
+
+        // Where the col position _should_ be. This is not always the same
+        // as cursorRow, which represents the col position of the cursor.
+        // While computing the result of a "k" motion, for example, the col
+        // position will be different than cursorCol until the view is
+        // updated the cursor is actually moved.
         col : null,
-        cursorRow : 0, // The row position of the cursor
-        cursorCol : 0, // The column position of the cursor
+
+        // The row position of the cursor. Unlike "row", this variable is
+        // only updated when the cursor actually moves. (The "row" variable
+        // above may change mid-command as new positions are computed.)
+        cursorRow : 0,
+
+        // The col position of the cursor. Unlike "col", this variable is
+        // only updated when the cursor actually moves. (The "col" variable
+        // above may change mid-command as new positions are computed.)
+        cursorCol : 0,
 
         // The lower left-hand corner text. Indicates the mode or error
         // messages.
         statusBarText : '',
+
+        // --- All other variables below are legacy --- //
+
         // The command stack holds things like 'd' during a 'dw' command. In
         // general, it contains the characters entered in a multi-character
         // command, before the command is completed.
