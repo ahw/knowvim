@@ -61,6 +61,7 @@ var EditorView = Backbone.View.extend({
         // Get the text of the current line. Note that <span> tags will be
         // automatically removed using jQuery's text() function.
         currentLine = $($('.line')[cursorRow]).text();
+        this.logger.log('EDITOR VIEW: current line = ' + currentLine);
 
         // If we're jumping to a new line, put the clean contents back into
         // `cursorRow` and pull out the contents in `row`. Otherwise, just
@@ -164,6 +165,12 @@ var EditorView = Backbone.View.extend({
         this.logger.log('EDITOR VIEW: Rendering entire buffer...');
         var markup = "";
         var lines = this.model.get('buffer').get('lines');
+
+        // If the buffer has been cleared (i.e., lines.length == 0), then we
+        // have to manually insert a single line here.
+        if (lines.length == 0)
+            markup = sprintf("<pre class=\"num\">%3d</pre><pre class=\"line\">%s</pre>\n", 1, "");
+
         for (var i = 0; i < lines.length; i++) {
             markup += sprintf("<pre class=\"num\">%3d</pre><pre class=\"line\">%s</pre>\n", i+1, lines[i]);
         }

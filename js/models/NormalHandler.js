@@ -156,6 +156,7 @@ var NormalHandler = Backbone.DeepModel.extend({
     // this.get('buffer'). If startRow and startCol are undefined it assumed
     // that Vim.get('cursorRow') and Vim.get('cursorCol') are to be used.
     getMotionResult : function(args) {
+        this.logger().log('NORMAL: getMotionResult() args = ', args);
         var motionName = args.motionName;
         var startRow = typeof args.startRow != 'undefined' ? args.startRow : this.cursorRow();
         var startCol = typeof args.startCol != 'undefined' ? args.startCol : this.cursorCol();
@@ -287,8 +288,10 @@ var NormalHandler = Backbone.DeepModel.extend({
                         lines : this.lines()
                     });
                 } else if (motionResult.type == 'linewise') {
-                    this.logger().warn('NORMAL: No implementation to handle linewise delete commands');
-
+                    operationResult = Operations.deleteLinewise({
+                        motionResult : motionResult,
+                        lines : this.lines()
+                    });
                 } else {
                     // Should never get here.
                     this.logger().log('Invalid motion type.', motionResult);

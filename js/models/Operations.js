@@ -145,12 +145,6 @@ var Operations = {
                 operationResult : operationResult
             });
         }
-
-        // If this is a [count]hd delete then move the cursor
-        // backwards as per Vim behavior.
-        if (isBackwardsDelete) {
-            operationResult.col = Math.max(0, motionResult.endCol - 1);
-        }
         
         // If this is a d[count]l delete whose [count]l motion
         // was cut short by the end of line, then we must delete
@@ -170,6 +164,46 @@ var Operations = {
         // -- attributes[sprintf('lines.%s', motionResult.startRow)] = line;
         // -- this.get('vim').get('buffer').set(attributes, {silent : true});
 
+        return operationResult;
+    },
+
+    /**
+     * Make a linewise deletion.
+     */
+    deleteLinewise : function(args) {
+
+        var motionResult = args.motionResult;
+        var lines = args.lines;
+        
+        // Compute a bunch of convenience variables.
+        var startRow = Math.min(motionResult.startRow, motionResult.endRow);
+        var endRow = Math.max(motionResult.startRow, motionResult.endRow);
+
+        // Encapsulates the result of this operation. "row" and "col"
+        // represent the final position of the cursor.
+        var operationResult = {
+            row : motionResult.startRow,
+            col : motionResult.startCol
+        }
+
+        var numLinesToDelete = endRow - startRow + 1;
+        lines.splice(startRow, numLinesToDelete);
+
+        // If there is still content on the line indexed by startRow then
+        // the col position should be the location of the first non-blank
+        // character in that line. If lines[startRow] does not exist (e.g.,
+        // when deleting the last line in the file), the cursor should go on
+        // the line immediately before it.
+        var newRowIndex = startRow;
+        if (typeof lines[startRow] == 'undefined')
+            newRowIndex = Math.max(0, startRow - 1);
+
+        var newColIndex = 0;
+        if (typeof lines[newRowIndex] == 'string')
+            newColIndex = Math.max(0, lines[newRowIndex].search(/\S/));
+
+        operationResult.row = newRowIndex;
+        operationResult.col = newColIndex;
         return operationResult;
     }
 
