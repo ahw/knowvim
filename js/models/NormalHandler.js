@@ -2,6 +2,7 @@ var NormalHandler = Backbone.DeepModel.extend({
 
     // Defaults.
     defaults : {
+        logger : new Logger('normal'),
         parser : null,
         tokenizer : null,
         operator : null,
@@ -73,6 +74,11 @@ var NormalHandler = Backbone.DeepModel.extend({
         return this.get('vim').get('buffer').get('lines');
     },
 
+    // Helper to get the logger
+    logger : function() {
+        return this.get('logger');
+    },
+
     // Helper for getting the last position of a line.
     indexOfLastChar : function(row) {
         // Note that lines with no content still need to have their last
@@ -87,7 +93,7 @@ var NormalHandler = Backbone.DeepModel.extend({
     },
 
     receiveNormalCommand : function(normalCommand) {
-        console.log('NORMAL: Received normalCommand', normalCommand);
+        this.logger().log('NORMAL: Received normalCommand', normalCommand);
 
         // If there is a motion component to the command, get the motion
         // result. If normalCommand.motionCount exists, the motion result
@@ -124,7 +130,7 @@ var NormalHandler = Backbone.DeepModel.extend({
             motionResult.startRow = this.cursorRow();
             motionResult.startCol = this.cursorCol();
 
-            console.log('NORMAL: Computed motion result', motionResult);
+            this.logger().log('NORMAL: Computed motion result', motionResult);
         }
         // If there is an operator, apply it. If
         // normalCommand.operationCount exists, the operation will be
@@ -258,10 +264,10 @@ var NormalHandler = Backbone.DeepModel.extend({
                 break;
 
             default:
-                console.warn('NORMAL: The "' + motionName + '" motion has not been implemented. Defaulting to no motion.');
+                this.logger().warn('NORMAL: The "' + motionName + '" motion has not been implemented. Defaulting to no motion.');
         }
 
-        // console.log(sprintf('NORMAL %s: start (%s, %s) end (%s, %s)', motionName, startRow, startCol, result.endRow, result.endCol));
+        // this.logger().log(sprintf('NORMAL %s: start (%s, %s) end (%s, %s)', motionName, startRow, startCol, result.endRow, result.endCol));
         return result;
     },
 
@@ -281,11 +287,11 @@ var NormalHandler = Backbone.DeepModel.extend({
                         lines : this.lines()
                     });
                 } else if (motionResult.type == 'linewise') {
-                    console.warn('NORMAL: No implementation to handle linewise delete commands');
+                    this.logger().warn('NORMAL: No implementation to handle linewise delete commands');
 
                 } else {
                     // Should never get here.
-                    console.log('Invalid motion type.', motionResult);
+                    this.logger().log('Invalid motion type.', motionResult);
                 }
 
                 // Update the row and col positions as per the
@@ -302,15 +308,15 @@ var NormalHandler = Backbone.DeepModel.extend({
                 break;
 
             case 'c':
-                console.log(sprintf('NORMAL: No implementation for operationName "%s"', operationName));
+                this.logger().log(sprintf('NORMAL: No implementation for operationName "%s"', operationName));
                 break;
 
             case 'y':
-                console.log(sprintf('NORMAL: No implementation for operationName "%s"', operationName));
+                this.logger().log(sprintf('NORMAL: No implementation for operationName "%s"', operationName));
                 break;
 
             default:
-                console.warn('NORMAL: No implementation for operationName "' + operationName + '"');
+                this.logger().warn('NORMAL: No implementation for operationName "' + operationName + '"');
                 break;
         }
     }

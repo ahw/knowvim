@@ -1,5 +1,6 @@
 var Parser = function(options) {
 
+    var logger = new Logger('parser');
     var mostRecentCountToken = null;
     var normalCommand = {};
     this.normalHandler = options.normalHandler;
@@ -51,7 +52,7 @@ var Parser = function(options) {
      * It is called when a new Parser object is created.
      */
     this.reset = function() {
-        console.log('PARSER: Resetting to initial state.');
+        logger.log('PARSER: Resetting to initial state.');
         mostRecentCountToken = null;
         normalCommand = {};
         validNextTokens = {
@@ -71,13 +72,13 @@ var Parser = function(options) {
     this.reset(); // Call reset when creating a new Parser.
 
     this.error = function(token) {
-        console.warn('PARSER: No implementation to handle token ' + token);
+        logger.warn('PARSER: No implementation to handle token ' + token);
     };
 
     this.done = function() {
-        // console.log('PARSER : Completed command');
-        // console.log('--------------------------');
-        // console.log(JSON.stringify(normalCommand, null, '    '));
+        // logger.log('PARSER : Completed command');
+        // logger.log('--------------------------');
+        // logger.log(JSON.stringify(normalCommand, null, '    '));
         this.normalHandler.receiveNormalCommand(normalCommand);
         normalCommand = {};
         this.reset();
@@ -110,7 +111,7 @@ var Parser = function(options) {
     };
 
     this.receiveToken = function(token) {
-        console.log('PARSER: Received token ' + token);
+        logger.log('PARSER: Received token ' + token);
         if (validNextTokens[token.type]) {
             // If this token type is valid, assign the appropriate property
             // in the normalCommand structure. Remember that the values of
@@ -134,7 +135,7 @@ var Parser = function(options) {
                 expectedTokenTypes += tokenType + ', ';
             });
             expectedTokenTypes.substr(0, expectedTokenTypes.length - 1);
-            console.warn('PARSER: Invalid token ' + token + '. Expected one of ' + expectedTokenTypes);
+            logger.warn('PARSER: Invalid token ' + token + '. Expected one of ' + expectedTokenTypes);
         }
 
         switch(token.type) {
@@ -220,7 +221,7 @@ var Parser = function(options) {
                 break;
 
             case 'escape':
-                console.log('PARSER: Escaping from Normal mode by resetting everything.');
+                logger.log('PARSER: Escaping from Normal mode by resetting everything.');
                 this.reset();
                 break;
 

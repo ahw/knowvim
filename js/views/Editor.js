@@ -9,6 +9,7 @@ var EditorView = Backbone.View.extend({
     statusBar : '#statusbar',
     row : '#row',
     col : '#col',
+    logger : new Logger('editor'),
 
     /**
      * @method initialize The EditorView constructor.  If
@@ -54,7 +55,7 @@ var EditorView = Backbone.View.extend({
         var col = this.model.get('col'); // The col we're moving to
         var cursorRow = this.model.get('cursorRow'); // The current row position of the cursor
         var cursorCol = this.model.get('cursorCol'); // The current col position of the cursor
-        // console.log("Updating cursor to (" + row + ", " + col + ")");
+        this.logger.log("Updating cursor to (" + row + ", " + col + ")");
 
         var currentLine, newLine;
         // Get the text of the current line. Note that <span> tags will be
@@ -160,7 +161,7 @@ var EditorView = Backbone.View.extend({
      */
     renderEntireBuffer : function() {
 
-        console.log('EDITOR VIEW: Rendering entire buffer...');
+        this.logger.log('EDITOR VIEW: Rendering entire buffer...');
         var markup = "";
         var lines = this.model.get('buffer').get('lines');
         for (var i = 0; i < lines.length; i++) {
@@ -178,7 +179,7 @@ var EditorView = Backbone.View.extend({
     renderBuffer : function() {
 
         this.model.get('buffer').get('outOfSyncLineIndices').forEach(function(lineIndex) {
-            console.log(sprintf('EDITOR VIEW: Re-rendering line %s: %s', lineIndex, this.model.get('buffer').get('lines')[lineIndex]));
+            this.logger.log(sprintf('EDITOR VIEW: Re-rendering line %s: %s', lineIndex, this.model.get('buffer').get('lines')[lineIndex]));
         });
     },
 

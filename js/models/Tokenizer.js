@@ -26,13 +26,14 @@ var Tokenizer = function(options) {
         REGISTER : 'REGISTER',
         GOTO_MARK : 'GOTO_MARK',
     }
+    var logger = new Logger('tokenizer');
 
     this.warnAboutIllegalCharacter = function(ch, expectedCharDescription) {
-        console.warn('TOKENIZER: Illegal character ' + ch + ' from ' + this.state + ' state. Expected ' + expectedCharDescription);
+        logger.warn('TOKENIZER: Illegal character ' + ch + ' from ' + this.state + ' state. Expected ' + expectedCharDescription);
     };
 
     this.reset = function() {
-        console.warn('TOKENIZER: Resetting to READY state.');
+        logger.warn('TOKENIZER: Resetting to READY state.');
         this.parser.reset();
         this.state = states.READY;
     };
@@ -45,6 +46,7 @@ var Tokenizer = function(options) {
 
         // TODO: Remove the magin strings here and use some sort of
         // enum-like construct.
+        logger.log('TOKENIZER: Received "' + ch + '"');
         switch(this.state) {
             case states.DELETE:
                 if (ch == deleteOperator) {
@@ -259,13 +261,6 @@ var Tokenizer = function(options) {
                 default:
                     this.state = states.READY;
         }
-    };
-
-    /**
-     * Helper method.
-     */
-    this.logToken = function(token) {
-        console.log('TOKEN: ' + token);
     };
 
 };

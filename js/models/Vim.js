@@ -1,6 +1,7 @@
 var Vim = Backbone.DeepModel.extend({
 
     defaults : {
+        logger : new Logger('vim'),
         buffer : null,
         mode : 'NORMAL',
         normalHandler : null,
@@ -105,8 +106,13 @@ var Vim = Backbone.DeepModel.extend({
 
     },
 
+    // Helper function to get the Logger.
+    logger : function() {
+        return this.get('logger');
+    },
+
     openBuffer : function(name, callback) {
-        console.log('VIM: Opening buffer '  + name);
+        this.logger().log('VIM: Opening buffer '  + name);
         var model = this;
         var buffer = new Buffer({name : name});
         // Silently set the new buffer.
@@ -147,7 +153,7 @@ var Vim = Backbone.DeepModel.extend({
         }
         // Now that the status bar has been updated, change the actual mode.
         // This will trigger the view to change.
-        console.log('Mode change : ' + mode);
+        this.logger().log('Mode change : ' + mode);
         this.set({mode: mode});
     }
 
