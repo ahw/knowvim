@@ -122,7 +122,7 @@ var NormalHandler = Backbone.DeepModel.extend({
             // position (if there was any motionCount iteration, the
             // starting position values change with each iteration).
             motionResult.startRow = this.cursorRow();
-            motionResult.starCol = this.cursorRow();
+            motionResult.startCol = this.cursorCol();
 
             console.log('NORMAL: Computed motion result', motionResult);
         }
@@ -266,7 +266,6 @@ var NormalHandler = Backbone.DeepModel.extend({
     },
 
     applyOperator : function(args) {
-        var model = this;
         var motionResult = args.motionResult;
         var operationName = args.operationName;
         var operationCount = args.operationCount;
@@ -276,52 +275,127 @@ var NormalHandler = Backbone.DeepModel.extend({
 
             case 'd':
                 if (motionResult.type == 'characterwise') {
-                    var line = model.lines()[motionResult.startRow];
-                    var startIndex = Math.min(motionResult.startCol, motionResult.endCol);
-                    var endIndex = Math.max(motionResult.startCol, motionResult.endCol);
-                    var isBackwardsDelete = motionResult.startCol > motionResult.endCol ? true : false;
+                    // var tempLines = this.lines();
+                    // var line = tempLines[motionResult.startRow];
+                    // var changedLines = {};
+                    var startCol = Math.min(motionResult.startCol, motionResult.endCol);
+                    var endCol = Math.max(motionResult.startCol, motionResult.endCol);
+                    var startRow = Math.min(motionResult.startRow, motionResult.endRow);
+                    var endRow = Math.max(motionResult.startRow, motionResult.endRow);
+                    var spansMultipleLines = startRow == endRow ? false : true;
+                    var cursorRow = startRow;
+                    var cursorCol = endCol;
+
+                    var isBackwardsDelete;
+                    if (motionResult.startRow > motionResult.endRow) {
+                        isBackwardsDelete = true;
+                    } else if (motionResult.startRow < motionResult.endRow) {
+                        isBackwardsDelete = false;
+                    } else if (motionResult.startCol > motionResult.endCol) {
+                        isBackwardsDelete = true;
+                    } else {
+                        isBackwardsDelete = false;
+                    }
+
 
                     // If the motion is inclusive, then add 1 to the end index.
                     if (motionResult.inclusive)
-                        endIndex++;
+                        endCol++;
 
-                    // Repeatedly remove whatever character is at startIndex.
-                    for (var i = startIndex;  i < endIndex; i++) {
-                        line = line.substr(0, startIndex) + line.substr(startIndex + 1);
+                    if (!spansMultipleLines) {
+                        console.log('\tDelete: characterwise does not span multiple lines');
+                        console.log('\tOriginal line: ' + this.lines()[startRow]);
+                        // Remove all characters in the range [startCol, endCol)
+                        this.lines()[startRow]
+                            = this.lines()[startRow].substr(0, startCol)
+                            + this.lines()[startRow].substr(endCol);
+                        console.log('\tModified line: ' + this.lines()[startRow]);
+
+                    } else {
+                        console.log('\tDelete: characterwise DOES span multiple lines');
+                        console.log('\tFirst line original: ' + this.lines()[startRow]);
+
+                        // Chop of the end of firstLine by taking only
+                        // characters in the range [0, startCol).
+                        var firstLine = this.lines()[startRow];
+                        firstLine = firstLine.substr(0, startCol);
+                        this.lines()[startRow] = firstLine;
+                        console.log('\tFirst line modified: ' + this.lines()[startRow]);
+                        console.log('\tFirst line modified: ' + firstLine);
+                        console.log('\tLast line original: ' + this.lines()[endRow]);
+
+                        // Chop of the beginning of lastLine by taking only
+                        // characters from index endCol to the end.
+                        var lastLine = this.lines()[endRow];
+                        lastLine = lastLine.substr(endCol);
+                        this.lines()[endRow] = lastLine;
+                        console.log('\tLast line modified: ' + this.lines()[endRow]);
+                        console.log('\tLast line modified: ' + lastLine);
+
+                        if (endRow - startRow > 1) {
+                            // Assert: the motion covers more than 2 lines,
+                            // which means there must be entire lines in
+                            // between that should be deleted.
+                            var deletedLines = this.lines().splice(startRow + 1, endRow - startRow - 1);
+                            deletedLines.forEach(function(line) {
+                                console.log('\tInner line deleted entirely: ' + line);
+                            });
+                        }
+
+                        // As per :help d:
+                        // An exception for the d{motion} command: If the
+                        // motion is not linewise, the start and end of the
+                        // motion are not in the same line, and there are
+                        // only blanks before the start and after the end of
+                        // the motion, the delete becomes linewise.  This
+                        // means that the delete also removes the line of
+                        // blanks that you might expect to remain.
+
+                        // Combine the firstLine and lastLine.
+                        this.lines()[startRow] = firstLine + lastLine;
+                        // Delete the lastLine.
+                        this.lines().splice(endRow, 1);
+                        // Update the positions
+                        console.log('\tNew positions: row = ' + startRow + ' col = ' + startCol);
+                        this.get('vim').set({
+                            row : startRow,
+                            col : startCol
+                        });
                     }
 
                     // If this is a [count]hd delete then move the cursor
                     // backwards as per Vim behavior.
                     if (isBackwardsDelete) {
-                        model.get('vim').set({
+                        this.get('vim').set({
                             col : Math.max(0, motionResult.endCol - 1)
                         });
                     }
                     
                     // If this is a d[count]l delete whose [count]l motion
                     // was cut short by the end of line, then we must delete
-                    // the last character of the line.
+                    // the last character of the line. The above logic will
+                    // not delete this last character.
                     if (motionResult.hitEol) {
-                        console.log('Deleting last character from line "' + line + '"');
-                        line = line.substr(0, line.length - 1)
-                        model.get('vim').set({
-                            col : Math.max(0, line.length - 1)
+                        console.log('Moving column position back by one position since we deleted the last character.');
+                        this.lines()[startRow] = this.lines()[startRow].substr(0, this.lines()[startRow].length - 1);
+                        this.get('vim').set({
+                            col : Math.max(0, this.lines()[startRow].length - 1)
                         });
                     }
 
-                    // Create an attributes hash of the form {'lines.3' :
-                    // 'foo'}. We'll have to create this in a somewhat
-                    // convoluted way since the property name ('lines.3') is
-                    // dynamically generated -- it depends on which line
-                    // index is being updated.
-                    var attributes = {};
-                    attributes[sprintf('lines.%s', motionResult.startRow)] = line;
-                    model.get('vim').get('buffer').set(attributes, {silent : true});
+                    // -- // Create an attributes hash of the form {'lines.3' :
+                    // -- // 'foo'}. We'll have to create this in a somewhat
+                    // -- // convoluted way since the property name ('lines.3') is
+                    // -- // dynamically generated -- it depends on which line
+                    // -- // index is being updated.
+                    // -- var attributes = {};
+                    // -- attributes[sprintf('lines.%s', motionResult.startRow)] = line;
+                    // -- this.get('vim').get('buffer').set(attributes, {silent : true});
 
                     // Manually trigger a change:buffer event on the Vim
                     // model (using the set() function alone doesn't seem to
                     // trigger the right change events).
-                    model.get('vim').trigger('change:buffer');
+                    this.get('vim').trigger('change:buffer');
 
                 } else if (motionResult.type == 'linewise') {
                     console.warn('NORMAL: No implementation to handle linewise delete commands');
