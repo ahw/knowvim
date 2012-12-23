@@ -63,16 +63,22 @@ var NormalHandler = Backbone.DeepModel.extend({
         return this.get('vim').get('row');
     },
 
-
     // Helper function to get the current col.
     col : function() {
         return this.get('vim').get('col');
     },
 
-
     // Helper for returning this.get('buffer').get('lines')
     lines : function() {
         return this.get('vim').get('buffer').get('lines');
+    },
+
+    // Helper for getting the last position of a line.
+    indexOfLastChar : function(row) {
+        // Note that lines with no content still need to have their last
+        // position be returned as "0". If we return -1 the cursor will
+        // disappear.
+        return Math.max(0, this.lines()[row].length - 1);
     },
 
     input : function(key) {
@@ -100,7 +106,8 @@ var NormalHandler = Backbone.DeepModel.extend({
                 motionResult = this.getMotionResult({
                     motionName : normalCommand.motionName,
                     startRow : motionResult.endRow,
-                    startCol : motionResult.endCol
+                    startCol : motionResult.endCol,
+                    isRepeat : true
                 });
 
                 // If the motionResult hasn't changed, then drop out of the
@@ -143,9 +150,10 @@ var NormalHandler = Backbone.DeepModel.extend({
     // this.get('buffer'). If startRow and startCol are undefined it assumed
     // that Vim.get('cursorRow') and Vim.get('cursorCol') are to be used.
     getMotionResult : function(args) {
-        motionName = args.motionName;
-        startRow = typeof args.startRow != 'undefined' ? args.startRow : this.cursorRow();
-        startCol = typeof args.startCol != 'undefined' ? args.startCol : this.cursorCol();
+        var motionName = args.motionName;
+        var startRow = typeof args.startRow != 'undefined' ? args.startRow : this.cursorRow();
+        var startCol = typeof args.startCol != 'undefined' ? args.startCol : this.cursorCol();
+        var isRepeat = args.isRepeat ? args.isRepeat : false;
         var result = {
             type : null, // 'linewise' or 'characterwise'
             startRow : startRow,
@@ -216,7 +224,21 @@ var NormalHandler = Backbone.DeepModel.extend({
                 break;
 
             case '$':
-                result.endCol = this.lines()[startRow].length - 1;
+                // Initially set endCol to what we expect (to the position
+                // at the end of the line).
+                var endCol = this.lines()[startRow].length - 1;
+
+                if (isRepeat) {
+                    // Special case: if this is part of a {count}$ motion,
+                    // each successive iteration should move the cursor down
+                    // one line and to the end.
+                    var numRows = this.lines().length;
+                    var endRow = startRow == numRows - 1 ? startRow : startRow + 1;
+                    endCol = this.indexOfLastChar(endRow);
+                    result.endRow = endRow;
+                }
+
+                result.endCol = endCol;
                 result.type = 'characterwise';
                 result.hitEol = true;
                 result.inclusive = false;
