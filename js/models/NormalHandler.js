@@ -209,6 +209,19 @@ var NormalHandler = Backbone.DeepModel.extend({
                 result.inclusive = true;
                 break;
 
+            case '0':
+                result.endCol = 0;
+                result.type = 'characterwise';
+                result.inclusive = false;
+                break;
+
+            case '$':
+                result.endCol = this.lines()[startRow].length - 1;
+                result.type = 'characterwise';
+                result.hitEol = true;
+                result.inclusive = false;
+                break;
+
             case 'd':
             case 'y':
                 // If "d" or "y" are given as the motionName we'll assume
