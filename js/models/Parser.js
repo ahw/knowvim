@@ -81,9 +81,6 @@ var Parser = function(options) {
         this.normalHandler.receiveNormalCommand(normalCommand);
         normalCommand = {};
         this.reset();
-        // TODO: Remove this.
-        $("body").css("background-color", "yellow");
-        $("body").animate({backgroundColor: "#DDF"}, 1000);
     };
 
     this.tryToAssignOperationCount = function () {

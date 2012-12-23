@@ -81,8 +81,7 @@ var NormalHandler = Backbone.DeepModel.extend({
     },
 
     receiveNormalCommand : function(normalCommand) {
-        console.log('NORMAL: Received normalCommand');
-        console.log(JSON.stringify(normalCommand, null, '    '));
+        console.log('NORMAL: Received normalCommand', normalCommand);
 
         // If there is a motion component to the command, get the motion
         // result. If normalCommand.motionCount exists, the motion result
@@ -94,14 +93,22 @@ var NormalHandler = Backbone.DeepModel.extend({
             motionResult = this.getMotionResult({
                 motionName : normalCommand.motionName
             });
+
             for (var i = 0; i < motionCount - 1; i++) {
                 // For each iteration, compute the motionResult starting
                 // from the previous motion's end positions.
                 motionResult = this.getMotionResult({
                     motionName : normalCommand.motionName,
-                    endRow : motionResult.endRow,
-                    endCol : motionResult.endCol
+                    startRow : motionResult.endRow,
+                    startCol : motionResult.endCol
                 });
+
+                // If the motionResult hasn't changed, then drop out of the
+                // loop for efficiency.
+                if (motionResult.startRow == motionResult.endRow
+                    && motionResult.startCol == motionResult.endCol) {
+                    break;
+                }
             }
 
             // Reset the starting position to the original starting
@@ -110,10 +117,8 @@ var NormalHandler = Backbone.DeepModel.extend({
             motionResult.startRow = this.cursorRow();
             motionResult.starCol = this.cursorRow();
 
-            console.log('NORMAL: Computed motion result');
-            console.log(JSON.stringify(motionResult, null, '    '));
+            console.log('NORMAL: Computed motion result', motionResult);
         }
-
         // If there is an operator, apply it. If
         // normalCommand.operationCount exists, the operation will be
         // applied that many times.
@@ -139,8 +144,8 @@ var NormalHandler = Backbone.DeepModel.extend({
     // that Vim.get('cursorRow') and Vim.get('cursorCol') are to be used.
     getMotionResult : function(args) {
         motionName = args.motionName;
-        startRow = args.startRow ? args.startRow : this.cursorRow();
-        startCol = args.startCol ? args.startCol : this.cursorCol();
+        startRow = typeof args.startRow != 'undefined' ? args.startRow : this.cursorRow();
+        startCol = typeof args.startCol != 'undefined' ? args.startCol : this.cursorCol();
         var result = {
             type : null, // 'linewise' or 'characterwise'
             startRow : startRow,
@@ -218,7 +223,7 @@ var NormalHandler = Backbone.DeepModel.extend({
                 break;
 
             default:
-                console.warn('NORMAL: The "' + motionName + '" motion has been been implemented. Defaulting to no motion.');
+                console.warn('NORMAL: The "' + motionName + '" motion has not been implemented. Defaulting to no motion.');
         }
 
         // console.log(sprintf('NORMAL %s: start (%s, %s) end (%s, %s)', motionName, startRow, startCol, result.endRow, result.endCol));

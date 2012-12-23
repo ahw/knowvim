@@ -10,14 +10,14 @@ var Vim = Backbone.DeepModel.extend({
         // While computing the result of a "j" motion, for example, the row
         // position will be different than cursorRow until the view is
         // updated the cursor is actually moved.
-        row : null,
+        row : 0,
 
         // Where the col position _should_ be. This is not always the same
         // as cursorRow, which represents the col position of the cursor.
         // While computing the result of a "k" motion, for example, the col
         // position will be different than cursorCol until the view is
         // updated the cursor is actually moved.
-        col : null,
+        col : 0,
 
         // The row position of the cursor. Unlike "row", this variable is
         // only updated when the cursor actually moves. (The "row" variable
@@ -106,13 +106,12 @@ var Vim = Backbone.DeepModel.extend({
     },
 
     openBuffer : function(name, callback) {
+        console.log('VIM: Opening buffer '  + name);
         var model = this;
         var buffer = new Buffer({name : name});
         // Silently set the new buffer.
         model.set({
-            buffer : buffer,
-            row : 0,
-            col : 0
+            buffer : buffer
         }, { silent: true });
         buffer.fetch({
             success : function() {

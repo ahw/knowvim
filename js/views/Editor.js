@@ -45,9 +45,9 @@ var EditorView = Backbone.View.extend({
     },
 
     /**
-     * @method updateCursor Renders the cursor block by first removing the
-     * `span` tags around the old  character and wrapping the current
-     * character in `span` tags.
+     * @method updateCursor Renders the cursor block at the position given
+     * by "cursorRow" and "cursorCol". This function first removes the
+     * cursor block at the position given by "row" and "col".
      */
     updateCursor : function() {
         var row = this.model.get('row'); // The row we're moving to
@@ -160,7 +160,7 @@ var EditorView = Backbone.View.extend({
      */
     renderEntireBuffer : function() {
 
-        console.log('Rendering entire buffer...');
+        console.log('EDITOR VIEW: Rendering entire buffer...');
         var markup = "";
         var lines = this.model.get('buffer').get('lines');
         for (var i = 0; i < lines.length; i++) {
@@ -178,7 +178,7 @@ var EditorView = Backbone.View.extend({
     renderBuffer : function() {
 
         this.model.get('buffer').get('outOfSyncLineIndices').forEach(function(lineIndex) {
-            console.log(sprintf('EDITOR VIEW re-rendering line %s: %s', lineIndex, this.model.get('buffer').get('lines')[lineIndex]));
+            console.log(sprintf('EDITOR VIEW: Re-rendering line %s: %s', lineIndex, this.model.get('buffer').get('lines')[lineIndex]));
         });
     },
 
