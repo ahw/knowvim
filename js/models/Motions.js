@@ -7,7 +7,15 @@ var Motions = {
 
     /**
      * Returns the result of a motionName motion, in the context of
-     * startRow, startCol, and an array of lines.
+     * startRow, startCol, and an array of lines. It is expected that args
+     * has the following properties:
+     *
+     *  motionName : 'h', 'j', 'k', 'l', etc.
+     *  startRow : Number
+     *  startCol : Number
+     *  lines : An array of strings representing the buffer
+     *  isRepeat : true if this is the Nth iteration of some {count}{motion}
+     *  command, for all N in {2, 3, 4, ...}
      */
     getMotionResult : function(args) {
         this.logger.log('getMotionResult() args = ', args);

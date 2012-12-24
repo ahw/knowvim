@@ -1,8 +1,8 @@
-var Operations = {
+var DeleteOperations = {
 
     logger : new Logger({
         module : 'operations',
-        prefix : 'OPERATIONS: '
+        prefix : 'DELETE: '
     }),
 
     /**

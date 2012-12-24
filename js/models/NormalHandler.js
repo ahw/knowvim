@@ -161,12 +161,12 @@ var NormalHandler = Backbone.DeepModel.extend({
 
             case 'd':
                 if (motionResult.type == 'characterwise') {
-                    operationResult = Operations.deleteCharacterwise({
+                    operationResult = DeleteOperations.deleteCharacterwise({
                         motionResult : motionResult,
                         lines : this.lines()
                     });
                 } else if (motionResult.type == 'linewise') {
-                    operationResult = Operations.deleteLinewise({
+                    operationResult = DeleteOperations.deleteLinewise({
                         motionResult : motionResult,
                         lines : this.lines()
                     });

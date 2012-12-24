@@ -32,11 +32,11 @@ var Tokenizer = function(options) {
     });
 
     this.warnAboutIllegalCharacter = function(ch, expectedCharDescription) {
-        logger.warn('TOKENIZER: Illegal character ' + ch + ' from ' + this.state + ' state. Expected ' + expectedCharDescription);
+        logger.warn('Illegal character ' + ch + ' from ' + this.state + ' state. Expected ' + expectedCharDescription);
     };
 
     this.reset = function() {
-        logger.warn('TOKENIZER: Resetting to READY state.');
+        logger.warn('Resetting to READY state.');
         this.parser.reset();
         this.state = states.READY;
     };
@@ -49,7 +49,7 @@ var Tokenizer = function(options) {
 
         // TODO: Remove the magin strings here and use some sort of
         // enum-like construct.
-        logger.log('TOKENIZER: Received "' + ch + '"');
+        logger.log('Received "' + ch + '"');
         switch(this.state) {
             case states.DELETE:
                 if (ch == deleteOperator) {
