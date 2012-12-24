@@ -1,15 +1,16 @@
 /**
  * A home-brewed Logger class. There are probably others out there, but this
  * will do what I want for now. If the URL query string has ?log=module_name
- * then this class logs all messages from "moduleName". Otherwise, call to
+ * then this class logs all messages from "module". Otherwise, call to
  * this logger return nothing.
  */
-var Logger = function(moduleName) {
+var Logger = function(args) {
 
-    this.moduleName = moduleName;
+    this.module = args.module;
+    this.prefix = args.prefix;
 
     this.isEnabled = function() {
-        var re = new RegExp("\\?log=[a-zA-Z0-9;]*" + this.moduleName);
+        var re = new RegExp("\\?log=[a-zA-Z0-9;]*" + this.module);
         return re.test(window.location.search);
     };
 
@@ -18,9 +19,9 @@ var Logger = function(moduleName) {
             return;
 
         if (obj)
-            console.log(msg, obj);
+            console.log(this.prefix + msg, obj);
         else
-            console.log(msg);
+            console.log(this.prefix + msg);
     };
 
     this.warn = function(msg, obj) {
@@ -28,9 +29,9 @@ var Logger = function(moduleName) {
             return;
 
         if (obj)
-            console.warn(msg, obj);
+            console.warn(this.prefix + msg, obj);
         else
-            console.warn(msg);
+            console.warn(this.prefix + msg);
     };
 
 };

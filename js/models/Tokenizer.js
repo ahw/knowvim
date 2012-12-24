@@ -26,7 +26,10 @@ var Tokenizer = function(options) {
         REGISTER : 'REGISTER',
         GOTO_MARK : 'GOTO_MARK',
     }
-    var logger = new Logger('tokenizer');
+    var logger = new Logger({
+        module : 'tokenizer',
+        prefix : 'TOKENIZER: '
+    });
 
     this.warnAboutIllegalCharacter = function(ch, expectedCharDescription) {
         logger.warn('TOKENIZER: Illegal character ' + ch + ' from ' + this.state + ' state. Expected ' + expectedCharDescription);

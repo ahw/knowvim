@@ -9,7 +9,10 @@ var EditorView = Backbone.View.extend({
     statusBar : '#statusbar',
     row : '#row',
     col : '#col',
-    logger : new Logger('editor'),
+    logger : new Logger({
+        module : 'editor',
+        prefix : 'EDITOR: '
+    }),
 
     /**
      * @method initialize The EditorView constructor.  If
@@ -61,7 +64,7 @@ var EditorView = Backbone.View.extend({
         // Get the text of the current line. Note that <span> tags will be
         // automatically removed using jQuery's text() function.
         currentLine = $($('.line')[cursorRow]).text();
-        this.logger.log('EDITOR VIEW: current line = ' + currentLine);
+        this.logger.log('Current line = ' + currentLine);
 
         // If we're jumping to a new line, put the clean contents back into
         // `cursorRow` and pull out the contents in `row`. Otherwise, just
@@ -162,7 +165,7 @@ var EditorView = Backbone.View.extend({
      */
     renderEntireBuffer : function() {
 
-        this.logger.log('EDITOR VIEW: Rendering entire buffer...');
+        this.logger.log('Rendering entire buffer...');
         var markup = "";
         var lines = this.model.get('buffer').get('lines');
 
@@ -186,7 +189,7 @@ var EditorView = Backbone.View.extend({
     renderBuffer : function() {
 
         this.model.get('buffer').get('outOfSyncLineIndices').forEach(function(lineIndex) {
-            this.logger.log(sprintf('EDITOR VIEW: Re-rendering line %s: %s', lineIndex, this.model.get('buffer').get('lines')[lineIndex]));
+            this.logger.log(sprintf('Re-rendering line %s: %s', lineIndex, this.model.get('buffer').get('lines')[lineIndex]));
         });
     },
 

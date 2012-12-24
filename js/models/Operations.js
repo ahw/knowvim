@@ -1,6 +1,9 @@
 var Operations = {
 
-    logger : new Logger('operations'),
+    logger : new Logger({
+        module : 'operations',
+        prefix : 'OPERATIONS: '
+    }),
 
     /**
      * Make a characterwise deletion all within a single line. For example,
@@ -12,11 +15,11 @@ var Operations = {
         var startCol = args.startCol;
         var endCol = args.endCol;
 
-        this.logger.log('OPERATION (DELETE): Characterwise does not span multiple lines');
-        this.logger.log('OPERATION (DELETE): Original line = ' + lines[row]);
+        this.logger.log('DELETE Characterwise does not span multiple lines');
+        this.logger.log('DELETE Original line = ' + lines[row]);
         // Remove all characters in the range [startCol, endCol)
         lines[row] = lines[row].substr(0, startCol) + lines[row].substr(endCol);
-        this.logger.log('OPERATION (DELETE): Modified line = ' + lines[row]);
+        this.logger.log('DELETE Modified line = ' + lines[row]);
 
         args.operationResult.row = row;
         args.operationResult.col = startCol;
@@ -33,23 +36,23 @@ var Operations = {
         var startCol = args.startCol;
         var endCol = args.endCol;
 
-        this.logger.log('OPERATION (DELETE): characterwise DOES span multiple lines');
-        this.logger.log('OPERATION (DELETE): First line original = ' + lines[startRow]);
+        this.logger.log('DELETE characterwise DOES span multiple lines');
+        this.logger.log('DELETE First line original = ' + lines[startRow]);
 
         // Chop of the end of firstLine by taking only
         // characters in the range [0, startCol).
         var firstLine = lines[startRow];
         firstLine = firstLine.substr(0, startCol);
         lines[startRow] = firstLine;
-        this.logger.log('OPERATION (DELETE): First line modified = ' + lines[startRow]);
-        this.logger.log('OPERATION (DELETE): Last line original = ' + lines[endRow]);
+        this.logger.log('DELETE First line modified = ' + lines[startRow]);
+        this.logger.log('DELETE Last line original = ' + lines[endRow]);
 
         // Chop of the beginning of lastLine by taking only
         // characters from index endCol to the end.
         var lastLine = lines[endRow];
         lastLine = lastLine.substr(endCol);
         lines[endRow] = lastLine;
-        this.logger.log('OPERATION (DELETE): Last line modified = ' + lastLine);
+        this.logger.log('DELETE Last line modified = ' + lastLine);
 
         if (endRow - startRow > 1) {
             // Assert: the motion covers more than 2 lines,
@@ -58,7 +61,7 @@ var Operations = {
             var deletedLines = lines.splice(startRow + 1, endRow - startRow - 1);
             var operationsLogger = this.logger;
             deletedLines.forEach(function(line) {
-                operationsLogger.log('OPERATION (DELETE): Inner line deleted entirely = ' + line);
+                operationsLogger.log('DELETE Inner line deleted entirely = ' + line);
             });
         }
 
@@ -78,7 +81,7 @@ var Operations = {
 
         // Update the positions using the operationResult object given in
         // the function arguments.
-        this.logger.log('OPERATION (DELETE): New positions row = ' + startRow + ' col = ' + startCol);
+        this.logger.log('DELETE New positions row = ' + startRow + ' col = ' + startCol);
         args.operationResult.row = startRow;
         args.operationResult.col = startCol;
     },
@@ -151,7 +154,7 @@ var Operations = {
         // the last character of the line. The above logic will
         // not delete this last character.
         if (motionResult.hitEol) {
-            this.logger.log('OPERATION (DELETE): Moving column position back by one position since we deleted the last character.');
+            this.logger.log('DELETE Moving column position back by one position since we deleted the last character.');
             operationResult.col = Math.max(0, lines[startRow].length - 1);
         }
 

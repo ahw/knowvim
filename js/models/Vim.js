@@ -1,7 +1,10 @@
 var Vim = Backbone.DeepModel.extend({
 
     defaults : {
-        logger : new Logger('vim'),
+        logger : new Logger({
+            module : 'vim',
+            prefix : 'VIM: '
+        }),
         buffer : null,
         mode : 'NORMAL',
         normalHandler : null,
@@ -112,7 +115,7 @@ var Vim = Backbone.DeepModel.extend({
     },
 
     openBuffer : function(name, callback) {
-        this.logger().log('VIM: Opening buffer '  + name);
+        this.logger().log('Opening buffer '  + name);
         var model = this;
         var buffer = new Buffer({name : name});
         // Silently set the new buffer.
