@@ -5,9 +5,9 @@ var Motions = {
     }),
 
     /**
-     * Returns the result of a motionName motion, in the context of
-     * startRow, startCol, and an array of lines. It is expected that args
-     * contains the following properties:
+     * Returns the result of a named motion, in the context of startRow,
+     * startCol, and an array of lines. It is expected that args contains
+     * the following properties:
      *
      *  normalCommand : The object received in
      *      NormalHandler.receiveNormalCommand.
@@ -60,6 +60,7 @@ var Motions = {
         motionResult.startRow = startRow;
         motionResult.startCol = startCol;
 
+        this.logger.log('Returning motionResult', motionResult);
         return motionResult;
     },
 
