@@ -141,14 +141,14 @@ var YankOperations = {
 
         // The cursor always goes on the minimum of startRow and endRow,
         // regardless of where the cursor was before the yank.
-        operationResult.row = startRow;
+        operationResult.endRow = startRow;
 
         // The column position is either (1) the same as it was or (2) on
         // the right-most character of startLine, if startLine has been
         // switched with endLine
         var newColIndex = Math.min(lines[startRow].length - 1, startCol);
         newColIndex = Math.max(0, newColIndex); // Because newColIndex can't be -1
-        operationResult.col = newColIndex;
+        operationResult.endCol = newColIndex;
         return operationResult;
     },
 
@@ -214,7 +214,7 @@ var YankOperations = {
         // not yank this last character.
         if (motionResult.hitEol) {
             this.logger.log('Moving column position back by one position since we yanked the last character.');
-            operationResult.col = Math.max(0, lines[startRow].length - 1);
+            operationResult.endCol = Math.max(0, lines[startRow].length - 1);
         }
 
         return operationResult;
@@ -238,8 +238,8 @@ var YankOperations = {
         lines[row] = lines[row].substr(0, startCol) + lines[row].substr(endCol);
         this.logger.log('Modified line = ' + lines[row]);
 
-        operationResult.row = row;
-        operationResult.col = startCol;
+        operationResult.endRow = row;
+        operationResult.endCol = startCol;
     },
 
     /**
@@ -301,8 +301,8 @@ var YankOperations = {
         // Update the positions using the operationResult object given in
         // the function arguments.
         this.logger.log('New positions row = ' + startRow + ' col = ' + startCol);
-        operationResult.row = startRow;
-        operationResult.col = startCol;
+        operationResult.endRow = startRow;
+        operationResult.endCol = startCol;
 
         return operationResult;
     }
