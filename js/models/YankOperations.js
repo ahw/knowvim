@@ -64,6 +64,12 @@ var YankOperations = {
         // Set the register name.
         operationResult.registerName = registerName;
 
+
+        this.logger.log('Yanked the following text into register ' + registerName);
+        var operationLogger = this.logger;
+        operationResult.text.forEach(function(item) {
+            operationLogger.log(sprintf('%3d %s', item.index + 1, item.content));
+        });
         return operationResult;
     },
 
