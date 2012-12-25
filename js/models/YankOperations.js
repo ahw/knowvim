@@ -4,9 +4,13 @@ var YankOperations = {
         prefix : 'YANK: '
     }),
 
-    getYankResult : function(args) {
+    getYankOperationResult : function(args) {
+        this.logger.log('Called getYankOperationResult');
         var motionResult = args.motionResult;
-        var registerName = args.registerName ? args.registerName : '"';
+        // Default register name is the unnamed register, '"'.
+        var registerName = args.normalCommand.registerName
+            ? args.normalCommand.registerName
+            : '"';
         var lines = args.lines;
 
         var operationResult = {
@@ -33,6 +37,8 @@ var YankOperations = {
             // Should never get here.
             logger.warn('Invalid motion type as part of yank command.', motionResult);
         }
+
+        return operationResult;
     },
 
     /**
@@ -110,28 +116,30 @@ var YankOperations = {
         var motionResult = args.motionResult;
         var lines = args.lines;
         var operationResult = args.operationResult;
-        
+
         // Compute a bunch of convenience variables.
         var startRow = Math.min(motionResult.startRow, motionResult.endRow);
         var endRow = Math.max(motionResult.startRow, motionResult.endRow);
+        var startCol = motionResult.startCol;
 
-        var numLinesToYank = endRow - startRow + 1;
-        lines.splice(startRow, numLinesToYank);
+        // Slice function returns elements in range [start, end).
+        var yankedLines = lines.slice(startRow, endRow + 1);
+        yankedLines.forEach(function(line, i) {
+            operationResult.text.push({
+                index : startRow + i,
+                content : line
+            });
+        });
 
-        // If there is still content on the line indexed by startRow then
-        // the col position should be the location of the first non-blank
-        // character in that line. If lines[startRow] does not exist (e.g.,
-        // when deleting the last line in the file), the cursor should go on
-        // the line immediately before it.
-        var newRowIndex = startRow;
-        if (typeof lines[startRow] == 'undefined')
-            newRowIndex = Math.max(0, startRow - 1);
+        // The cursor always goes on the minimum of startRow and endRow,
+        // regardless of where the cursor was before the yank.
+        operationResult.row = startRow;
 
-        var newColIndex = 0;
-        if (typeof lines[newRowIndex] == 'string')
-            newColIndex = Math.max(0, lines[newRowIndex].search(/\S/));
-
-        operationResult.row = newRowIndex;
+        // The column position is either (1) the same as it was or (2) on
+        // the right-most character of startLine, if startLine has been
+        // switched with endLine
+        var newColIndex = Math.min(lines[startRow].length - 1, startCol);
+        newColIndex = Math.max(0, newColIndex); // Because newColIndex can't be -1
         operationResult.col = newColIndex;
         return operationResult;
     },
