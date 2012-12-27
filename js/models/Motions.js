@@ -45,7 +45,7 @@ var Motions = {
         });
 
         for (var i = 0; i < totalMotionCount - 1; i++) {
-            this.logger.log('Calling applyMotion for "' + normalCommand.motionName + '" motion (iteration #' + (i+2));
+            this.logger.log('Calling applyMotion for "' + normalCommand.motionName + '" motion iteration #' + (i+2));
             // For each iteration, compute the motionResult starting
             // from the previous motion's end positions.
             motionResult = this.applyMotion({
@@ -173,12 +173,15 @@ var Motions = {
 
                 if (isRepeat) {
                     // Special case: if this is part of a {count}$ motion,
-                    // each successive iteration should move the cursor down
-                    // one line and to the end.
+                    // each successive iteration should move the cursor
+                    // down one line and to the end.
                     var numRows = lines.length;
-                    var endRow = startRow == numRows - 1 ? startRow : startRow + 1;
+                    var endRow =
+                        startRow == numRows - 1
+                        ? startRow
+                        : startRow + 1;
                     // End position must be 0 even if length of content 0.
-                    endCol = Math.max(0, lines[row].length - 1);
+                    endCol = Math.max(0, lines[endRow].length - 1);
                     motionResult.endRow = endRow;
                 }
 
