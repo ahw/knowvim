@@ -74,7 +74,7 @@ var YankOperations = {
      *    this operation
      */
     applyOperation : function(args) {   
-        this.logger.log('Called applyOperation with args' , args);
+        this.logger.log('Called applyOperation with args:' , args);
         var operationName = args.operationName;
         var motionResult = args.motionResult;
         var lines = args.lines;
@@ -148,7 +148,6 @@ var YankOperations = {
         var newColIndex = Math.min(lines[minRow].length - 1, startCol);
         newColIndex = Math.max(0, newColIndex); // Because newColIndex can't be -1
         operationResult.endCol = newColIndex;
-        return operationResult;
     },
 
     /**
@@ -161,6 +160,10 @@ var YankOperations = {
         var motionResult = args.motionResult;
         var lines = args.lines;
         var operationResult = args.operationResult;
+        var minRow = Math.min(
+            motionResult.startRow,
+            motionResult.endRow);
+
 
         var spansMultipleLines =
             motionResult.startRow == motionResult.endRow
@@ -180,11 +183,11 @@ var YankOperations = {
 
         // If the motion is inclusive, then add 1 to the end index.
         if (motionResult.inclusive)
-            endCol++;
+            motionResult.endCol++;
 
         // If we hit the end of the line, add 1 to the end index
         if (motionResult.hitEol)
-            endCol++;
+            motionResult.endCol++;
 
         if (!spansMultipleLines) {
             this.yankCharacterwiseSingleLine({
@@ -199,17 +202,6 @@ var YankOperations = {
                 operationResult : operationResult
             });
         }
-        
-        // If this is a d[count]l yank whose [count]l motion
-        // was cut short by the end of line, then we must yank
-        // the last character of the line. The above logic will
-        // not yank this last character.
-        if (motionResult.hitEol) {
-            this.logger.log('Moving column position back by one position since we yanked the last character.');
-            operationResult.endCol = Math.max(0, lines[startRow].length - 1);
-        }
-
-        return operationResult;
     },
 
     /**
@@ -218,6 +210,7 @@ var YankOperations = {
      * always (and only) apply within a single line.
      */
     yankCharacterwiseSingleLine : function(args) {
+        this.logger.log('Called yankCharacterwiseSingleLine with args:', args);
         var lines = args.lines;
         var startRow = args.motionResult.startRow;
         var minCol = Math.min(
@@ -227,10 +220,8 @@ var YankOperations = {
             args.motionResult.startCol,
             args.motionResult.endCol);
         var operationResult = args.operationResult;
-
-        this.logger.log('Characterwise motion does not span multiple lines');
-        // Yank all characters in the range [startCol, endCol)
-        var yankedChars = lines[startRow].substr(minCol, maxCol);
+        // Yank all characters in the range [minCol, maxCol)
+        var yankedChars = lines[startRow].substring(minCol, maxCol);
         operationResult.text = [{
             index : startRow,
             content : yankedChars
@@ -248,62 +239,57 @@ var YankOperations = {
      * always apply over multiple lines.
      */
     yankCharacterwiseMultipleLines : function(args) {
+        this.logger.log('Called yankCharacterwiseMultipleLines with args:', args);
+
         var lines = args.lines;
-        var startRow = args.motionResult.startRow;
-        var endRow = args.motionResult.endRow;
+        var minRow = Math.min(
+            args.motionResult.startRow,
+            args.motionResult.endRow);
+        var maxRow = Math.max(
+            args.motionResult.startRow,
+            args.motionResult.endRow);
         var startCol = args.motionResult.startCol;
         var endCol = args.motionResult.endCol;
         var operationResult = args.operationResult;
+        var yankedLines = [];
 
-        this.logger.log('Characterwise DOES span multiple lines');
-        this.logger.log('First line original = ' + lines[startRow]);
+        // Yank characters in the start row in the range [startCol, EOL).
+        yankedLines.push({
+            index : minRow,
+            content : lines[minRow].substring(startCol)
+        });
 
-        // Chop of the end of firstLine by taking only
-        // characters in the range [0, startCol).
-        var firstLine = lines[startRow];
-        firstLine = firstLine.substr(0, startCol);
-        lines[startRow] = firstLine;
-        this.logger.log('First line modified = ' + lines[startRow]);
-        this.logger.log('Last line original = ' + lines[endRow]);
-
-        // Chop of the beginning of lastLine by taking only
-        // characters from index endCol to the end.
-        var lastLine = lines[endRow];
-        lastLine = lastLine.substr(endCol);
-        lines[endRow] = lastLine;
-        this.logger.log('Last line modified = ' + lastLine);
-
-        if (endRow - startRow > 1) {
+        // If there are entire lines between minRow and maxRow, add them to
+        // the yankedLines structure.
+        if (maxRow - minRow > 1) {
             // Assert: the motion covers more than 2 lines,
             // which means there must be entire lines in
             // between that should be yanked.
-            var yankedLines = lines.splice(startRow + 1, endRow - startRow - 1);
-            var operationsLogger = this.logger;
-            yankedLines.forEach(function(line) {
-                operationsLogger.log('Inner line yanked entirely = ' + line);
-            });
+            for (var i = minRow + 1; i < maxRow; i++) {
+                this.logger.log('Yanking the entire line:', lines[i]);
+                yankedLines.push({
+                    index : i,
+                    content : lines[i]
+                });
+            }
         }
 
-        // As per :help d:
-        // An exception for the d{motion} command: If the
-        // motion is not linewise, the start and end of the
-        // motion are not in the same line, and there are
-        // only blanks before the start and after the end of
-        // the motion, the yank becomes linewise.  This
-        // means that the yank also removes the line of
-        // blanks that you might expect to remain.
+        // Yank the characters in the last line in the range [0, endCol).
+        yankedLines.push({
+            index : maxRow,
+            content : lines[maxRow].substr(0, endCol)
+        });
 
-        // Combine the firstLine and lastLine.
-        lines[startRow] = firstLine + lastLine;
-        // Yank the lastLine.
-        lines.splice(endRow, 1);
+        // Assign yankedLines to the text property.
+        operationResult.text = yankedLines;
 
         // Update the positions using the operationResult object given in
         // the function arguments.
-        this.logger.log('New positions row = ' + startRow + ' col = ' + startCol);
-        operationResult.endRow = startRow;
+        this.logger.log('New positions minRow = ' + minRow
+            + ' startCol = ' + startCol);
+        operationResult.endRow = minRow;
         operationResult.endCol = startCol;
 
-        return operationResult;
+        this.logger.log('Returning operationResult:', operationResult);
     }
 };
