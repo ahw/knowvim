@@ -84,7 +84,9 @@ var YankOperations = {
         // Define the operationResult object.
         var operationResult = {
             motionResult : motionResult,
-            text : text
+            text : text,
+            endRow : motionResult.endRow, // Default is no cursor change
+            endCol : motionResult.endCol // Default is no cursor change
         };
 
         switch(motionResult.type) {
