@@ -103,7 +103,8 @@ var NormalHandler = Backbone.DeepModel.extend({
             this.logger().log('Finished computing operation result:', operationResult);
             this.get('vim').set({
                 row : operationResult.endRow,
-                col : operationResult.endCol
+                col : operationResult.endCol,
+                statusBar : operationResult.statusBar
             });
         }
 
@@ -120,7 +121,7 @@ var NormalHandler = Backbone.DeepModel.extend({
             this.logger().log('Finished computing motion result:', motionResult);
             this.get('vim').set({
                 row : motionResult.endRow,
-                col : motionResult.endCol
+                col : motionResult.endCol,
             });
         }
     }

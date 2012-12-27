@@ -26,6 +26,7 @@ var YankOperations = {
         var lines = args.lines;
         var operationCount = normalCommand.operationCount ? normalCommand.operationCount : 1;
 
+
         // First, get the motionResult.
         var motionResult = Motions.getMotionResult({
             normalCommand : normalCommand,
@@ -44,26 +45,12 @@ var YankOperations = {
         operationResult = this.applyOperation({
             operationName : normalCommand.operationName,
             motionResult : motionResult,
-            lines : lines
+            lines : lines,
+            statusBar : "" // Defines the status bar text.
         });
-
-        // ---- Ignore repetition for now.
-        // -- for (var i = 0; i < operationCount; i++) {
-        // --     this.logger.log('Applying "' + normalCommand.operationName + '" operation (iteration #' + (i+2));
-        // --     // For each iteration, compute the operationResult starting from
-        // --     // the previous operation's end positions.
-        // --     operationResult = this.applyOperation({
-        // --         operationName : normalCommand.operationName,
-        // --         startRow : startRow,
-        // --         startCol : startCol,
-        // --         lines : lines,
-        // --         isRepeat : true
-        // --     });
-        // -- }
 
         // Set the register name.
         operationResult.registerName = registerName;
-
 
         this.logger.log('Yanked the following text into register ' + registerName);
         var operationLogger = this.logger;
@@ -144,6 +131,12 @@ var YankOperations = {
                 content : line
             });
         });
+
+        // Set the status bar text if the number of yanked lines is greater
+        // than 2 (seems weird that 2 is the magic number, but that seems to
+        // be Vim behavior as far as I can tell.
+        if (yankedLines.length > 2)
+            operationResult.statusBar = yankedLines.length + ' lines yanked';
 
         // The cursor always goes on the minimum of startRow and endRow,
         // regardless of where the cursor was before the yank.

@@ -46,6 +46,10 @@ var EditorView = Backbone.View.extend({
             view.renderStatusBar();
         });
 
+        view.model.on('change:statusBar', function() {
+            view.renderStatusBar();
+        });
+
     },
 
     /**
@@ -153,7 +157,7 @@ var EditorView = Backbone.View.extend({
     },
 
     renderStatusBar : function() {
-        $(this.statusBar).html(this.model.get('statusBarText'));
+        $(this.statusBar).html(this.model.get('statusBar'));
     },
 
     /**

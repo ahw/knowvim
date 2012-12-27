@@ -23,10 +23,20 @@ var Motions = {
         var startRow = args.startRow;
         var startCol = args.startCol;
         var lines = args.lines;
-        var motionCount = normalCommand.motionCount ? normalCommand.motionCount : 1;
+        var totalMotionCount = 1; // Default motion count value is 1.
+        // If this normalCommand has an operationCount, multiply the
+        // motionCount by that value since it is equivalent to simply apply
+        // the motion (operationCount * motionCount) number of times.
+        if (normalCommand.motionCount && normalCommand.operationCount)
+            totalMotionCount = normalCommand.motionCount * normalCommand.operationCount;
+        else if (normalCommand.motionCount)
+            totalMotionCount = normalCommand.motionCount;
+        else if (normalCommand.operationCount)
+            totalMotionCount = normalCommand.operationCount;
+
         var motionResult = {};
 
-        this.logger.log('Applying "' + normalCommand.motionName + '" motion.');
+        this.logger.log('Calling applyMotion for "' + normalCommand.motionName + '" motion.');
         motionResult = this.applyMotion({
             motionName : normalCommand.motionName,
             startRow : startRow,
@@ -34,8 +44,8 @@ var Motions = {
             lines : lines
         });
 
-        for (var i = 0; i < motionCount - 1; i++) {
-            this.logger.log('Applying "' + normalCommand.motionName + '" motion (iteration #' + (i+2));
+        for (var i = 0; i < totalMotionCount - 1; i++) {
+            this.logger.log('Calling applyMotion for "' + normalCommand.motionName + '" motion (iteration #' + (i+2));
             // For each iteration, compute the motionResult starting
             // from the previous motion's end positions.
             motionResult = this.applyMotion({
@@ -55,7 +65,7 @@ var Motions = {
         }
 
         // Reset the starting position to the original starting
-        // position (if there was any motionCount iteration, the
+        // position (if there was any totalMotionCount iteration, the
         // starting position values change with each iteration).
         motionResult.startRow = startRow;
         motionResult.startCol = startCol;

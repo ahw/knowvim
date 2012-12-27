@@ -35,7 +35,7 @@ var Vim = Backbone.DeepModel.extend({
 
         // The lower left-hand corner text. Indicates the mode or error
         // messages.
-        statusBarText : '',
+        statusBar : '',
 
         // --- All other variables below are legacy --- //
 
@@ -142,16 +142,16 @@ var Vim = Backbone.DeepModel.extend({
         // First change the status bar.
         switch(mode) {
             case 'INSERT':
-                this.set({statusBarText : '-- INSERT --'});
+                this.set({statusBar : '-- INSERT --'});
                 break;
             case  'EXECUTE':
-                this.set({statusBarText : ': '});
+                this.set({statusBar : ': '});
                 break;
             case 'SEARCH':
-                this.set({statusBarText : '/'});
+                this.set({statusBar : '/'});
                 break;
             case 'NORMAL':
-                this.set({statusBarText : ''});
+                this.set({statusBar : ''});
                 break;
         }
         // Now that the status bar has been updated, change the actual mode.
