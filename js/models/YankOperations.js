@@ -55,15 +55,15 @@ var YankOperations = {
         this.logger.log('Yanked the following text into register ' + registerName);
         var operationLogger = this.logger;
         operationResult.text.forEach(function(item) {
-            operationLogger.log(sprintf('%3d %s', item.index + 1, item.content));
+            operationLogger.log(sprintf('%3d. %s', item.index + 1, item.content));
         });
         return operationResult;
     },
 
     /**
      * This is a helper function and should not be called directly. It is
-     * intended that getYankOperationResult will call this funciton for each
-     * of the {count} times required in order to compute the final
+     * intended that getYankOperationResult will call this function for
+     * each of the {count} times required in order to compute the final
      * operationResult of a repeated operation. The expected properties of
      * args are as follows:
      *
@@ -98,7 +98,6 @@ var YankOperations = {
                 });
                 break;
             case 'characterwise':
-                // Assert: this motion spans multiple rows.
                 this.yankCharacterwise({
                     motionResult : args.motionResult,
                     lines : lines,
@@ -113,7 +112,7 @@ var YankOperations = {
     },
 
     /**
-     * Make a linewise deletion.
+     * Make a linewise yank.
      */
     yankLinewise : function(args) {
         var motionResult = args.motionResult;
@@ -121,15 +120,15 @@ var YankOperations = {
         var operationResult = args.operationResult;
 
         // Compute a bunch of convenience variables.
-        var startRow = Math.min(motionResult.startRow, motionResult.endRow);
-        var endRow = Math.max(motionResult.startRow, motionResult.endRow);
+        var minRow = Math.min(motionResult.startRow, motionResult.endRow);
+        var maxRow = Math.max(motionResult.startRow, motionResult.endRow);
         var startCol = motionResult.startCol;
 
         // Slice function returns elements in range [start, end).
-        var yankedLines = lines.slice(startRow, endRow + 1);
+        var yankedLines = lines.slice(minRow, maxRow + 1);
         yankedLines.forEach(function(line, i) {
             operationResult.text.push({
-                index : startRow + i,
+                index : minRow + i,
                 content : line
             });
         });
@@ -140,35 +139,33 @@ var YankOperations = {
         if (yankedLines.length > 2)
             operationResult.statusBar = yankedLines.length + ' lines yanked';
 
-        // The cursor always goes on the minimum of startRow and endRow,
-        // regardless of where the cursor was before the yank.
-        operationResult.endRow = startRow;
+        // The cursor always goes on the minimum row regardless of where
+        // the cursor was before the yank.
+        operationResult.endRow = minRow;
 
         // The column position is either (1) the same as it was or (2) on
-        // the right-most character of startLine, if startLine has been
-        // switched with endLine
-        var newColIndex = Math.min(lines[startRow].length - 1, startCol);
+        // the right-most character of minRow
+        var newColIndex = Math.min(lines[minRow].length - 1, startCol);
         newColIndex = Math.max(0, newColIndex); // Because newColIndex can't be -1
         operationResult.endCol = newColIndex;
         return operationResult;
     },
 
     /**
-     * Make a characterwise deletion. This function will call helper
-     * functions such as "yankCharacterwiseSingleLine" or
+     * Make a characterwise yank. This function will call helper functions
+     * such as "yankCharacterwiseSingleLine" or
      * "yankCharacterwiseMultipleLines" depending on the type of motion
      * involved.
      */
     yankCharacterwise : function(args) {
         var motionResult = args.motionResult;
         var lines = args.lines;
-        
-        // Compute a bunch of convenience variables.
-        var startCol = Math.min(motionResult.startCol, motionResult.endCol);
-        var endCol = Math.max(motionResult.startCol, motionResult.endCol);
-        var startRow = Math.min(motionResult.startRow, motionResult.endRow);
-        var endRow = Math.max(motionResult.startRow, motionResult.endRow);
-        var spansMultipleLines = startRow == endRow ? false : true;
+        var operationResult = args.operationResult;
+
+        var spansMultipleLines =
+            motionResult.startRow == motionResult.endRow
+            ? false
+            : true;
 
         var isBackwardsYank;
         if (motionResult.startRow > motionResult.endRow) {
@@ -191,19 +188,13 @@ var YankOperations = {
 
         if (!spansMultipleLines) {
             this.yankCharacterwiseSingleLine({
-                startRow : startRow,
-                endRow : endRow,
-                startCol : startCol,
-                endCol : endCol,
+                motionResult : motionResult,
                 lines : lines,
                 operationResult : operationResult
             });
         } else {
             this.yankCharacterwiseMultipleLines({
-                startRow : startRow,
-                endRow : endRow,
-                startCol : startCol,
-                endCol : endCol,
+                motionResult : motionResult,
                 lines : lines,
                 operationResult : operationResult
             });
@@ -223,37 +214,45 @@ var YankOperations = {
 
     /**
      * Helper function (should not call directly).  Make a characterwise
-     * deletion all within a single line. For example, d{count}l will always
-     * (and only) apply within a single line.
+     * yank all within a single line. For example, d{count}l will
+     * always (and only) apply within a single line.
      */
     yankCharacterwiseSingleLine : function(args) {
         var lines = args.lines;
-        var row = args.startRow;
-        var startCol = args.startCol;
-        var endCol = args.endCol;
+        var startRow = args.motionResult.startRow;
+        var minCol = Math.min(
+            args.motionResult.startCol,
+            args.motionResult.endCol);
+        var maxCol = Math.max(
+            args.motionResult.startCol,
+            args.motionResult.endCol);
         var operationResult = args.operationResult;
 
-        this.logger.log('Characterwise does not span multiple lines');
-        this.logger.log('Original line = ' + lines[row]);
-        // Remove all characters in the range [startCol, endCol)
-        lines[row] = lines[row].substr(0, startCol) + lines[row].substr(endCol);
-        this.logger.log('Modified line = ' + lines[row]);
+        this.logger.log('Characterwise motion does not span multiple lines');
+        // Yank all characters in the range [startCol, endCol)
+        var yankedChars = lines[startRow].substr(minCol, maxCol);
+        operationResult.text = [{
+            index : startRow,
+            content : yankedChars
+        }];
 
-        operationResult.endRow = row;
-        operationResult.endCol = startCol;
+        // Cursor stays on the same startRow.
+        operationResult.endRow = startRow;
+        // Cursor always goes to the left-most position of the motion.
+        operationResult.endCol = minCol;
     },
 
     /**
      * Helper function (should not call directly).Make a characterwise
-     * deletion over multiple lines. For example, d{count}$ will almost
+     * yank over multiple lines. For example, d{count}$ will almost
      * always apply over multiple lines.
      */
     yankCharacterwiseMultipleLines : function(args) {
         var lines = args.lines;
-        var startRow = args.startRow;
-        var endRow = args.endRow;
-        var startCol = args.startCol;
-        var endCol = args.endCol;
+        var startRow = args.motionResult.startRow;
+        var endRow = args.motionResult.endRow;
+        var startCol = args.motionResult.startCol;
+        var endCol = args.motionResult.endCol;
         var operationResult = args.operationResult;
 
         this.logger.log('Characterwise DOES span multiple lines');
