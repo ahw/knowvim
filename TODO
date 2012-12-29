@@ -1,0 +1,15 @@
+Bugs
+----
+[ ] Positioning. Figure out how the column position is determined after
+    vertical movements and especially characterwise yanks and such. Maybe
+    create a Positioning.js module with methods like
+
+    var col = getColumnPosition({
+        startCol : Number
+        motionResult : {
+            motionName : String,
+            type : 'characterwise' | 'linewise',
+            inclusive : Boolean
+            ...
+        }
+    });
