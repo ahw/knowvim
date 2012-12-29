@@ -7,7 +7,7 @@
 var Logger = function(args) {
 
     this.module = args.module;
-    this.prefix = args.prefix;
+    this.prefix = args.prefix + ': ';
 
     this.isEnabled = function() {
         var re = new RegExp("\\?log=[a-zA-Z0-9;]*" + this.module);

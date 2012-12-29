@@ -4,7 +4,7 @@ var NormalHandler = Backbone.DeepModel.extend({
     defaults : {
         logger : new Logger({
             module : 'normal',
-            prefix : 'NORMAL: '
+            prefix : 'NORMAL'
         }),
         parser : null,
         tokenizer : null,
@@ -14,28 +14,6 @@ var NormalHandler = Backbone.DeepModel.extend({
         state : 'START',
         operatorCount : 1,
         motionCount : 1,
-
-        operators : {
-            'd' : 'd',
-            'c' : 'c',
-            'y' : 'y',
-        },
-        motions : {
-            'w' : 'w',
-            'b' : 'b',
-            '{' : '{',
-            '}' : '}',
-            // '0' : '0',
-            '$' : '$',
-            'H' : 'H',
-            'L' : 'L',
-            'G' : 'G',
-            'j' : 'j',
-            'k' : 'k',
-            'h' : 'h',
-            'l' : 'l'
-        },
-
         buffer : null,
         vim : null
     },
@@ -82,6 +60,11 @@ var NormalHandler = Backbone.DeepModel.extend({
         return this.get('logger');
     },
 
+    // Helper to get the filename
+    filename : function() {
+        return this.get('vim').get('buffer').get('name');
+    },
+
     input : function(key) {
         // Send the input to the tokenizer.
         this.get('tokenizer').receiveChar(key);
@@ -90,11 +73,22 @@ var NormalHandler = Backbone.DeepModel.extend({
     receiveNormalCommand : function(normalCommand) {
         this.logger().log('Received normalCommand', normalCommand);
 
-        // If there is an operator, apply it. If
-        // normalCommand.operationCount exists, the operation will be
-        // applied that many times.
-        if (normalCommand.operationName) {
-            var operationResult = YankOperations.getYankOperationResult({
+        if (normalCommand.operationName == 'm') {
+            // If this is an mark operation, just do it right here.
+            var markName = normalCommand.markName;
+            var attributes = {};
+            attributes['marks.' + markName] = {
+                row : this.cursorRow(),
+                col : this.cursorCol(),
+                filename : this.filename()
+            };
+            this.get('vim').set(attributes);
+
+        } else if (normalCommand.operationName) {
+            // If there is an operator, apply it. If
+            // normalCommand.operationCount exists, the operation will be
+            // applied that many times.
+            var operationResult = Operations.getOperationResult({
                 normalCommand : normalCommand,
                 startRow : this.cursorRow(),
                 startCol : this.cursorCol(),
@@ -106,12 +100,11 @@ var NormalHandler = Backbone.DeepModel.extend({
                 col : operationResult.endCol,
                 statusBar : operationResult.statusBar
             });
-        }
 
-        // If there is a motion component to the command, get the motion
-        // result. If normalCommand.motionCount exists, the motion result
-        // will reflect this repetition.
-        else if (normalCommand.motionName) {
+        } else if (normalCommand.motionName) {
+            // If there is a motion component to the command, get the motion
+            // result. If normalCommand.motionCount exists, the motion
+            // result will reflect this repetition.
             var motionResult = Motions.getMotionResult({
                 normalCommand : normalCommand,
                 startRow : this.cursorRow(),

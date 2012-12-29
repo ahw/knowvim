@@ -1,11 +1,11 @@
 var YankOperations = {
     logger : new Logger({
         module : 'operations',
-        prefix : 'YANK: '
+        prefix : 'YANK'
     }),
 
     /**
-     * Returns the result of a named operation, in the context of startRow,
+     * Returns the result of a yank operation, in the context of startRow,
      * startCol, and an array of lines. This function handles computing the
      * motionResult if it needs to. It is expected that args containst the
      * following properties:

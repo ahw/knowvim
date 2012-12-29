@@ -2,7 +2,7 @@ var Parser = function(options) {
 
     var logger = new Logger({
         module : 'parser',
-        prefix : 'PARSER: '
+        prefix : 'PARSER'
     });
     var mostRecentCountToken = null;
     var normalCommand = {};

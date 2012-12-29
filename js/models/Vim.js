@@ -3,7 +3,7 @@ var Vim = Backbone.DeepModel.extend({
     defaults : {
         logger : new Logger({
             module : 'vim',
-            prefix : 'VIM: '
+            prefix : 'VIM'
         }),
         buffer : null,
         mode : 'NORMAL',
@@ -36,6 +36,9 @@ var Vim = Backbone.DeepModel.extend({
         // The lower left-hand corner text. Indicates the mode or error
         // messages.
         statusBar : '',
+
+        // The list of all marks in a buffer.
+        marks : {},
 
         // --- All other variables below are legacy --- //
 

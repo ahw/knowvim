@@ -1,7 +1,7 @@
 var Motions = {
     logger : new Logger({
         module : 'motions',
-        prefix : 'MOTION: '
+        prefix : 'MOTION'
     }),
 
     /**

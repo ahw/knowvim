@@ -2,7 +2,7 @@ var DeleteOperations = {
 
     logger : new Logger({
         module : 'operations',
-        prefix : 'DELETE: '
+        prefix : 'DELETE'
     }),
 
     /**

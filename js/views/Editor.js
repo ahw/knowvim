@@ -11,7 +11,7 @@ var EditorView = Backbone.View.extend({
     col : '#col',
     logger : new Logger({
         module : 'editor',
-        prefix : 'EDITOR: '
+        prefix : 'EDITOR'
     }),
 
     /**

@@ -28,7 +28,7 @@ var Tokenizer = function(options) {
     }
     var logger = new Logger({
         module : 'tokenizer',
-        prefix : 'TOKENIZER: '
+        prefix : 'TOKENIZER'
     });
 
     this.warnAboutIllegalCharacter = function(ch, expectedCharDescription) {
