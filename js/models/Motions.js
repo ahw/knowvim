@@ -106,6 +106,15 @@ var Motions = {
         // Define the default motionResult object.
         var motionResult = {
             type : null, // 'linewise' or 'characterwise'
+            higherOrLower : null,
+            lowerPosition : {
+                row : startRow,
+                col : startCol
+            },
+            higherPosition : {
+                row : startRow,
+                col : startCol
+            },
             startRow : startRow,
             startCol : startCol,
             endRow : startRow, // Default is no row movement
@@ -121,6 +130,8 @@ var Motions = {
                 motionResult.type = 'characterwise';
                 motionResult.endCol = endCol;
                 motionResult.inclusive = false;
+                motionResult.higherOrLower = 'lower';
+                motionResult.lowerPosition.col = endCol;
                 break;
 
             case 'l':
@@ -130,6 +141,8 @@ var Motions = {
                 motionResult.endCol = endCol;
                 motionResult.inclusive = false;
                 motionResult.hitEol = endCol == startCol ? true : false;
+                motionResult.higherOrLower = 'higher';
+                motionResult.higherPosition.col = endCol;
                 break;
 
             case 'j':
@@ -147,6 +160,9 @@ var Motions = {
                 motionResult.endRow = endRow;
                 motionResult.endCol = endCol;
                 motionResult.inclusive = true;
+                motionResult.higherOrLower = 'higher';
+                motionResult.higherPosition.row = endRow;
+                motionResult.higherPosition.col = endCol;
                 break;
 
             case 'k':
@@ -164,12 +180,17 @@ var Motions = {
                 motionResult.endRow = endRow;
                 motionResult.endCol = endCol;
                 motionResult.inclusive = true;
+                motionResult.higherOrLower = 'lower';
+                motionResult.lowerPosition.row = endRow;
+                motionResult.lowerPosition.col = endCol;
                 break;
 
             case '0':
                 motionResult.endCol = 0;
                 motionResult.type = 'characterwise';
                 motionResult.inclusive = false;
+                motionResult.higherOrLower = 'lower';
+                motionResult.lowerPosition.col = 0;
                 break;
 
             case '$':
@@ -189,12 +210,16 @@ var Motions = {
                     // End position must be 0 even if length of content 0.
                     endCol = Math.max(0, lines[endRow].length - 1);
                     motionResult.endRow = endRow;
+                    motionResult.higherOrLower = 'higher';
+                    motionResult.higherPosition.row = endRow;
                 }
 
                 motionResult.endCol = endCol;
+                motionResult.higherPosition.col = endCol;
                 motionResult.type = 'characterwise';
                 motionResult.hitEol = true;
                 motionResult.inclusive = false;
+                motionResult.higherOrLower = 'higher';
                 break;
 
             case 'd':
@@ -214,24 +239,63 @@ var Motions = {
 
             case "'":
                 var markName = normalCommand.markName;
-                if (typeof vim.get('marks')[markName] != 'undefined') {
-                    var newRow = vim.get('marks')[markName].row;
-                    motionResult.endRow = newRow;
-                    motionResult.endCol = Math.max(0, lines[newRow].search(/\S/));
-                    motionResult.type = 'linewise';
-                    motionResult.inclusive = true;
+                if (typeof vim.get('marks')[markName] == 'undefined') {
+                    this.logger.warn('Mark "' + markName + '" not set');
+                    break;
+                }
+                var newRow = vim.get('marks')[markName].row;
+                var newCol = Math.max(0, lines[newRow].search(/\S/));
+                motionResult.endRow = newRow;
+                motionResult.endCol = newCol;
+                motionResult.type = 'linewise';
+                motionResult.inclusive = true;
+
+                if (newRow == startRow && newCol > startCol) {
+                    motionResult.higherOrLower = 'higher';
+                    motionResult.higherPosition.col = newCol;
+                } else if (newRow == startRow && newCol < startCol) {
+                    motionResult.higherOrLower = 'lower';
+                    motionResult.lowerPosition.col = newCol;
+                } else if (newRow < startRow) {
+                    motionResult.higherOrLower = 'lower';
+                    motionResult.lowerPosition.row = newRow;
+                    motionResult.lowerPosition.col = newCol;
+                } else if (newRow > startRow) {
+                    motionResult.higherOrLower = 'higher';
+                    motionResult.higherPosition.row = newRow;
+                    motionResult.higherPosition.col = newCol;
                 }
                 break;
 
             case '`':
                 var markName = normalCommand.markName;
-                if (typeof vim.get('marks')[markName] != 'undefined') {
-                    var newRow =
-                    motionResult.endRow = vim.get('marks')[markName].row;
-                    motionResult.endCol = vim.get('marks')[markName].col;
-                    motionResult.type = 'characterwise';
-                    motionResult.inclusive = false;
+                if (typeof vim.get('marks')[markName] == 'undefined') {
+                    this.logger.warn('Mark "' + markName + '" not set');
+                    break;
                 }
+                var newRow = vim.get('marks')[markName].row;
+                var newCol = vim.get('marks')[markName].col;
+
+                if (newRow == startRow && newCol > startCol) {
+                    motionResult.higherOrLower = 'higher';
+                    motionResult.higherPosition.col = newCol;
+                } else if (newRow == startRow && newCol < startCol) {
+                    motionResult.higherOrLower = 'lower';
+                    motionResult.lowerPosition.col = newCol;
+                } else if (newRow < startRow) {
+                    motionResult.higherOrLower = 'lower';
+                    motionResult.lowerPosition.row = newRow;
+                    motionResult.lowerPosition.col = newCol;
+                } else if (newRow > startRow) {
+                    motionResult.higherOrLower = 'higher';
+                    motionResult.higherPosition.row = newRow;
+                    motionResult.higherPosition.col = newCol;
+                }
+
+                motionResult.endRow = vim.get('marks')[markName].row;
+                motionResult.endCol = vim.get('marks')[markName].col;
+                motionResult.type = 'characterwise';
+                motionResult.inclusive = false;
                 break;
 
             default:

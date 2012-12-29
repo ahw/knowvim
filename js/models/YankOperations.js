@@ -117,6 +117,8 @@ var YankOperations = {
      * Make a linewise yank.
      */
     yankLinewise : function(args) {
+        this.logger.log('Called yankLinewise with args:', args);
+
         var motionResult = args.motionResult;
         var lines = args.lines;
         var operationResult = args.operationResult;
@@ -260,6 +262,7 @@ var YankOperations = {
             index : minRow,
             content : lines[minRow].substring(startCol)
         });
+        this.logger.log('Yanking "' + yankedLines[0].content + '" (partial)');
 
         // If there are entire lines between minRow and maxRow, add them to
         // the yankedLines structure.
@@ -268,7 +271,7 @@ var YankOperations = {
             // which means there must be entire lines in
             // between that should be yanked.
             for (var i = minRow + 1; i < maxRow; i++) {
-                this.logger.log('Yanking the entire line:', lines[i]);
+                this.logger.log('Yanking "' + lines[i] + '" (entire line)');
                 yankedLines.push({
                     index : i,
                     content : lines[i]
@@ -281,6 +284,7 @@ var YankOperations = {
             index : maxRow,
             content : lines[maxRow].substr(0, endCol)
         });
+        this.logger.log('Yanking "' + yankedLines[yankedLines.length-1].content + '" (partial)');
 
         // Assign yankedLines to the text property.
         operationResult.text = yankedLines;
