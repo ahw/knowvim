@@ -14,6 +14,7 @@ var Motions = {
      *  lines : An array of strings representing the buffer
      *  startRow : Number
      *  startCol : Number
+     *  vim : The Vim model
      */
     getMotionResult : function(args) {
         this.logger.log('Called getMotionResult with args', args);
@@ -23,6 +24,7 @@ var Motions = {
         var startRow = args.startRow;
         var startCol = args.startCol;
         var lines = args.lines;
+        var vim = args.vim;
         var totalMotionCount = 1; // Default motion count value is 1.
         // If this normalCommand has an operationCount, multiply the
         // motionCount by that value since it is equivalent to simply apply
@@ -38,10 +40,11 @@ var Motions = {
 
         this.logger.log('Calling applyMotion for "' + normalCommand.motionName + '" motion.');
         motionResult = this.applyMotion({
-            motionName : normalCommand.motionName,
+            normalCommand : normalCommand,
             startRow : startRow,
             startCol : startCol,
-            lines : lines
+            lines : lines,
+            vim : vim
         });
 
         for (var i = 0; i < totalMotionCount - 1; i++) {
@@ -49,10 +52,11 @@ var Motions = {
             // For each iteration, compute the motionResult starting
             // from the previous motion's end positions.
             motionResult = this.applyMotion({
-                motionName : normalCommand.motionName,
+                normalCommand : normalCommand,
                 startRow : motionResult.endRow,
                 startCol : motionResult.endCol,
                 lines : lines,
+                vim : vim,
                 isRepeat : true
             });
 
@@ -79,10 +83,11 @@ var Motions = {
      * intended that getMotionResult will call this function for each of the
      * {count} times required in order to compute the final motionResult of
      * a repeated motion. Applies an individual motion, identified by
-     * motionName, in the context of startRow, startCol, and an array of
-     * lines. The expected properties of args are as follows:
+     * normalCommand.motionName, in the context of startRow, startCol, and
+     * an array of lines. The expected properties of args are as follows:
      *
-     *  motionName : 'h', 'j', 'k', 'l', etc.
+     *  normalCommand : The object received from
+     *      NormalHandler.receiveNormalCommand
      *  startRow : Number
      *  startCol : Number
      *  lines : An array of strings representing the buffer
@@ -91,10 +96,11 @@ var Motions = {
      */
     applyMotion : function(args) {
         this.logger.log('Called applyMotion with args', args);
-        var motionName = args.motionName;
+        var normalCommand = args.normalCommand;
         var startRow = args.startRow;
         var startCol = args.startCol;
         var lines = args.lines;
+        var vim = args.vim;
         var isRepeat = args.isRepeat ? args.isRepeat : false;
 
         // Define the default motionResult object.
@@ -108,7 +114,7 @@ var Motions = {
             hitEol : false // True if characterwise motion is stopped short due to end of line
         };
 
-        switch(motionName) {
+        switch(normalCommand.motionName) {
 
             case 'h':
                 var endCol = startCol == 0 ? 0 : startCol - 1;
@@ -206,8 +212,24 @@ var Motions = {
                 this.logger.warn('The w motion has not be implemented. Defaulting to no motion.');
                 break;
 
+            case "'":
+                var markName = normalCommand.markName;
+                var newRow = vim.get('marks')[markName].row;
+                motionResult.endRow = newRow;
+                motionResult.endCol = Math.max(0, lines[newRow].search(/\S/));
+                motionResult.type = 'linewise';
+                motionResult.inclusive = true;
+                break;
+
+            case '`':
+                var markName = normalCommand.markName;
+                motionResult.endRow = vim.get('marks')[markName].row;
+                motionResult.endCol = vim.get('marks')[markName].col;
+                motionResult.type = 'characterwise';
+                motionResult.inclusive = false;
+
             default:
-                this.logger.warn('The "' + motionName + '" motion has not been implemented. Defaulting to no motion.');
+                this.logger.warn('The "' + normalCommand.motionName + '" motion has not been implemented. Defaulting to no motion.');
         }
         return motionResult;
     },

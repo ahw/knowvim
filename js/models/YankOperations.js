@@ -24,6 +24,7 @@ var YankOperations = {
         var startRow = args.startRow;
         var startCol = args.startCol;
         var lines = args.lines;
+        var vim = args.vim;
         var operationCount = normalCommand.operationCount ? normalCommand.operationCount : 1;
 
 
@@ -32,7 +33,8 @@ var YankOperations = {
             normalCommand : normalCommand,
             startRow : startRow,
             startCol : startCol,
-            lines : lines
+            lines : lines,
+            vim : vim
         });
 
         // Default register name is the unnamed register, '"'.
