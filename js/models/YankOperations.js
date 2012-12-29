@@ -14,7 +14,7 @@ var YankOperations = {
      *      NormalHandler.receiveNormalCommand.
      *  lines : An array of strings representing the buffer
      *  startRow : Number
-     *  startCol : Number.
+     *  startCol : Number
      */
     getYankOperationResult : function(args) {
         this.logger.log('Called getYankOperationResult');

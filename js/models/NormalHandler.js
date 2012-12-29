@@ -73,18 +73,7 @@ var NormalHandler = Backbone.DeepModel.extend({
     receiveNormalCommand : function(normalCommand) {
         this.logger().log('Received normalCommand', normalCommand);
 
-        if (normalCommand.operationName == 'm') {
-            // If this is an mark operation, just do it right here.
-            var markName = normalCommand.markName;
-            var attributes = {};
-            attributes['marks.' + markName] = {
-                row : this.cursorRow(),
-                col : this.cursorCol(),
-                filename : this.filename()
-            };
-            this.get('vim').set(attributes);
-
-        } else if (normalCommand.operationName) {
+        if (normalCommand.operationName) {
             // If there is an operator, apply it. If
             // normalCommand.operationCount exists, the operation will be
             // applied that many times.
@@ -92,7 +81,8 @@ var NormalHandler = Backbone.DeepModel.extend({
                 normalCommand : normalCommand,
                 startRow : this.cursorRow(),
                 startCol : this.cursorCol(),
-                lines : this.lines()
+                lines : this.lines(),
+                vim : this.get('vim')
             });
             this.logger().log('Finished computing operation result:', operationResult);
             this.get('vim').set({
