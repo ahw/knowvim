@@ -214,19 +214,25 @@ var Motions = {
 
             case "'":
                 var markName = normalCommand.markName;
-                var newRow = vim.get('marks')[markName].row;
-                motionResult.endRow = newRow;
-                motionResult.endCol = Math.max(0, lines[newRow].search(/\S/));
-                motionResult.type = 'linewise';
-                motionResult.inclusive = true;
+                if (typeof vim.get('marks')[markName] != 'undefined') {
+                    var newRow = vim.get('marks')[markName].row;
+                    motionResult.endRow = newRow;
+                    motionResult.endCol = Math.max(0, lines[newRow].search(/\S/));
+                    motionResult.type = 'linewise';
+                    motionResult.inclusive = true;
+                }
                 break;
 
             case '`':
                 var markName = normalCommand.markName;
-                motionResult.endRow = vim.get('marks')[markName].row;
-                motionResult.endCol = vim.get('marks')[markName].col;
-                motionResult.type = 'characterwise';
-                motionResult.inclusive = false;
+                if (typeof vim.get('marks')[markName] != 'undefined') {
+                    var newRow =
+                    motionResult.endRow = vim.get('marks')[markName].row;
+                    motionResult.endCol = vim.get('marks')[markName].col;
+                    motionResult.type = 'characterwise';
+                    motionResult.inclusive = false;
+                }
+                break;
 
             default:
                 this.logger.warn('The "' + normalCommand.motionName + '" motion has not been implemented. Defaulting to no motion.');

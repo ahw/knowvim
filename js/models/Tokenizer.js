@@ -11,7 +11,7 @@ var Tokenizer = function(options) {
     var yankOperator = 'y';
     var putOperator = 'p';
     var markOperator = 'm';
-    var gotoMarkOperator = "'";
+    var jumpOperators = /^['`]$/;
     var regOperator = '"';
     var searchTerm = "";
     var countValue = 0;
@@ -219,7 +219,7 @@ var Tokenizer = function(options) {
                     this.state = states.SEARCH;
                     this.parser.receiveToken(t);
 
-                } else if (ch == gotoMarkOperator) {
+                } else if (jumpOperators.test(ch)) {
                     var t = new Token({
                         type : 'gotoMark',
                         value : ch
