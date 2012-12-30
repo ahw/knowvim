@@ -119,20 +119,19 @@ var YankOperations = {
     yankLinewise : function(args) {
         this.logger.log('Called yankLinewise with args:', args);
 
-        var motionResult = args.motionResult;
         var lines = args.lines;
         var operationResult = args.operationResult;
 
         // Compute a bunch of convenience variables.
-        var minRow = Math.min(motionResult.startRow, motionResult.endRow);
-        var maxRow = Math.max(motionResult.startRow, motionResult.endRow);
-        var startCol = motionResult.startCol;
+        var lowerRow = args.motionResult.lowerPosition.row;
+        var higherRow = args.motionResult.higherPosition.row;
+        var startCol = args.motionResult.startCol;
 
         // Slice function returns elements in range [start, end).
-        var yankedLines = lines.slice(minRow, maxRow + 1);
+        var yankedLines = lines.slice(lowerRow, higherRow + 1);
         yankedLines.forEach(function(line, i) {
             operationResult.text.push({
-                index : minRow + i,
+                index : lowerRow + i,
                 content : line
             });
         });
@@ -145,11 +144,11 @@ var YankOperations = {
 
         // The cursor always goes on the minimum row regardless of where
         // the cursor was before the yank.
-        operationResult.endRow = minRow;
+        operationResult.endRow = lowerRow;
 
         // The column position is either (1) the same as it was or (2) on
-        // the right-most character of minRow
-        var newColIndex = Math.min(lines[minRow].length - 1, startCol);
+        // the right-most character of lowerRow
+        var newColIndex = Math.min(lines[lowerRow].length - 1, startCol);
         newColIndex = Math.max(0, newColIndex); // Because newColIndex can't be -1
         operationResult.endCol = newColIndex;
     },
@@ -164,10 +163,7 @@ var YankOperations = {
         var motionResult = args.motionResult;
         var lines = args.lines;
         var operationResult = args.operationResult;
-        var minRow = Math.min(
-            motionResult.startRow,
-            motionResult.endRow);
-
+        var lowerRow = args.motionResult.lowerPosition.row;
 
         var spansMultipleLines =
             motionResult.startRow == motionResult.endRow
