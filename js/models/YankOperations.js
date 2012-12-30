@@ -54,10 +54,16 @@ var YankOperations = {
         // Set the register name.
         operationResult.registerName = registerName;
 
+        // Set the status bar text if the number of yanked lines is greater
+        // than 2 (seems weird that 2 is the magic number, but that seems to
+        // be Vim behavior as far as I can tell.
+        if (operationResult.text.length > 2)
+            operationResult.statusBar = operationResult.text.length + ' lines yanked';
+
         this.logger.log('Yanked the following text into register ' + registerName);
         var operationLogger = this.logger;
-        operationResult.text.forEach(function(item) {
-            operationLogger.log(sprintf('%3d. %s', item.index + 1, item.content));
+        operationResult.text.forEach(function(line) {
+            operationLogger.log('=> "' + line + '"');
         });
         return operationResult;
     },
@@ -128,19 +134,7 @@ var YankOperations = {
         var startCol = args.motionResult.startCol;
 
         // Slice function returns elements in range [start, end).
-        var yankedLines = lines.slice(lowerRow, higherRow + 1);
-        yankedLines.forEach(function(line, i) {
-            operationResult.text.push({
-                index : lowerRow + i,
-                content : line
-            });
-        });
-
-        // Set the status bar text if the number of yanked lines is greater
-        // than 2 (seems weird that 2 is the magic number, but that seems to
-        // be Vim behavior as far as I can tell.
-        if (yankedLines.length > 2)
-            operationResult.statusBar = yankedLines.length + ' lines yanked';
+        operationResult.text = lines.slice(lowerRow, higherRow + 1);
 
         // The cursor always goes on the minimum row regardless of where
         // the cursor was before the yank.
@@ -222,10 +216,7 @@ var YankOperations = {
         var operationResult = args.operationResult;
         // Yank all characters in the range [minCol, maxCol)
         var yankedChars = lines[startRow].substring(minCol, maxCol);
-        operationResult.text = [{
-            index : startRow,
-            content : yankedChars
-        }];
+        operationResult.text = [yankedChars];
 
         // Cursor stays on the same startRow.
         operationResult.endRow = startRow;
@@ -250,11 +241,8 @@ var YankOperations = {
         var yankedLines = [];
 
         // Yank characters in the lower row in the range [lowerCol, EOL).
-        yankedLines.push({
-            index : lowerRow,
-            content : lines[lowerRow].substring(lowerCol)
-        });
-        this.logger.log('Yanking "' + yankedLines[0].content + '" (partial)');
+        yankedLines.push(lines[lowerRow].substring(lowerCol));
+        this.logger.log('Yanking "' + yankedLines[0] + '" (partial)');
 
         // If there are entire lines between lowerRow and higherRow, add them to
         // the yankedLines structure.
@@ -264,19 +252,13 @@ var YankOperations = {
             // between that should be yanked.
             for (var i = lowerRow + 1; i < higherRow; i++) {
                 this.logger.log('Yanking "' + lines[i] + '" (entire line)');
-                yankedLines.push({
-                    index : i,
-                    content : lines[i]
-                });
+                yankedLines.push(lines[i]);
             }
         }
 
         // Yank the characters in the last line in the range [0, higherCol).
-        yankedLines.push({
-            index : higherRow,
-            content : lines[higherRow].substr(0, higherCol)
-        });
-        this.logger.log('Yanking "' + yankedLines[yankedLines.length-1].content + '" (partial)');
+        yankedLines.push(lines[higherRow].substr(0, higherCol));
+        this.logger.log('Yanking "' + yankedLines[yankedLines.length-1] + '" (partial)');
 
         // Assign yankedLines to the text property.
         operationResult.text = yankedLines;

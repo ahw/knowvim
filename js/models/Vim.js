@@ -40,6 +40,9 @@ var Vim = Backbone.DeepModel.extend({
         // The list of all marks in a buffer.
         marks : {},
 
+        // The set of all Registers
+        registers : {},
+
         // --- All other variables below are legacy --- //
 
         // The command stack holds things like 'd' during a 'dw' command. In

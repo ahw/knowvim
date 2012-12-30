@@ -74,6 +74,25 @@ var Motions = {
         motionResult.startRow = startRow;
         motionResult.startCol = startCol;
 
+        // If the overall motion moved the cursor to a higher row/col
+        // position, then reset lower position. Conversely, if the overall
+        // motion moved the cursor to a lower row/col position, then reset
+        // the higher position.
+        if (motionResult.higherOrLower == 'higher') {
+            motionResult.lowerPosition.row = startRow;
+            motionResult.lowerPosition.col = startCol;
+        } else if (motionResult.higherOrLower == 'lower') {
+            motionResult.higherPosition.row = startRow;
+            motionResult.higherPosition.col = startCol;
+        } else {
+            motionResult.lowerPosition.row = startRow;
+            motionResult.lowerPosition.col = startCol;
+            motionResult.higherPosition.row = startRow;
+            motionResult.higherPosition.col = startCol;
+            this.logger.warn('Not changing motionResult.higherPosition or motionResult.lowerPosition because higherOrLower == null');
+            this.logger.warn('Setting lowerPosition row/col AND higherPosition row/col to the original start values');
+        }
+
         this.logger.log('Returning motionResult', motionResult);
         return motionResult;
     },
