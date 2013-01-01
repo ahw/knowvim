@@ -51,6 +51,7 @@ var Tokenizer = function(options) {
         // enum-like construct.
         logger.log('Received "' + ch + '"');
         switch(this.state) {
+
             case states.DELETE:
                 if (ch == deleteOperator) {
                     var t = new Token({

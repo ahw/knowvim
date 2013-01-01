@@ -6,7 +6,7 @@ var Vim = Backbone.DeepModel.extend({
             prefix : 'VIM'
         }),
         buffer : null,
-        mode : 'NORMAL',
+        mode : Helpers.modeNames.NORMAL,
         normalHandler : null,
 
         // Where the row position _should_ be. This is not always the same
@@ -138,32 +138,34 @@ var Vim = Backbone.DeepModel.extend({
 
     keyHandler : function(key) {
         switch(this.get('mode')) {
-            case 'NORMAL':
+            case Helpers.modeNames.NORMAL:
                 this.get('normalHandler').input(key);
                 break;
+            default:
+                this.logger().warn('Somehow got into unknown mode "' + this.get('mode') + '"');
         }
     },
 
     changeMode : function(mode) {
         // First change the status bar.
         switch(mode) {
-            case 'INSERT':
+            case Helpers.modeNames.INSERT:
                 this.set({statusBar : '-- INSERT --'});
                 break;
-            case  'EXECUTE':
+            case Helpers.modeNames.EXECUTE:
                 this.set({statusBar : ': '});
                 break;
-            case 'SEARCH':
+            case Helpers.modeNames.SEARCH:
                 this.set({statusBar : '/'});
                 break;
-            case 'NORMAL':
+            case Helpers.modeNames.NORMAL:
                 this.set({statusBar : ''});
                 break;
         }
         // Now that the status bar has been updated, change the actual mode.
         // This will trigger the view to change.
         this.logger().log('Mode change : ' + mode);
-        this.set({mode: mode});
+        this.set({mode : mode});
     }
 
 });

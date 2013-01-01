@@ -79,9 +79,6 @@ var Parser = function(options) {
     };
 
     this.done = function() {
-        // logger.log('PARSER : Completed command');
-        // logger.log('--------------------------');
-        // logger.log(JSON.stringify(normalCommand, null, '    '));
         this.normalHandler.receiveNormalCommand(normalCommand);
         normalCommand = {};
         this.reset();
