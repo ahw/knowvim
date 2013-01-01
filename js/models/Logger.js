@@ -35,6 +35,16 @@ var Logger = function(args) {
         error : 3
     };
 
+    this.debug = function(msg, obj) {
+        if (!this.isEnabled() || !this.meetsThreshold('debug'))
+            return;
+
+        if (obj)
+            console.debug(this.prefix + msg, obj);
+        else
+            console.debug(this.prefix + msg);
+    };
+
     this.log = function(msg, obj) {
         if (!this.isEnabled() || !this.meetsThreshold('info'))
             return;

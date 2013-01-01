@@ -69,7 +69,7 @@ var NormalHandler = Backbone.DeepModel.extend({
 
         switch(normalCommand.operationName) {
             case 'd':
-                this.logger().warn('No implementation for the "d" operation');
+                var operationResult = DeleteOperations.getDeleteOperationResult(args);
                 break;
 
             case 'y':
