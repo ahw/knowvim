@@ -62,8 +62,8 @@ var YankOperations = {
 
         this.logger.log('Yanked the following text into register ' + registerName);
         var operationLogger = this.logger;
-        operationResult.text.forEach(function(line) {
-            operationLogger.log('=> "' + line + '"');
+        operationResult.text.forEach(function(item, index, arr) {
+            operationLogger.log(sprintf('%3s => "%s"', index, item.content));
         });
         return operationResult;
     },
@@ -133,8 +133,12 @@ var YankOperations = {
         var higherRow = args.motionResult.higherPosition.row;
         var startCol = args.motionResult.startCol;
 
-        // Slice function returns elements in range [start, end).
-        operationResult.text = lines.slice(lowerRow, higherRow + 1);
+        for (var i = lowerRow; i <= higherRow; i++) {
+            operationResult.text.push({
+                index : i,
+                content : lines[i]
+            });
+        }
 
         // The cursor always goes on the minimum row regardless of where
         // the cursor was before the yank.
@@ -216,7 +220,10 @@ var YankOperations = {
         var operationResult = args.operationResult;
         // Yank all characters in the range [minCol, maxCol)
         var yankedChars = lines[startRow].substring(minCol, maxCol);
-        operationResult.text = [yankedChars];
+        operationResult.text.push({
+            index : startRow,
+            content : yankedChars
+        });
 
         // Cursor stays on the same startRow.
         operationResult.endRow = startRow;
@@ -241,7 +248,10 @@ var YankOperations = {
         var yankedLines = [];
 
         // Yank characters in the lower row in the range [lowerCol, EOL).
-        yankedLines.push(lines[lowerRow].substring(lowerCol));
+        yankedLines.push({
+            index : lowerRow,
+            content : lines[lowerRow].substring(lowerCol)
+        });
         this.logger.log('Yanking "' + yankedLines[0] + '" (partial)');
 
         // If there are entire lines between lowerRow and higherRow, add them to
@@ -252,12 +262,18 @@ var YankOperations = {
             // between that should be yanked.
             for (var i = lowerRow + 1; i < higherRow; i++) {
                 this.logger.log('Yanking "' + lines[i] + '" (entire line)');
-                yankedLines.push(lines[i]);
+                yankedLines.push({
+                    index : i,
+                    content : lines[i]
+                });
             }
         }
 
         // Yank the characters in the last line in the range [0, higherCol).
-        yankedLines.push(lines[higherRow].substr(0, higherCol));
+        yankedLines.push({
+            index : higherRow,
+            content : lines[higherRow].substr(0, higherCol)
+        });
         this.logger.log('Yanking "' + yankedLines[yankedLines.length-1] + '" (partial)');
 
         // Assign yankedLines to the text property.
