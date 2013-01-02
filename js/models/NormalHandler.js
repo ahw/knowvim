@@ -70,6 +70,22 @@ var NormalHandler = Backbone.DeepModel.extend({
         switch(normalCommand.operationName) {
             case 'd':
                 var operationResult = DeleteOperations.getDeleteOperationResult(args);
+
+                var attributes = {
+                    row : operationResult.endRow,
+                    col : operationResult.endCol,
+                    statusBar : operationResult.statusBar,
+                };
+                attributes['registers.' + operationResult.registerName] = {
+                    type : operationResult.motionResult.type,
+                    text : operationResult.text
+                };
+                this.get('vim').set(attributes);
+                this.logger().log('Setting Vim attributes:', attributes);
+                this.logger().log('Finished computing delete operation result:', operationResult);
+
+                // Manually fire a change event to change the buffer.
+                this.get('vim').trigger('change:buffer');
                 break;
 
             case 'y':

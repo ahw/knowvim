@@ -19,229 +19,274 @@ var DeleteOperations = {
      *  startCol : Number
      */
     getDeleteOperationResult : function(args) {
-        this.logger.log('Called getDeleteOperationResult');
+        this.logger.debug('Called getDeleteOperationResult');
+
+        // Yank with the exact same arguments.
         var operationResult = YankOperations.getYankOperationResult(args);
-        this.logger.warn('getDeleteOperationResult not fully implemented. Returning', operationResult);
-        return operationResult;
-    },
 
-    /**
-     * This is a helper function and should not be called directly. It is
-     * intended that getYankOperationResult will call this function for
-     * each of the {count} times required in order to compute the final
-     * operationResult of a repeated operation. The expected properties of
-     * args are as follows:
-     *
-     *  operationName : 'y', 'd'
-     *  motionResult : The object returned from Motions.getMotionResult
-     *  lines : An array of strings representing the buffer
-     *  text : An array of strings representing text already operated on by
-     *    this operation
-     */
-    applyOperation : function(args) {   
-        this.logger.log('Called applyOperation with args:' , args);
-        var operationName = args.operationName;
-        var motionResult = args.motionResult;
         var lines = args.lines;
-        var text = args.text ? args.text : [];
-        var isRepeat = args.isRepeat ? args.isRepeat : false;
+        var numLines = operationResult.text.length;
+        var lowerRow = operationResult.motionResult.lowerPosition.row;
+        var higherRow = operationResult.motionResult.higherPosition.row;
+        var lowerCol = operationResult.motionResult.lowerPosition.col;
+        var higherCol = operationResult.motionResult.higherPosition.col;
 
-        // Define the operationResult object.
-        var operationResult = {
-            motionResult : motionResult,
-            text : text,
-            endRow : motionResult.endRow, // Default is no cursor change
-            endCol : motionResult.endCol // Default is no cursor change
-        };
-
-        switch(motionResult.type) {
+        switch(operationResult.motionResult.type) {
             case 'linewise':
-                this.yankLinewise({
-                    motionResult : args.motionResult,
-                    lines : args.lines,
-                    operationResult : operationResult
-                });
+                this.logger.log('Removing ' + numLines + ' lines starting at line # ' + (lowerRow + 1));
+                lines.splice(lowerRow, numLines);
                 break;
+
             case 'characterwise':
-                this.yankCharacterwise({
-                    motionResult : args.motionResult,
-                    lines : lines,
-                    operationResult : operationResult
-                });
+                // Yank the characters to the left and right of the motion
+                // result. Note that lowerRow and higherRow might be
+                // references to the same element.
+                var leftChars = lines[lowerRow].substring(0, lowerCol);
+                var rightChars = lines[higherRow].substring(higherCol);
+                this.logger.debug('leftChars = ' + leftChars);
+                this.logger.debug('rightChars = ' + rightChars);
+                if (higherRow - lowerRow == 0) {
+                    this.logger.log('Characterwise delete on same line');
+                    // Assert: lowerRow and higherRow are the same thing.
+                    lines[lowerRow] = leftChars + rightChars;
+                }  else if (higherRow - lowerRow == 1) {
+                    this.logger.log('Characterwise delete on consecutive lines');
+                    // Assert: lowerRow and higherRow are consecutive.
+                    lines[lowerRow] = leftChars;
+                    lines[higherRow] = rightChars;
+                } else {
+                    this.logger.log('Characterwise delete on multiple lines');
+                    // Assert: characterwise motion spans multiple lines.
+                    lines.splice(lowerRow + 1, numLines - 2);
+                    lines[lowerRow] = leftChars + rightChars;
+                }
                 break;
+
             default:
-                this.logger.warn('Invalid motion type as part of ' + operationName + ' command.', motionResult);
+                this.logger.warn('Invalid motion type for delete command "' + args.normalCommand.commandString + '"');
         }
-
         return operationResult;
-    },
-
-    /**
-     * Make a linewise yank.
-     */
-    yankLinewise : function(args) {
-        this.logger.log('Called yankLinewise with args:', args);
-
-        var lines = args.lines;
-        var operationResult = args.operationResult;
-
-        // Compute a bunch of convenience variables.
-        var lowerRow = args.motionResult.lowerPosition.row;
-        var higherRow = args.motionResult.higherPosition.row;
-        var startCol = args.motionResult.startCol;
-
-        for (var i = lowerRow; i <= higherRow; i++) {
-            operationResult.text.push({
-                index : i,
-                content : lines[i]
-            });
-        }
-
-        // The cursor always goes on the minimum row regardless of where
-        // the cursor was before the yank.
-        operationResult.endRow = lowerRow;
-
-        // The column position is either (1) the same as it was or (2) on
-        // the right-most character of lowerRow
-        var newColIndex = Math.min(lines[lowerRow].length - 1, startCol);
-        newColIndex = Math.max(0, newColIndex); // Because newColIndex can't be -1
-        operationResult.endCol = newColIndex;
-    },
-
-    /**
-     * Make a characterwise yank. This function will call helper functions
-     * such as "yankCharacterwiseSingleLine" or
-     * "yankCharacterwiseMultipleLines" depending on the type of motion
-     * involved.
-     */
-    yankCharacterwise : function(args) {
-        var motionResult = args.motionResult;
-        var lines = args.lines;
-        var operationResult = args.operationResult;
-        var lowerRow = args.motionResult.lowerPosition.row;
-
-        var spansMultipleLines =
-            motionResult.startRow == motionResult.endRow
-            ? false
-            : true;
-
-        var isBackwardsYank;
-        if (motionResult.startRow > motionResult.endRow) {
-            isBackwardsYank = true;
-        } else if (motionResult.startRow < motionResult.endRow) {
-            isBackwardsYank = false;
-        } else if (motionResult.startCol > motionResult.endCol) {
-            isBackwardsYank = true;
-        } else {
-            isBackwardsYank = false;
-        }
-
-        // If the motion is inclusive, then add 1 to the end index.
-        if (motionResult.inclusive)
-            motionResult.endCol++;
-
-        // If we hit the end of the line, add 1 to the end index
-        if (motionResult.hitEol)
-            motionResult.endCol++;
-
-        if (!spansMultipleLines) {
-            this.yankCharacterwiseSingleLine({
-                motionResult : motionResult,
-                lines : lines,
-                operationResult : operationResult
-            });
-        } else {
-            this.yankCharacterwiseMultipleLines({
-                motionResult : motionResult,
-                lines : lines,
-                operationResult : operationResult
-            });
-        }
-    },
-
-    /**
-     * Helper function (should not call directly).  Make a characterwise
-     * yank all within a single line. For example, d{count}l will
-     * always (and only) apply within a single line.
-     */
-    yankCharacterwiseSingleLine : function(args) {
-        this.logger.log('Called yankCharacterwiseSingleLine with args:', args);
-        var lines = args.lines;
-        var startRow = args.motionResult.startRow;
-        var minCol = Math.min(
-            args.motionResult.startCol,
-            args.motionResult.endCol);
-        var maxCol = Math.max(
-            args.motionResult.startCol,
-            args.motionResult.endCol);
-        var operationResult = args.operationResult;
-        // Yank all characters in the range [minCol, maxCol)
-        var yankedChars = lines[startRow].substring(minCol, maxCol);
-        operationResult.text.push({
-            index : startRow,
-            content : yankedChars
-        });
-
-        // Cursor stays on the same startRow.
-        operationResult.endRow = startRow;
-        // Cursor always goes to the left-most position of the motion.
-        operationResult.endCol = minCol;
-    },
-
-    /**
-     * Helper function (should not call directly).Make a characterwise
-     * yank over multiple lines. For example, d{count}$ will almost
-     * always apply over multiple lines.
-     */
-    yankCharacterwiseMultipleLines : function(args) {
-        this.logger.log('Called yankCharacterwiseMultipleLines with args:', args);
-
-        var lines = args.lines;
-        var lowerRow = args.motionResult.lowerPosition.row;
-        var lowerCol = args.motionResult.lowerPosition.col;
-        var higherRow = args.motionResult.higherPosition.row;
-        var higherCol = args.motionResult.higherPosition.col;
-        var operationResult = args.operationResult;
-        var yankedLines = [];
-
-        // Yank characters in the lower row in the range [lowerCol, EOL).
-        yankedLines.push({
-            index : lowerRow,
-            content : lines[lowerRow].substring(lowerCol)
-        });
-        this.logger.log('Yanking "' + yankedLines[0] + '" (partial)');
-
-        // If there are entire lines between lowerRow and higherRow, add them to
-        // the yankedLines structure.
-        if (higherRow - lowerRow > 1) {
-            // Assert: the motion covers more than 2 lines,
-            // which means there must be entire lines in
-            // between that should be yanked.
-            for (var i = lowerRow + 1; i < higherRow; i++) {
-                this.logger.log('Yanking "' + lines[i] + '" (entire line)');
-                yankedLines.push({
-                    index : i,
-                    content : lines[i]
-                });
-            }
-        }
-
-        // Yank the characters in the last line in the range [0, higherCol).
-        yankedLines.push({
-            index : higherRow,
-            content : lines[higherRow].substr(0, higherCol)
-        });
-        this.logger.log('Yanking "' + yankedLines[yankedLines.length-1] + '" (partial)');
-
-        // Assign yankedLines to the text property.
-        operationResult.text = yankedLines;
-
-        // Update the positions using the operationResult object given in
-        // the function arguments.
-        this.logger.log('Set operationResult row and col ending positions: row = ' + lowerRow + ',  col = ' + lowerCol);
-        operationResult.endRow = lowerRow;
-        operationResult.endCol = lowerCol;
-
-        this.logger.log('Returning operationResult:', operationResult);
     }
+
+    // -- /**
+    // --  * Apply a deletion operation after having first done a yank.
+    // --  * Expected properties of the args parameter.
+    // --  *
+    // --  *  motionResult : The result of Motions.getMotionResult
+    // --  *  lines : An array of Strings representing the buffer
+    // --  */
+    // -- applyOperation : function(args) {
+    // --     switch(operationResult.motionResult.type) {
+    // --         case 'characterwise':
+    // --             this.deleteCharacterwise(args);
+    // --             break;
+
+    // --         case 'linewise':
+    // --             this.deleteLinewise(args);
+    // --             break;
+
+    // --         default:
+    // --             this.logger.warn('Unknown motion type "'
+    // --                 + operationResult.motionResult.type
+    // --                 + '" as part of delete command');
+    // --     }
+    // -- },
+
+
+    // -- /**
+    // --  * Make a characterwise deletion all within a single line. For example,
+    // --  * d{count}l will always (and only) apply within a single line.
+    // --  */
+    // -- deleteCharacterwiseSingleLine : function(args) {
+    // --     var lines = args.lines;
+    // --     var row = args.startRow;
+    // --     var startCol = args.startCol;
+    // --     var endCol = args.endCol;
+
+    // --     this.logger.log('Characterwise does not span multiple lines');
+    // --     this.logger.log('Original line = ' + lines[row]);
+    // --     // Remove all characters in the range [startCol, endCol)
+    // --     lines[row] = lines[row].substr(0, startCol) + lines[row].substr(endCol);
+    // --     this.logger.log('Modified line = ' + lines[row]);
+
+    // --     args.operationResult.row = row;
+    // --     args.operationResult.col = startCol;
+    // -- },
+
+    // -- /**
+    // --  * Make a characterwise deletion over multiple lines. For example,
+    // --  * d{count}$ will almost always apply over multiple lines.
+    // --  */
+    // -- deleteCharacterwiseMultipleLines : function(args) {
+    // --     var lines = args.lines;
+    // --     var startRow = args.startRow;
+    // --     var endRow = args.endRow;
+    // --     var startCol = args.startCol;
+    // --     var endCol = args.endCol;
+
+    // --     this.logger.log('characterwise DOES span multiple lines');
+    // --     this.logger.log('First line original = ' + lines[startRow]);
+
+    // --     // Chop of the end of firstLine by taking only
+    // --     // characters in the range [0, startCol).
+    // --     var firstLine = lines[startRow];
+    // --     firstLine = firstLine.substr(0, startCol);
+    // --     lines[startRow] = firstLine;
+    // --     this.logger.log('First line modified = ' + lines[startRow]);
+    // --     this.logger.log('Last line original = ' + lines[endRow]);
+
+    // --     // Chop of the beginning of lastLine by taking only
+    // --     // characters from index endCol to the end.
+    // --     var lastLine = lines[endRow];
+    // --     lastLine = lastLine.substr(endCol);
+    // --     lines[endRow] = lastLine;
+    // --     this.logger.log('Last line modified = ' + lastLine);
+
+    // --     if (endRow - startRow > 1) {
+    // --         // Assert: the motion covers more than 2 lines,
+    // --         // which means there must be entire lines in
+    // --         // between that should be deleted.
+    // --         var deletedLines = lines.splice(startRow + 1, endRow - startRow - 1);
+    // --         var operationsLogger = this.logger;
+    // --         deletedLines.forEach(function(line) {
+    // --             operationsLogger.log('Inner line deleted entirely = ' + line);
+    // --         });
+    // --     }
+
+    // --     // As per :help d:
+    // --     // An exception for the d{motion} command: If the
+    // --     // motion is not linewise, the start and end of the
+    // --     // motion are not in the same line, and there are
+    // --     // only blanks before the start and after the end of
+    // --     // the motion, the delete becomes linewise.  This
+    // --     // means that the delete also removes the line of
+    // --     // blanks that you might expect to remain.
+
+    // --     // Combine the firstLine and lastLine.
+    // --     lines[startRow] = firstLine + lastLine;
+    // --     // Delete the lastLine.
+    // --     lines.splice(endRow, 1);
+
+    // --     // Update the positions using the operationResult object given in
+    // --     // the function arguments.
+    // --     this.logger.log('New positions row = ' + startRow + ' col = ' + startCol);
+    // --     args.operationResult.row = startRow;
+    // --     args.operationResult.col = startCol;
+    // -- },
+
+    // -- /**
+    // --  * Make a characterwise deletion. This function will call helper
+    // --  * functions such as "deleteCharacterwiseSingleLine" or
+    // --  * "deleteCharacterwiseMultipleLines" depending on the type of motion
+    // --  * involved.
+    // --  */
+    // -- deleteCharacterwise : function(args) {
+    // --     var motionResult = args.motionResult;
+    // --     var lines = args.lines;
+    // --     
+    // --     // Compute a bunch of convenience variables.
+    // --     var startCol = Math.min(motionResult.startCol, motionResult.endCol);
+    // --     var endCol = Math.max(motionResult.startCol, motionResult.endCol);
+    // --     var startRow = Math.min(motionResult.startRow, motionResult.endRow);
+    // --     var endRow = Math.max(motionResult.startRow, motionResult.endRow);
+    // --     var spansMultipleLines = startRow == endRow ? false : true;
+
+    // --     // Encapsulates the result of this operation. "row" and "col"
+    // --     // represent the final position of the cursor.
+    // --     var operationResult = {
+    // --         row : motionResult.startRow,
+    // --         col : motionResult.startCol
+    // --     }
+
+    // --     var isBackwardsDelete;
+    // --     if (motionResult.startRow > motionResult.endRow) {
+    // --         isBackwardsDelete = true;
+    // --     } else if (motionResult.startRow < motionResult.endRow) {
+    // --         isBackwardsDelete = false;
+    // --     } else if (motionResult.startCol > motionResult.endCol) {
+    // --         isBackwardsDelete = true;
+    // --     } else {
+    // --         isBackwardsDelete = false;
+    // --     }
+
+    // --     // If the motion is inclusive, then add 1 to the end index.
+    // --     if (motionResult.inclusive)
+    // --         endCol++;
+
+    // --     // If we hit the end of the line, add 1 to the end index
+    // --     if (motionResult.hitEol)
+    // --         endCol++;
+
+    // --     if (!spansMultipleLines) {
+    // --         this.deleteCharacterwiseSingleLine({
+    // --             startRow : startRow,
+    // --             endRow : endRow,
+    // --             startCol : startCol,
+    // --             endCol : endCol,
+    // --             lines : lines,
+    // --             operationResult : operationResult
+    // --         });
+    // --     } else {
+    // --         this.deleteCharacterwiseMultipleLines({
+    // --             startRow : startRow,
+    // --             endRow : endRow,
+    // --             startCol : startCol,
+    // --             endCol : endCol,
+    // --             lines : lines,
+    // --             operationResult : operationResult
+    // --         });
+    // --     }
+    // --     
+    // --     // If this is a d[count]l delete whose [count]l motion
+    // --     // was cut short by the end of line, then we must delete
+    // --     // the last character of the line. The above logic will
+    // --     // not delete this last character.
+    // --     if (motionResult.hitEol) {
+    // --         this.logger.log('Moving column position back by one position since we deleted the last character.');
+    // --         operationResult.col = Math.max(0, lines[startRow].length - 1);
+    // --     }
+
+    // --     return operationResult;
+    // -- },
+
+    // -- /**
+    // --  * Make a linewise deletion.
+    // --  */
+    // -- deleteLinewise : function(args) {
+
+    // --     var motionResult = args.motionResult;
+    // --     var lines = args.lines;
+    // --     
+    // --     // Compute a bunch of convenience variables.
+    // --     var startRow = Math.min(motionResult.startRow, motionResult.endRow);
+    // --     var endRow = Math.max(motionResult.startRow, motionResult.endRow);
+
+    // --     // Encapsulates the result of this operation. "row" and "col"
+    // --     // represent the final position of the cursor.
+    // --     var operationResult = {
+    // --         row : motionResult.startRow,
+    // --         col : motionResult.startCol
+    // --     }
+
+    // --     var numLinesToDelete = endRow - startRow + 1;
+    // --     lines.splice(startRow, numLinesToDelete);
+
+    // --     // If there is still content on the line indexed by startRow then
+    // --     // the col position should be the location of the first non-blank
+    // --     // character in that line. If lines[startRow] does not exist (e.g.,
+    // --     // when deleting the last line in the file), the cursor should go on
+    // --     // the line immediately before it.
+    // --     var newRowIndex = startRow;
+    // --     if (typeof lines[startRow] == 'undefined')
+    // --         newRowIndex = Math.max(0, startRow - 1);
+
+    // --     var newColIndex = 0;
+    // --     if (typeof lines[newRowIndex] == 'string')
+    // --         newColIndex = Math.max(0, lines[newRowIndex].search(/\S/));
+
+    // --     operationResult.row = newRowIndex;
+    // --     operationResult.col = newColIndex;
+    // --     return operationResult;
+    // -- }
+
 };

@@ -65,6 +65,7 @@ var YankOperations = {
         operationResult.text.forEach(function(item, index, arr) {
             operationLogger.log(sprintf('%3s => "%s"', index, item.content));
         });
+        this.logger.log('Returning operationResult', operationResult);
         return operationResult;
     },
 
@@ -133,6 +134,7 @@ var YankOperations = {
         var higherRow = args.motionResult.higherPosition.row;
         var startCol = args.motionResult.startCol;
 
+        // Copy the line contents to the operationResult object.
         for (var i = lowerRow; i <= higherRow; i++) {
             operationResult.text.push({
                 index : i,
