@@ -26,6 +26,7 @@ var DeleteOperations = {
 
         var lines = args.lines;
         var numLines = operationResult.text.length;
+        var motionResult = operationResult.motionResult;
         var lowerRow = operationResult.motionResult.lowerPosition.row;
         var higherRow = operationResult.motionResult.higherPosition.row;
         var lowerCol = operationResult.motionResult.lowerPosition.col;
@@ -47,10 +48,20 @@ var DeleteOperations = {
                 // Yank the characters to the left and right of the motion
                 // result. Note that lowerRow and higherRow might be
                 // references to the same element.
+
+                // If the motion is inclusive, then add 1 to the end index.
+                if (motionResult.inclusive)
+                    higherCol++;
+
+                // If we hit the end of the line, add 1 to the end index
+                if (motionResult.hitEol)
+                    higherCol++;
+
                 var leftChars = lines[lowerRow].substring(0, lowerCol);
                 var rightChars = lines[higherRow].substring(higherCol);
                 this.logger.debug('leftChars = ' + leftChars);
                 this.logger.debug('rightChars = ' + rightChars);
+
                 if (higherRow - lowerRow == 0) {
                     this.logger.log('Characterwise delete on same line');
                     // Assert: lowerRow and higherRow are the same thing.
@@ -66,6 +77,16 @@ var DeleteOperations = {
                     lines.splice(lowerRow + 1, numLines - 2);
                     lines[lowerRow] = leftChars + rightChars;
                 }
+
+                // If this is a d[count]l delete whose [count]l motion
+                // was cut short by the end of line, then we must delete
+                // the last character of the line. The above logic will
+                // not delete this last character.
+                if (motionResult.hitEol) {
+                    this.logger.log('Moving column position back by one position since we deleted the last character.');
+                    operationResult.endCol = Math.max(0, lines[lowerRow].length - 1);
+                }
+
                 break;
 
             default:
