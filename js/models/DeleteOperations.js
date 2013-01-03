@@ -66,16 +66,25 @@ var DeleteOperations = {
                     this.logger.log('Characterwise delete on same line');
                     // Assert: lowerRow and higherRow are the same thing.
                     lines[lowerRow] = leftChars + rightChars;
-                }  else if (higherRow - lowerRow == 1) {
-                    this.logger.log('Characterwise delete on consecutive lines');
-                    // Assert: lowerRow and higherRow are consecutive.
-                    lines[lowerRow] = leftChars;
-                    lines[higherRow] = rightChars;
                 } else {
                     this.logger.log('Characterwise delete on multiple lines');
                     // Assert: characterwise motion spans multiple lines.
-                    lines.splice(lowerRow + 1, numLines - 2);
+                    lines.splice(lowerRow + 1, numLines - 1);
                     lines[lowerRow] = leftChars + rightChars;
+
+                    // An exception for the d{motion} command: If the motion
+                    // is not linewise, the start and end of the motion are
+                    // not in the same line, and there are only blanks
+                    // before the start and after the end of the motion, the
+                    // delete becomes linewise.  This means that the delete
+                    // also removes the line of blanks that you might expect
+                    // to remain.
+                    if (/^[\s]*$/.test(rightChars)) {
+                        this.logger.debug('Should turn into a linewise');
+                        this.logger.debug('lowerRow = ' + lowerRow);
+                        this.logger.debug('higherRow = ' + higherRow);
+                        lines.splice(higherRow, 1);
+                    }
                 }
 
                 // If this is a d[count]l delete whose [count]l motion
