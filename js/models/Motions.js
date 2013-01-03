@@ -84,13 +84,18 @@ var Motions = {
         } else if (motionResult.higherOrLower == 'lower') {
             motionResult.higherPosition.row = startRow;
             motionResult.higherPosition.col = startCol;
-        } else {
+        } else if (motionResult.higherOrLower == 'sameLine') {
             motionResult.lowerPosition.row = startRow;
             motionResult.lowerPosition.col = startCol;
             motionResult.higherPosition.row = startRow;
             motionResult.higherPosition.col = startCol;
-            this.logger.warn('Not changing motionResult.higherPosition or motionResult.lowerPosition because higherOrLower == null');
+        } else {
+            this.logger.warn('Not changing motionResult.higherPosition or motionResult.lowerPosition because higherOrLower == ' + motionResult.higherOrLower);
             this.logger.warn('Setting lowerPosition row/col AND higherPosition row/col to the original start values');
+            motionResult.lowerPosition.row = startRow;
+            motionResult.lowerPosition.col = startCol;
+            motionResult.higherPosition.row = startRow;
+            motionResult.higherPosition.col = startCol;
         }
 
         this.logger.log('Returning motionResult', motionResult);
@@ -250,6 +255,7 @@ var Motions = {
                 // motionResult.startRow and motinoResult.endRow should
                 // remain as-is.
                 motionResult.type = 'linewise';
+                motionResult.higherOrLower = 'sameLine';
                 break;
 
             case 'w':

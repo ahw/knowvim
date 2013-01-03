@@ -95,6 +95,7 @@ if ($browser == 'mobile') {
 <script type="text/javascript" src="/js/models/Tokenizer.js"></script>
 <script type="text/javascript" src="/js/models/Parser.js"></script>
 <script type="text/javascript" src="/js/models/Motions.js"></script>
+<script type="text/javascript" src="/js/models/Positioning.js"></script>
 <script type="text/javascript" src="/js/models/YankOperations.js"></script>
 <script type="text/javascript" src="/js/models/DeleteOperations.js"></script>
 <script type="text/javascript" src="/js/models/MarkOperations.js"></script>

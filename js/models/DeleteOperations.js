@@ -35,6 +35,12 @@ var DeleteOperations = {
             case 'linewise':
                 this.logger.log('Removing ' + numLines + ' lines starting at line # ' + (lowerRow + 1));
                 lines.splice(lowerRow, numLines);
+                var position = Positioning.getPositionAfterLinewiseDelete({
+                    lines : lines,
+                    motionResult : operationResult.motionResult
+                });
+                operationResult.endRow = position.row;
+                operationResult.endCol = position.col;
                 break;
 
             case 'characterwise':
