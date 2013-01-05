@@ -29,7 +29,7 @@ var Operations = {
                 return {
                     endRow : args.startRow,
                     endCol : args.startCol,
-                    statusBar : ""
+                    error : ""
                 };
                 break;
             case 'm':

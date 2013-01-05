@@ -74,7 +74,7 @@ var NormalHandler = Backbone.DeepModel.extend({
                 var attributes = {
                     row : operationResult.endRow,
                     col : operationResult.endCol,
-                    statusBar : operationResult.statusBar,
+                    statusBar : operationResult.error ? operationResult.error : ""
                 };
                 attributes['registers.' + operationResult.registerName] = {
                     type : operationResult.motionResult.type,
@@ -93,7 +93,7 @@ var NormalHandler = Backbone.DeepModel.extend({
                 var attributes = {
                     row : operationResult.endRow,
                     col : operationResult.endCol,
-                    statusBar : operationResult.statusBar,
+                    statusBar : operationResult.error ? operationResult.error : ""
                 };
                 attributes['registers.' + operationResult.registerName] = {
                     type : operationResult.motionResult.type,
@@ -127,6 +127,7 @@ var NormalHandler = Backbone.DeepModel.extend({
                 this.get('vim').set({
                     row : motionResult.endRow,
                     col : motionResult.endCol,
+                    statusBar : motionResult.error ? motionResult.error : ""
                 });
         }
     }

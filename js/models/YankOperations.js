@@ -48,7 +48,7 @@ var YankOperations = {
             operationName : normalCommand.operationName,
             motionResult : motionResult,
             lines : lines,
-            statusBar : "" // Defines the status bar text.
+            error : "" // No error message.
         });
 
         // Set the register name.
@@ -58,7 +58,7 @@ var YankOperations = {
         // than 2 (seems weird that 2 is the magic number, but that seems to
         // be Vim behavior as far as I can tell.
         if (operationResult.text.length > 2)
-            operationResult.statusBar = operationResult.text.length + ' lines yanked';
+            operationResult.error = operationResult.text.length + ' lines yanked';
 
         this.logger.log('Yanked the following text into register ' + registerName);
         var operationLogger = this.logger;

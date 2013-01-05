@@ -29,8 +29,7 @@ var MarkOperations = {
         vim.set(attributes);
         var operationResult = {
             endRow : startRow,
-            endCol : startCol,
-            statusBar : ""
+            endCol : startCol
         };
         this.logger.log('Set mark "' + markName + '"');
         this.logger.log('All marks:', vim.get('marks'));
