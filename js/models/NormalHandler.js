@@ -56,7 +56,7 @@ var NormalHandler = Backbone.DeepModel.extend({
     },
 
     receiveNormalCommand : function(normalCommand) {
-        this.logger().log('Received normalCommand', normalCommand);
+        this.logger().log('Received normal command "' + normalCommand.commandString + '"', normalCommand);
         var deleteOrYank = /^(delete|yank)$/;
 
         var args = {

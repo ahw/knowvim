@@ -80,6 +80,7 @@ var Parser = function(options) {
 
     this.done = function() {
         this.normalHandler.receiveNormalCommand(normalCommand);
+        logger.log('Submitting normal command ' + normalCommand.commandString, normalCommand);
         normalCommand = {};
         this.reset();
     };
@@ -197,7 +198,7 @@ var Parser = function(options) {
                 validNextTokens = {
                     'put' : 'operationName',
                     'yank' : 'operationName',
-                    'count' : 'operationCount',
+                    'count' : 'count',
                     'delete' : 'operationName'
                 };
                 break;
@@ -207,7 +208,7 @@ var Parser = function(options) {
                 this.tryToAssignOperationCount();
                 validNextTokens = {
                     'find' : 'motionName',
-                    'count' : 'motionCount',
+                    'count' : 'count',
                     'search' : 'motionName',
                     'motion' : 'motionName',
                     'gotoMark' : 'motionName',
