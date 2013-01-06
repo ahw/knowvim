@@ -24,7 +24,7 @@ var Logger = function(args) {
         if (matches) {
             return matches[1];
         } else {
-            return 'debug';
+            return 'debug'; // Default threshold is debug.
         }
     };
 

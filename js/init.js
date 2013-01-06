@@ -3,5 +3,5 @@ $(document).ready(function() {
     vim = new Vim();
     editor = new EditorView({model : vim});
     app = new ApplicationView({editorView : editor});
-    vim.openBuffer('lorem.txt');
+    vim.openBuffer('python.py');
 });

@@ -99,6 +99,7 @@ if ($browser == 'mobile') {
 <script type="text/javascript" src="/js/models/YankOperations.js"></script>
 <script type="text/javascript" src="/js/models/DeleteOperations.js"></script>
 <script type="text/javascript" src="/js/models/MarkOperations.js"></script>
+<script type="text/javascript" src="/js/models/PutOperations.js"></script>
 
 <script type="text/javascript" src="/js/models/Buffer.js"></script>
 <script type="text/javascript" src="/js/models/NormalHandler.js"></script>

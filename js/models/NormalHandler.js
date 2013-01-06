@@ -111,6 +111,19 @@ var NormalHandler = Backbone.DeepModel.extend({
                 // TODO: Why return something we don't do anything with it?
                 break;
 
+            case 'p':
+                var operationResult = PutOperations.getPutOperationResult(args);
+                this.logger().log('Finished computing put operation result:', operationResult);
+                this.logger().debug('Triggering change:buffer event');
+                this.get('vim').trigger('change:buffer');
+
+                this.get('vim').set({
+                    row : operationResult.endRow,
+                    col : operationResult.endCol,
+                    statusBar : operationResult.error ? operationResult.error : ""
+                });
+                break;
+
             default:
                 // Assert: No operation given. This must be a motion only.
                 // If there is a motion component to the command, get the motion

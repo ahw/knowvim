@@ -59,8 +59,9 @@ var DeleteOperations = {
 
                 var leftChars = lines[lowerRow].substring(0, lowerCol);
                 var rightChars = lines[higherRow].substring(higherCol);
-                this.logger.debug('leftChars = ' + leftChars);
-                this.logger.debug('rightChars = ' + rightChars);
+                this.logger.debug('leftChars = "' + leftChars + '"');
+                this.logger.debug('deletedChars = "' + lines[lowerRow].substring(lowerCol, higherCol) + '"');
+                this.logger.debug('rightChars = "' + rightChars + '"');
 
                 if (higherRow - lowerRow == 0) {
                     this.logger.log('Characterwise delete on same line');

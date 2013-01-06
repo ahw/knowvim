@@ -40,5 +40,19 @@ var Positioning = {
 
         this.logger.log('Position after linewise delete: row = ' + row + ' col = ' + col);
         return {row: row, col: col};
+    },
+
+    /**
+     * Returns an object whose "row" and "col" properties represent the new
+     * cursor position afte a linewise delete. Expected properties of args:
+     *
+     *  lines : the array of Strings representing the buffer after a put
+     *  startRow : Number the starting row before the put
+     *  startCol : Number the starting column before the put
+     */
+    getPositionAfterLinewisePutBelow : function(args) {
+        var row = args.startRow + 1;
+        var col = Math.max(0, args.lines[row].search(/\S/));
+        return {row: row, col: col};
     }
 };

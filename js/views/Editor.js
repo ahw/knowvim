@@ -68,7 +68,7 @@ var EditorView = Backbone.View.extend({
         // Get the text of the current line. Note that <span> tags will be
         // automatically removed using jQuery's text() function.
         currentLine = $($('.line')[cursorRow]).text();
-        this.logger.log('Current line = ' + currentLine);
+        this.logger.debug('Current line = ' + currentLine);
 
         // If we're jumping to a new line, put the clean contents back into
         // `cursorRow` and pull out the contents in `row`. Otherwise, just
@@ -76,8 +76,10 @@ var EditorView = Backbone.View.extend({
         if (cursorRow != row) {
             $($('.line')[cursorRow]).html(currentLine);
             newLine = $($('.line')[row]).text();
+            this.logger.debug('Jumping to a new line. new line = "' + newLine + '"');
         } else {
             newLine = currentLine;
+            this.logger.debug('Moving within same lines = "' + newLine + '"');
         }
         // Add cursor tags to the new line.
         newLine = this.addCursorTags(newLine, row, col);

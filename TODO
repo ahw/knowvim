@@ -6,38 +6,39 @@ Features
 [ ] Update mark positions for every delete and insertion.
 
 [ ] Positioning. Figure out how the column position is determined after
- |  vertical movements and especially characterwise yanks and such. Maybe
- |  create a Positioning.js module with methods like
- |
- |  var col = getColumnPosition({
- |      startCol : Number
- |      motionResult : {
- |          motionName : String,
- |          type : 'characterwise' | 'linewise',
- |          inclusive : Boolean
- |          ...
- |      }
- |  });
+    vertical movements and especially characterwise yanks and such. Maybe
+    create a Positioning.js module with methods like
+  
+    var col = getColumnPosition({
+        startCol : Number
+        motionResult : {
+            motionName : String,
+            type : 'characterwise' | 'linewise',
+            inclusive : Boolean
+            ...
+        }
+    });
+[ ] w motion
+[ ] b motion
+[ ] } motion
+[ ] { motion
+[ ] gg motion
+[ ] G motion
 
-[ ] Motions
-    [ ] w motion
-    [ ] b motion
-    [ ] } motion
-    [ ] { motion
-    [ ] gg motion
-    [ ] G motion
+[ ] f motion
+[ ] F motion
+[ ] t motion
+[ ] T motion
 
-[ ] Finds
-    [ ] f motion
-    [ ] F motion
-    [ ] t motion
-    [ ] T motion
+[ ] / forward search
+[ ] ? backward search
+[ ] n motion
+[ ] N motion
 
-[ ] Searches
-    [ ] / forward search
-    [ ] ? backward search
-    [ ] n motion
-    [ ] N motion
+Code Maintenance
+----------------
+[ ] Create map of error codes and messages (e.g., E20 => Mark not set)
+[ ] Remove Positioning module since its only used in one spot.
 
 Bugs
 ----
