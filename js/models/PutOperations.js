@@ -20,6 +20,8 @@ var PutOperations = {
 
         var normalCommand = args.normalCommand;
         var lines = args.lines;
+        var startRow = args.startRow;
+        var startCol = args.startCol;
 
         // Default register name is the unnamed register, '"'.
         var registerName = normalCommand.registerName
@@ -27,8 +29,8 @@ var PutOperations = {
             : '"';
 
         var operationResult = {
-            endRow : args.startRow,
-            endCol : args.startCol
+            endRow : startRow,
+            endCol : startCol
         };
 
         var register = vim.get('registers')[registerName];
@@ -37,24 +39,43 @@ var PutOperations = {
             this.logger.warn('Nothing in register ' + registerName);
             return operationResult;
         } else if (register.type == 'linewise') {
+            this.logger.debug('Linewise put');
             var offset = 1;
             var putLogger = this.logger;
             this.logger.debug('lines = ', lines);
             register.text.forEach(function(line) {
-                lines.splice(args.startRow + offset, 0, line.content);
-                putLogger.log('Splicing at index ' + (args.startRow + offset) + ': "' + line.content + '" lines.splice(' + (args.startRow + offset) + ', 0, ' + line.content + ')');
+                lines.splice(startRow + offset, 0, line.content);
+                putLogger.log('Splicing at index ' + (startRow + offset) + ': "' + line.content + '" lines.splice(' + (startRow + offset) + ', 0, ' + line.content + ')');
                 putLogger.debug('lines = ', lines);
                 offset++;
             });
             var position = Positioning.getPositionAfterLinewisePutBelow({
                 lines : lines,
-                startRow : args.startRow,
-                startCol : args.startCol
+                startRow : startRow,
+                startCol : startCol
             });
             operationResult.endRow = position.row;
             operationResult.endCol = position.col;
         } else if (register.type == 'characterwise') {
-            this.logger.warn('Characterwise puts not implemented yet. Doing nothing.');
+            this.logger.debug('Characterwise put');
+            // Concatenate the characters to the left of the cursor with the
+            // first line of text in the register.
+            var leftChars = lines[startRow].substring(0, startCol + 1) + register.text[0].content;
+            // Concatenate the last line of the register with the characters
+            // to the right of the cursor.
+            var rightChars = register.text[register.text.length - 1].content + lines[startRow].substring(startCol + 1);
+            lines.splice(startRow, 1, leftChars);
+            var offset = 1;
+            register.text.forEach(function(line, index) {
+                // If this isn't the first or last line, apply the splice
+                // operation.
+                if (index != 0 && index != register.text.length - 1) {
+                    lines.splice(startRow + offset, 0, line.content);
+                    offset++;
+                }
+            });
+            lines.splice(startRow + register.text.length, 0, rightChars);
+            operationResult.endCol = startCol + 1;
         } else {
             this.logger.warn('Unknown value "' + register.type + '" for register type');
         }
