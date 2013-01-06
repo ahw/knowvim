@@ -76,7 +76,7 @@ var PutOperations = {
                     offset++;
                 }
             });
-            lines.splice(startRow + register.text.length, 0, rightChars);
+            lines.splice(startRow + register.text.length - 1, 0, rightChars);
             operationResult.endCol = startCol + 1;
         } else {
             this.logger.warn('Unknown value "' + register.type + '" for register type');

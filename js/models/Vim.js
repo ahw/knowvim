@@ -139,6 +139,15 @@ var Vim = Backbone.DeepModel.extend({
     },
 
     keyHandler : function(key) {
+        if (window.location.search.indexOf('recordKeyStrokes=1')) {
+            var previousKeystrokes = this.get('keystrokes');
+            if (typeof previousKeystrokes == 'undefined') {
+                previousKeystrokes = "";
+            }
+            this.set({
+                keystrokes : previousKeystrokes + key
+            });
+        }
         switch(this.get('mode')) {
             case Helpers.modeNames.NORMAL:
                 this.get('normalHandler').input(key);

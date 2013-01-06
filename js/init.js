@@ -5,10 +5,12 @@ $(document).ready(function() {
     app = new ApplicationView({editorView : editor});
     vim.openBuffer('python.py', function() {
         var macroString = Macros.getQueryStringMacro();
-        Macros.runMacroString({
-            vim : vim,
-            macroString : macroString
-        });
+        if (typeof macroString == 'string') {
+            Macros.runMacroString({
+                vim : vim,
+                macroString : macroString
+            });
+        }
     });
 
 });

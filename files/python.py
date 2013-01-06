@@ -1,5 +1,5 @@
 import random
-
+# Here is a comment.
 def quick(ls):
     # Base cases: list of length 1 or 0 is already sorted.
     if (len(ls) == 1 or len(ls) == 0):

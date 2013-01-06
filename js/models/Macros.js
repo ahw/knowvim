@@ -10,9 +10,13 @@ var Macros = {
      * present.
      */
     getQueryStringMacro : function() {
-        var macro = window.location.search.match(/macro=([^&]+)/)[1];
-        this.logger.log('Found macro string: ' + macro);
-        return macro;
+        var matches = window.location.search.match(/macro=([^&]+)/);
+        if (matches) {
+            this.logger.log('Found macro string: ' + matches[1]);
+            return matches[1];
+        } else {
+            return null;
+        }
     },
 
     /**
