@@ -64,7 +64,9 @@ var PutOperations = {
             // Concatenate the last line of the register with the characters
             // to the right of the cursor.
             var rightChars = register.text[register.text.length - 1].content + lines[startRow].substring(startCol + 1);
+            this.logger.debug('Original: ' + lines[startRow]);
             lines.splice(startRow, 1, leftChars);
+            this.logger.debug('Modified: ' + lines[startRow]);
             var offset = 1;
             register.text.forEach(function(line, index) {
                 // If this isn't the first or last line, apply the splice

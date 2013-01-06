@@ -132,6 +132,8 @@ var Vim = Backbone.DeepModel.extend({
             success : function() {
                 // Manually trigger the change event on success.
                 model.change();
+                // Call the callback function
+                callback();
             }
         });
     },
