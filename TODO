@@ -48,3 +48,9 @@ Bugs
     file with a blank line. "j" movement down to the line, then "k" away
     from it. Line contents will remain a single space, even after "k"-ing
     away.
+
+[ ] Sometimes {count} values get mixed up. To reproduce:
+        y4j => Yanks 5 lines (expected)
+        4yj => Yanks 5 lines in register r (expected)
+        "ry4j => Yanks 5 lines in register r (expected)
+        "r4yj => Yanks 17 lines into register r (unexpected)
