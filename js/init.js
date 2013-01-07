@@ -3,7 +3,9 @@ $(document).ready(function() {
     vim = new Vim();
     editor = new EditorView({model : vim});
     app = new ApplicationView({editorView : editor});
-    vim.openBuffer('python.py', function() {
+    var matches = window.location.search.match(/file=([^&]+)/);
+    var fileName = matches ? matches[1] : 'lorem.txt';
+    vim.openBuffer(fileName, function() {
         var macroString = Macros.getQueryStringMacro();
         if (typeof macroString == 'string') {
             Macros.runMacroString({
