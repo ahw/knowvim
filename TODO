@@ -1,6 +1,6 @@
 Features
 --------
-[ ] INSERT mode
+[x] INSERT mode
 [ ] Update mark positions for every delete and insertion.
 
 [ ] Positioning. Figure out how the column position is determined after
