@@ -55,6 +55,11 @@ var NormalHandler = Backbone.DeepModel.extend({
         this.get('tokenizer').receiveChar(key);
     },
 
+    receiveModeChange : function(mode) {
+        this.logger().log('Setting Vim mode to "' + mode + '" from NORMAL');
+        this.get('vim').changeMode(mode);
+    },
+
     receiveNormalCommand : function(normalCommand) {
         this.logger().log('Received normal command "' + normalCommand.commandString + '"', normalCommand);
         var deleteOrYank = /^(delete|yank)$/;

@@ -105,6 +105,7 @@ if ($browser == 'mobile') {
 
 <script type="text/javascript" src="/js/models/Buffer.js"></script>
 <script type="text/javascript" src="/js/models/NormalHandler.js"></script>
+<script type="text/javascript" src="/js/models/InsertHandler.js"></script>
 <script type="text/javascript" src="/js/models/Vim.js"></script>
 <script type="text/javascript" src="/js/views/Application.js"></script>
 <script type="text/javascript" src="/js/views/Editor.js"></script>

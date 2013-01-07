@@ -1,8 +1,6 @@
 Features
 --------
 [ ] INSERT mode
-[ ] Deletes
-[ ] Puts
 [ ] Update mark positions for every delete and insertion.
 
 [ ] Positioning. Figure out how the column position is determined after
@@ -34,6 +32,8 @@ Features
 [ ] ? backward search
 [ ] n motion
 [ ] N motion
+[X] Deletes
+[X] Puts
 
 Code Maintenance
 ----------------
@@ -49,7 +49,7 @@ Bugs
     from it. Line contents will remain a single space, even after "k"-ing
     away.
 
-[ ] Sometimes {count} values get mixed up. To reproduce:
+[X] Sometimes {count} values get mixed up. To reproduce:
         y4j => Yanks 5 lines (expected)
         4yj => Yanks 5 lines in register r (expected)
         "ry4j => Yanks 5 lines in register r (expected)

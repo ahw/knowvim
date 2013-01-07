@@ -8,10 +8,11 @@ var Helpers = {
     },
 
     modeNames : {
+        INSERT : 'INSERT',
         NORMAL : 'NORMAL',
         VISUAL : 'VISUAL',
-        EXECUTE : 'EXECUTE',
-        SEARCH : 'SEARCH'
+        SEARCH : 'SEARCH',
+        EXECUTE : 'EXECUTE'
     }
 
 };

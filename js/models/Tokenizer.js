@@ -12,6 +12,7 @@ var Tokenizer = function(options) {
     var putOperator = 'p';
     var markOperator = 'm';
     var jumpOperators = /^['`]$/;
+    var modeKeys = /^[iVvR\:]$/;
     var regOperator = '"';
     var searchTerm = "";
     var countValue = 0;
@@ -254,6 +255,13 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     this.state = states.READY;
+                    this.parser.receiveToken(t);
+                
+                } else if (modeKeys.test(ch)) {
+                    var t = new Token({
+                        type : 'mode',
+                        value : ch
+                    });
                     this.parser.receiveToken(t);
 
                 } else {

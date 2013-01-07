@@ -15,6 +15,7 @@ var Vim = Backbone.DeepModel.extend({
         buffer : null,
         mode : Helpers.modeNames.NORMAL,
         normalHandler : null,
+        insertHandler : null,
 
         // Where the row position _should_ be. This is not always the same
         // as cursorRow, which represents the row position of the cursor.
@@ -115,9 +116,10 @@ var Vim = Backbone.DeepModel.extend({
             model.set({buffer : new Buffer()});
         }
 
-        // Initialize the NormalHandler.
+        // Initialize the NormalHandler and InsertHandler
         model.set({
             normalHandler : new NormalHandler({ vim : model }),
+            insertHandler : new InsertHandler({ vim : model })
         });
 
     },
@@ -150,6 +152,9 @@ var Vim = Backbone.DeepModel.extend({
         switch(this.get('mode')) {
             case Helpers.modeNames.NORMAL:
                 this.get('normalHandler').input(key);
+                break;
+            case Helpers.modeNames.INSERT:
+                this.get('insertHandler').receiveKey(key);
                 break;
             default:
                 this.logger().warn('Somehow got into unknown mode "' + this.get('mode') + '"');

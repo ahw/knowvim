@@ -20,33 +20,35 @@ var Parser = function(options) {
      * The values in validNextTokens are the key names used in assembling
      * the final VimCommand object. They should be interpreted as such:
      *
-     * If validNextTokens = {
-     *  searchWord : 'searchWord'
-     * }
+     * If we have
      *
-     * Then the only valid next token is a 'searchWord' token. Once
+     *  validNextTokens = {
+     *   searchWord : 'searchWord'
+     *  }
+     *
+     * then the only valid next token is a 'searchWord' token. Once
      * received, it should be inpreted as the 'searchWord' within a 'search'
      * command, which itself is a particular 'motionName'. See example
      * below.
      *
-     * var p = new Parser();
-     * p.receiveToken(new Token({type : 'register', value : 'a'});
-     * // => validNextTokens = {
-     * //  count : 'operationCount',
-     * //  delete : 'operationName',
-     * //  yank : 'operationName',
-     * //  put : 'operationName'
-     * // }
+     *  var p = new Parser();
+     *  p.receiveToken(new Token({type : 'register', value : 'a'});
+     *  // => validNextTokens = {
+     *  //  count : 'operationCount',
+     *  //  delete : 'operationName',
+     *  //  yank : 'operationName',
+     *  //  put : 'operationName'
+     *  // }
      *
-     * p.receiveToken(new Token({type : 'delete', value : 'd'});
-     * // => validNextTokens = {
-     * //  count : 'motionCount',
-     * //  motion : 'motionName',
-     * //  find : 'motionName',
-     * //  search : 'motionName',
-     * //  gotoMark : 'motionName',
-     * //  sameLine : 'motionName'
-     * // }
+     *  p.receiveToken(new Token({type : 'delete', value : 'd'});
+     *  // => validNextTokens = {
+     *  //  count : 'motionCount',
+     *  //  motion : 'motionName',
+     *  //  find : 'motionName',
+     *  //  search : 'motionName',
+     *  //  gotoMark : 'motionName',
+     *  //  sameLine : 'motionName'
+     *  // }
      */
     var validNextTokens = {};
 
@@ -59,6 +61,7 @@ var Parser = function(options) {
         mostRecentCountToken = null;
         normalCommand = {};
         validNextTokens = {
+            'mode' : 'mode',
             'count' : 'count',
             'escape' : 'escape',
             'register' : 'register',
@@ -76,6 +79,11 @@ var Parser = function(options) {
 
     this.error = function(token) {
         logger.warn('No implementation to handle token ' + token);
+    };
+
+    this.sendModeChange = function(mode) {
+        logger.log('Received mode change "' + mode + '"');
+        this.normalHandler.receiveModeChange(mode);
     };
 
     this.done = function() {
@@ -222,8 +230,13 @@ var Parser = function(options) {
                 break;
 
             case 'escape':
-                logger.log('Escaping from Normal mode by resetting everything.');
+                logger.log('Received ESC while already in NORMAL mode; resetting everything.');
                 this.reset();
+                break;
+
+            case 'mode':
+                this.reset();
+                this.sendModeChange(Helpers.modeNamesByKey[token.value]);
                 break;
 
             default:
