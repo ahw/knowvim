@@ -1,10 +1,17 @@
 var Vim = Backbone.DeepModel.extend({
 
     defaults : {
+        // The logger.
         logger : new Logger({
             module : 'vim',
             prefix : 'VIM'
         }),
+
+        // The keystroke logger. Used for recording all keystrokes in a session.
+        keystrokeLogger : new KeystrokeLogger({
+            vim : this
+        }),
+
         buffer : null,
         mode : Helpers.modeNames.NORMAL,
         normalHandler : null,
@@ -139,15 +146,7 @@ var Vim = Backbone.DeepModel.extend({
     },
 
     keyHandler : function(key) {
-        if (window.location.search.indexOf('recordKeyStrokes=1')) {
-            var previousKeystrokes = this.get('keystrokes');
-            if (typeof previousKeystrokes == 'undefined') {
-                previousKeystrokes = "";
-            }
-            this.set({
-                keystrokes : previousKeystrokes + key
-            });
-        }
+        this.get('keystrokeLogger').log(key);
         switch(this.get('mode')) {
             case Helpers.modeNames.NORMAL:
                 this.get('normalHandler').input(key);
