@@ -9,6 +9,10 @@ var EditorView = Backbone.View.extend({
     statusBar : '#statusbar',
     row : '#row',
     col : '#col',
+    cursor : {
+        openingTag : '<span id="cursor_char">',
+        closingTag : '</span>'
+    },
     logger : new Logger({
         module : 'editor',
         prefix : 'EDITOR'
@@ -23,7 +27,6 @@ var EditorView = Backbone.View.extend({
      * <code>this.model</code>
      */
     initialize : function(options) {
-
         var view = this;
         if (options && options.model) {
             view.model = options.model; // Assume model is a Vim.
@@ -49,7 +52,6 @@ var EditorView = Backbone.View.extend({
         view.model.on('change:statusBar', function() {
             view.renderStatusBar();
         });
-
     },
 
     /**
@@ -107,46 +109,20 @@ var EditorView = Backbone.View.extend({
      * `span` tags around the character at the current `col` position.
      */
     addCursorTags : function(line, row, col) {
-
         if (line) {
             var leftSide = line.substring(0, col);
             var middle = line.charAt(col);
             var rightSide = line.substring(col + 1, line.length);
-            var newContents = leftSide + '<span id="cursor_char">' + middle + '</span>' + rightSide;
+            var newContents = leftSide
+                + this.cursor.openingTag
+                + middle
+                + this.cursor.closingTag
+                + rightSide;
             return newContents;
         } else {
             this.convertEmptyToSpace(row);
-            return '<span id="cursor_char"> </span>';
+            return this.cursor.openingTag + ' ' + this.cursor.closingTag;
         }
-    },
-
-    /**
-     * @method removeCursorTags Helper function for removing the `span`
-     * tags from a `line` of text.
-     */
-    removeCursorTags : function(line) {
-
-        // TODO: Put this magic text in a variable.
-        var spanOpen = line.indexOf('<span id="cursor_char">');
-        if (spanOpen == -1) {
-            return line;
-        }
-
-        // Get all the text up until the `span` opening tag.
-        leftSide = line.substring(0, spanOpen);
-
-        // Get the single character sandwiched between `span` tags.
-        // Note: "<span id="cursor_char">".length = 23
-        // TODO: Put this magic number in a function.
-        middle = line.charAt(spanOpen + 23);
-
-        // Get the rest of the text after the <span> closing tag.
-        // Note: "</span>".length = 7
-        // TODO: Put this magic text and magic number in a variable and/or
-        // function.
-        spanClose = line.indexOf("</span>");
-        rightSide = line.substring(spanClose + 7, line.length);
-        return leftSide + middle + rightSide;
     },
 
     /**
@@ -170,7 +146,6 @@ var EditorView = Backbone.View.extend({
      * chunk into <code>this.buffer</code>.
      */
     renderEntireBuffer : function() {
-
         this.logger.log('Rendering entire buffer...');
         var markup = "";
         var lines = this.model.get('buffer').get('lines');

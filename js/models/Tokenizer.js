@@ -25,8 +25,8 @@ var Tokenizer = function(options) {
         DELETE : 'DELETE',
         SEARCH : 'SEARCH',
         REGISTER : 'REGISTER',
-        GOTO_MARK : 'GOTO_MARK',
-    }
+        GOTO_MARK : 'GOTO_MARK'
+    };
     var logger = new Logger({
         module : 'tokenizer',
         prefix : 'TOKENIZER'
