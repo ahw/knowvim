@@ -14,18 +14,18 @@ var ApplicationView = Backbone.View.extend({
         keydown: function(e) {
             var key = null;
             switch(e.which) {
-                case 190:
-                    // The dot '.'
-                    // Trying to cope with Opera.
-                    e.preventDefault();
-                    key = '.';
-                    break;
-                case 191:
-                    // The slash '/'
-                    // Trying to cope with Opera.
-                    e.preventDefault();
-                    key = '/';
-                    break;
+                // -- case 190:
+                // --     // The dot '.'
+                // --     // Trying to cope with Opera.
+                // --     e.preventDefault();
+                // --     key = '.';
+                // --     break;
+                // -- case 191:
+                // --     // The slash '/'
+                // --     // Trying to cope with Opera.
+                // --     e.preventDefault();
+                // --     key = '/';
+                // --     break;
                 case 32:
                     // The space ' '
                     // Stop page from centering.
@@ -53,7 +53,7 @@ var ApplicationView = Backbone.View.extend({
                     break;
                 case 13:
                     e.preventDefault();
-                    key = 'ENTER';
+                    key = '\n';
                     break;
                 case 46:
                     key = 'DEL';

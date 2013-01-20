@@ -1,21 +1,19 @@
-01234
-11234
-21234
-31234
+                             know vim . com
 
-+ dev                          know vim . com
-+ dev
-+ dev
-+ dev
-+ dev
-+ dev
-+ dev                Press 'i' to enter INSERT mode.
-+ dev
-+ dev
-+ dev
-+ dev
-+ dev
-+ dev
-+ dev
-+ dev
+V => [C] (M | F | S | A)
+  => D
+  => Y
+  => P
 
+C => [1-9][0-9]*
+
+M => h | j | k | l | ...
+
+D => [R] [C] d [C] (M | F | S | A | d)
+Y => [R] [C] y [C] (M | F | S | A | y)
+
+P => [C] p
+K => mL
+A => 'L
+F => fL | tL | "F"L | TL
+S => /W | ?W

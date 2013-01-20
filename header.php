@@ -72,17 +72,44 @@ if ($browser == 'mobile') {
 <link rel="stylesheet" type="text/css" href="/css/shThemeDefault.css"/>
 
 
-<script type="text/javascript" src="/js/lib/jquery.js"></script>
-<script type="text/javascript" src="/js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="/js/lib/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="/js/lib/jquery-ui-1.9.1.custom.min.js"></script>
+<script type="text/javascript" src="/js/lib/underscore.js"></script>
+<script type="text/javascript" src="/js/lib/json2.js"></script>
+<script type="text/javascript" src="/js/lib/backbone.js"></script>
+<script type="text/javascript" src="/js/lib/deep-model.js"></script>
+<script type="text/javascript" src="/js/lib/sprintf.js"></script>
 <?php if (
     $pagetitle != "about"
     && $pagetitle != "faq"
     && $pagetitle != "contact"
-    && $pagetitle != "devnotes") { ?>
-
+    && $pagetitle != "devnotes"
+    && $pagetitle != "devnotes2") { ?>
+<!--
 <script type="text/javascript" src="/js/knowvim-ui.js"></script>
 <script type="text/javascript" src="/js/knowvim.js"></script>
+-->
+<script type="text/javascript" src="/js/util/Helpers.js"></script>
+<script type="text/javascript" src="/js/util/Logger.js"></script>
+<script type="text/javascript" src="/js/util/KeystrokeLogger.js"></script>
+<script type="text/javascript" src="/js/tokenizer/Token.js"></script>
+<script type="text/javascript" src="/js/tokenizer/Tokenizer.js"></script>
+<script type="text/javascript" src="/js/parser/Parser.js"></script>
+<script type="text/javascript" src="/js/motion/Motions.js"></script>
+<script type="text/javascript" src="/js/util/Positioning.js"></script>
+<script type="text/javascript" src="/js/operations/YankOperations.js"></script>
+<script type="text/javascript" src="/js/operations/DeleteOperations.js"></script>
+<script type="text/javascript" src="/js/operations/MarkOperations.js"></script>
+<script type="text/javascript" src="/js/operations/PutOperations.js"></script>
+<script type="text/javascript" src="/js/util/Macros.js"></script>
 
+<script type="text/javascript" src="/js/models/Buffer.js"></script>
+<script type="text/javascript" src="/js/handlers/NormalHandler.js"></script>
+<script type="text/javascript" src="/js/handlers/InsertHandler.js"></script>
+<script type="text/javascript" src="/js/models/Vim.js"></script>
+<script type="text/javascript" src="/js/views/Application.js"></script>
+<script type="text/javascript" src="/js/views/Editor.js"></script>
+<script type="text/javascript" src="/js/init.js"></script>
 <?php } ?>
 
 <!-- ye olde Google Analytics -->

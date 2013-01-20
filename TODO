@@ -1,12 +1,57 @@
-Implement better search and replace commands. E.g., :s/old/new, %s/old/new
-without g and c options.
+Features
+--------
+[x] INSERT mode
+[ ] INSERT mode backspace, delete
+[ ] Update mark positions for every delete and insertion.
 
-fix bug in 'gqj' command.  To repeat:
- :colorscheme hicon
- gqj
-. (repeatedly)
+[ ] Positioning. Figure out how the column position is determined after
+    vertical movements and especially characterwise yanks and such. Maybe
+    create a Positioning.js module with methods like
+  
+    var col = getColumnPosition({
+        startCol : Number
+        motionResult : {
+            motionName : String,
+            type : 'characterwise' | 'linewise',
+            inclusive : Boolean
+            ...
+        }
+    });
+[ ] w motion
+[ ] b motion
+[ ] } motion
+[ ] { motion
+[ ] gg motion
+[ ] G motion
 
-fix bug where hitting SPACE key moves page when writeoutput panel is long.
+[ ] f motion
+[ ] F motion
+[ ] t motion
+[ ] T motion
 
-refactor code so that v_cursor_move does not always need to be followed by
-calls to set_line_visibilities and renumber_lines(start).
+[ ] / forward search
+[ ] ? backward search
+[ ] n motion
+[ ] N motion
+[X] Deletes
+[X] Puts
+
+Code Maintenance
+----------------
+[ ] Create map of error codes and messages (e.g., E20 => Mark not set)
+[ ] Remove Positioning module since its only used in one spot.
+
+Bugs
+----
+[ ] Change empty lines to blank spaces only when the cursor is over them.
+    When the cursor leaves, change the line contents back to the empty
+    string (currently they are left as a single space). To reproduce edit a
+    file with a blank line. "j" movement down to the line, then "k" away
+    from it. Line contents will remain a single space, even after "k"-ing
+    away.
+
+[X] Sometimes {count} values get mixed up. To reproduce:
+        y4j => Yanks 5 lines (expected)
+        4yj => Yanks 5 lines in register r (expected)
+        "ry4j => Yanks 5 lines in register r (expected)
+        "r4yj => Yanks 17 lines into register r (unexpected)

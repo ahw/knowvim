@@ -1,0 +1,11 @@
+V -> [C]M|F|S|A
+  -> D
+  -> Y
+  -> P
+
+D -> [R][C]d[C]M|F|S|A|d
+M -> h|j|k|l|...
+Y -> [R][C]y[C]M|F|S|A|y
+P -> [C]p
+K -> mL
+

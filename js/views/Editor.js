@@ -9,6 +9,10 @@ var EditorView = Backbone.View.extend({
     statusBar : '#statusbar',
     row : '#row',
     col : '#col',
+    logger : new Logger({
+        module : 'editor',
+        prefix : 'EDITOR'
+    }),
 
     /**
      * @method initialize The EditorView constructor.  If
@@ -27,43 +31,93 @@ var EditorView = Backbone.View.extend({
             view.model = new Vim();
         }
 
-        view.model.on('change', function() {
-            view.renderBuffer();
+        view.model.on('change:buffer', function() {
+            // TODO: call renderBuffer instead.
+            view.renderEntireBuffer();
+            view.updateCursor();
         });
 
         view.model.on('change:row change:col', function() {
-            view.renderRowAndColCounters();
-            view.renderCursor();
+            view.updateRowAndColCounters();
+            view.updateCursor();
         });
 
         view.model.on('change:mode', function() {
             view.renderStatusBar();
         });
 
+        view.model.on('change:statusBar', function() {
+            view.renderStatusBar();
+        });
+
     },
 
     /**
-     * @method renderCursor Renders the cursor block by first removing the
-     * `span` tags around the old  character and wrapping the current
-     * character in `span` tags.
+     * @method updateCursor Renders the cursor block at the position given
+     * by "cursorRow" and "cursorCol". This function first removes the
+     * cursor block at the position given by "row" and "col".
      */
-    renderCursor : function() {
-        var row = this.model.get('row');
-        var col = this.model.get('col');
-        var cursorRow = this.model.get('cursorRow');
-        var cursorCol = this.model.get('cursorCol');
-        var line = this.model.get('buffer').get('lines')[cursorRow];
+    updateCursor : function() {
+        var row = this.model.get('row'); // The row we're moving to
+        var col = this.model.get('col'); // The col we're moving to
+        var cursorRow = this.model.get('cursorRow'); // The current row position of the cursor
+        var cursorCol = this.model.get('cursorCol'); // The current col position of the cursor
+        this.logger.log("Updating cursor to (" + row + ", " + col + ")");
 
-        // Write the cleaned line back to the buffer.
-        this.model.get('buffer').get('lines')[cursorRow] = line;
+        var currentLine, newLine;
+        // Get the text of the current line. Note that <span> tags will be
+        // automatically removed using jQuery's text() function.
+        currentLine = $($('.line')[cursorRow]).text();
+        this.logger.debug('Current line = ' + currentLine);
 
-        var newLine = this.model.get('bufer').get('lines')[row];
-        var left_side = newLine.substring(0, index);
-        var middle = newLine.charAt(index);
-        var right_side = newLine.substring(index + 1, newLine.length);
-        var new_contents = left_side
-                         + '<span id="cursor_char">' + middle + '</span>'
-                         + right_side;
+        // If we're jumping to a new line, put the clean contents back into
+        // `cursorRow` and pull out the contents in `row`. Otherwise, just
+        // re-use the contents in `cursorRow`.
+        if (cursorRow != row) {
+            $($('.line')[cursorRow]).html(currentLine);
+            newLine = $($('.line')[row]).text();
+            this.logger.debug('Jumping to a new line. new line = "' + newLine + '"');
+        } else {
+            newLine = currentLine;
+            this.logger.debug('Moving within same lines = "' + newLine + '"');
+        }
+        // Add cursor tags to the new line.
+        newLine = this.addCursorTags(newLine, row, col);
+        $($('.line')[row]).html(newLine);
+
+        // Make the current row and col positions the new cursorRow and
+        // cursorCol positions.
+        this.model.set({
+            cursorRow : row,
+            cursorCol : col
+        });
+    },
+
+    /**
+     * @method convertEmptyToSpace Helper function for converting an empty
+     * string in a `Buffer` to a single space. This is done because the
+     * cursor needs at least one character to be visible.
+     */
+    convertEmptyToSpace : function(index) {
+        this.model.get('buffer').get('lines')[index] = " ";
+    },
+
+    /**
+     * @method addCursorTags Helper function for adding the cursor's
+     * `span` tags around the character at the current `col` position.
+     */
+    addCursorTags : function(line, row, col) {
+
+        if (line) {
+            var leftSide = line.substring(0, col);
+            var middle = line.charAt(col);
+            var rightSide = line.substring(col + 1, line.length);
+            var newContents = leftSide + '<span id="cursor_char">' + middle + '</span>' + rightSide;
+            return newContents;
+        } else {
+            this.convertEmptyToSpace(row);
+            return '<span id="cursor_char"> </span>';
+        }
     },
 
     /**
@@ -96,33 +150,53 @@ var EditorView = Backbone.View.extend({
     },
 
     /**
-     * @method renderRowAndCol Renders the row and column position
+     * @method updateRowAndColCounters Renders the row and column position
      * indicators at the bottom of the editor window.
      */
-    renderRowAndColCounters : function() {
+    updateRowAndColCounters : function() {
         $(this.row).html(this.model.get('row') + 1);
         $(this.col).html(this.model.get('col') + 1);
     },
 
     renderStatusBar : function() {
-        $(this.statusBar).html(this.model.get('statusBarText'));
+        $(this.statusBar).html(this.model.get('statusBar'));
     },
 
     /**
-     * @method render Renders the "buffer" section of the EditorView.
-     * Iterates through <code>this.model.get('buffer').get('lines')</code>,
-     * wraps the contents with appropriate HTML markup tags, and inserts the
-     * entire chunk into <code>this.buffer</code>.
+     * @method renderEntireBuffer Renders the "buffer" section of the
+     * EditorView.  Iterates through
+     * <code>this.model.get('buffer').get('lines')</code>, wraps the
+     * contents with appropriate HTML markup tags, and inserts the entire
+     * chunk into <code>this.buffer</code>.
      */
-    renderBuffer : function() {
+    renderEntireBuffer : function() {
 
+        this.logger.log('Rendering entire buffer...');
         var markup = "";
         var lines = this.model.get('buffer').get('lines');
+
+        // If the buffer has been cleared (i.e., lines.length == 0), then we
+        // have to manually insert a single line here.
+        if (lines.length == 0)
+            markup = sprintf("<pre class=\"num\">%3d</pre><pre class=\"line\">%s</pre>\n", 1, "");
+
         for (var i = 0; i < lines.length; i++) {
             markup += sprintf("<pre class=\"num\">%3d</pre><pre class=\"line\">%s</pre>\n", i+1, lines[i]);
         }
         $(this.buffer).html(markup);
         return this;
+    },
+
+    /**
+     * @method renderBuffer Renders the "buffer" section of the EditorView,
+     * changing only those lines identified in the Buffer's
+     * outOfSyncLineIndices property.
+     */
+    renderBuffer : function() {
+
+        this.model.get('buffer').get('outOfSyncLineIndices').forEach(function(lineIndex) {
+            this.logger.log(sprintf('Re-rendering line %s: %s', lineIndex, this.model.get('buffer').get('lines')[lineIndex]));
+        });
     },
 
     /**

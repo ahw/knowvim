@@ -1,15 +1,58 @@
 var Vim = Backbone.DeepModel.extend({
 
     defaults : {
+        // The logger.
+        logger : new Logger({
+            module : 'vim',
+            prefix : 'VIM'
+        }),
+
+        // The keystroke logger. Used for recording all keystrokes in a session.
+        keystrokeLogger : new KeystrokeLogger({
+            vim : this
+        }),
+
         buffer : null,
-        mode : 'NORMAL',
+        mode : Helpers.modeNames.NORMAL,
         normalHandler : null,
-        col : 0,
+        insertHandler : null,
+
+        // Where the row position _should_ be. This is not always the same
+        // as cursorRow, which represents the row position of the cursor.
+        // While computing the result of a "j" motion, for example, the row
+        // position will be different than cursorRow until the view is
+        // updated the cursor is actually moved.
         row : 0,
+
+        // Where the col position _should_ be. This is not always the same
+        // as cursorRow, which represents the col position of the cursor.
+        // While computing the result of a "k" motion, for example, the col
+        // position will be different than cursorCol until the view is
+        // updated the cursor is actually moved.
+        col : 0,
+
+        // The row position of the cursor. Unlike "row", this variable is
+        // only updated when the cursor actually moves. (The "row" variable
+        // above may change mid-command as new positions are computed.)
+        cursorRow : 0,
+
+        // The col position of the cursor. Unlike "col", this variable is
+        // only updated when the cursor actually moves. (The "col" variable
+        // above may change mid-command as new positions are computed.)
+        cursorCol : 0,
 
         // The lower left-hand corner text. Indicates the mode or error
         // messages.
-        statusBarText : '',
+        statusBar : '',
+
+        // The list of all marks in a buffer.
+        marks : {},
+
+        // The set of all Registers
+        registers : {},
+
+        // --- All other variables below are legacy --- //
+
         // The command stack holds things like 'd' during a 'dw' command. In
         // general, it contains the characters entered in a multi-character
         // command, before the command is completed.
@@ -73,120 +116,71 @@ var Vim = Backbone.DeepModel.extend({
             model.set({buffer : new Buffer()});
         }
 
-        // Initialize the NormalHandler.
+        // Initialize the NormalHandler and InsertHandler
         model.set({
-            normalHandler : new NormalHandler({ vim : model })
+            normalHandler : new NormalHandler({ vim : model }),
+            insertHandler : new InsertHandler({ vim : model })
         });
 
     },
 
+    // Helper function to get the Logger.
+    logger : function() {
+        return this.get('logger');
+    },
+
     openBuffer : function(name, callback) {
+        this.logger().log('Opening buffer '  + name);
         var model = this;
         var buffer = new Buffer({name : name});
         // Silently set the new buffer.
-        model.set({buffer : buffer}, {silent: true});
+        model.set({
+            buffer : buffer
+        }, { silent: true });
         buffer.fetch({
             success : function() {
                 // Manually trigger the change event on success.
                 model.change();
+                // Call the callback function
+                callback();
             }
         });
     },
 
     keyHandler : function(key) {
+        this.get('keystrokeLogger').log(key);
         switch(this.get('mode')) {
-            case 'NORMAL':
+            case Helpers.modeNames.NORMAL:
                 this.get('normalHandler').input(key);
                 break;
-            case 'INSERT':
-                this.insert_handler(key);
+            case Helpers.modeNames.INSERT:
+                this.get('insertHandler').receiveKey(key);
                 break;
-            case 'EXECUTE':
-                this.execute_handler(key);
-                break;
-            case 'SEARCH':
-                this.search_handler(key);
-                break;
-            case 'NEWFILE':
-                this.newfile_handler(key);
-                break;
-            case 'SEARCH_AND_REPLACE':
-                this.searchreplace_handler(key);
-                break;
-            case 'VISUAL_LINE':
-                this.visual_line_handler(key);
-                break;
-            case 'REPLACE':
-                this.replace_handler(key);
-                break;
-            case 'REPLACE_SINGLE':
-                this.replace_single_handler(key);
-                break;
-            case 'FIND_SINGLE':
-                this.find_single_handler(key);
-                break;
-            case 'SET_MARK':
-                this.set_mark_handler(key);
-                break;
-            case 'GOTO_MARK':
-                this.goto_mark_handler(key);
-                break;
+            default:
+                this.logger().warn('Somehow got into unknown mode "' + this.get('mode') + '"');
         }
     },
 
     changeMode : function(mode) {
         // First change the status bar.
         switch(mode) {
-            case 'INSERT':
-                this.set({statusBarText : '-- INSERT --'});
+            case Helpers.modeNames.INSERT:
+                this.set({statusBar : '-- INSERT --'});
                 break;
-            case  'EXECUTE':
-                this.set({statusBarText : ': '});
+            case Helpers.modeNames.EXECUTE:
+                this.set({statusBar : ': '});
                 break;
-            case 'SEARCH':
-                this.set({statusBarText : '/'});
+            case Helpers.modeNames.SEARCH:
+                this.set({statusBar : '/'});
                 break;
-            case 'NORMAL':
-                this.set({statusBarText : ''});
+            case Helpers.modeNames.NORMAL:
+                this.set({statusBar : ''});
                 break;
         }
         // Now that the status bar has been updated, change the actual mode.
         // This will trigger the view to change.
-        console.log('Mode change : ' + mode);
-        this.set({mode: mode});
-    },
-
-    insert_handler : function(key) {
-    },
-
-    search_handler : function(key) {
-    },
-
-    execute_handler : function(key) {
-    },
-
-    newfile_handler : function(key) {
-    },
-
-    searchreplace_handler : function(key) {
-    },
-
-    visual_line_handler : function(key) {
-    },
-
-    replace_handler : function(key) {
-    },
-
-    replace_single_handler : function(key) {
-    },
-
-    find_single_handler : function(key) {
-    },
-
-    set_mark_handler : function(key) {
-    },
-
-    goto_mark_handler : function(key) {
+        this.logger().log('Mode change : ' + mode);
+        this.set({mode : mode});
     }
 
 });

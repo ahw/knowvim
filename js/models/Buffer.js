@@ -7,6 +7,7 @@ var Buffer = Backbone.DeepModel.extend({
     defaults : {
         name : 'new.txt',
         lines : [],
+        outOfSyncLineIndices : [],
         raw : null,
         mimetype : 'text'
     },
@@ -26,7 +27,6 @@ var Buffer = Backbone.DeepModel.extend({
             model.fetch();
         });
 
-
     },
 
     /**
@@ -40,7 +40,7 @@ var Buffer = Backbone.DeepModel.extend({
             url : '/files/' + model.get('name'),
             success : function(response) {
                 // Trim of the newline that gets appended.
-                response = response.trim();
+                response = response.trimRight();
 
                 model.set({
                     raw : response,
@@ -51,5 +51,12 @@ var Buffer = Backbone.DeepModel.extend({
                 options.success();
             }
         });
+    },
+
+    /**
+     * @method toString Overrides Backbone's toString function.
+     */
+    toString : function() {
+        return lines.join('\n');
     }
 });
