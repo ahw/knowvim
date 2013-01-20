@@ -325,20 +325,30 @@ var Motions = {
                 motionResult.inclusive = false;
                 break;
 
+            case 't':
+                var endOffset = -1;
+                // If this is {count}t{letter} then add 1 to the startCol so
+                // we don't just end up finding the same letter position
+                // {count} times.
+                if (isRepeat) {
+                    startCol++;
+                }
+
             case 'f':
-                var colOffset = startCol + 1;
-                var searchString = lines[startRow].substring(colOffset);
+                var endOffset = endOffset || 0;
+                var startOffset = startCol + 1;
+                var searchString = lines[startRow].substring(startOffset);
                 var letter = normalCommand.findLetter;
                 // Note that charIndex represents a relative position and
-                // must be added to colOffset to get the absolute position of
+                // must be added to startOffset to get the absolute position of
                 // this character.
                 var charIndex = searchString.indexOf(letter);
                 this.logger.debug('Searching for "' + letter + '" in string "' + searchString + '"');
                 if (charIndex > -1) {
-                    this.logger.debug('Found character "' + letter + '" at index ' + (colOffset + charIndex));
+                    this.logger.debug('Found character "' + letter + '" at index ' + (startOffset + charIndex));
                     motionResult.higherOrLower = 'higher';
-                    motionResult.higherPosition.col = colOffset + charIndex;
-                    motionResult.endCol = colOffset + charIndex;
+                    motionResult.higherPosition.col = startOffset + charIndex + endOffset;
+                    motionResult.endCol = startOffset + charIndex + endOffset;
                     motionResult.type = 'characterwise';
                     motionResult.inclusive = true;
                 } else {

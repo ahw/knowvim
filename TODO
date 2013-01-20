@@ -1,7 +1,6 @@
 Features
 --------
-[x] INSERT mode
-[ ] INSERT mode backspace, delete
+[X] INSERT mode
 [ ] Update mark positions for every delete and insertion.
 
 [ ] Positioning. Figure out how the column position is determined after
@@ -25,9 +24,9 @@ Features
 [ ] gg motion
 [ ] G motion
 
-[ ] f motion
+[X] f motion
+[X] t motion
 [ ] F motion
-[ ] t motion
 [ ] T motion
 
 [ ] / forward search
@@ -50,6 +49,9 @@ Bugs
     file with a blank line. "j" movement down to the line, then "k" away
     from it. Line contents will remain a single space, even after "k"-ing
     away.
+[ ] Deleting all characters from a line. When there are no characters to the
+    right of the cursor, pressing DELETE will delete backwwards instead of
+    sucking up the characters from the next line.
 
 [X] Sometimes {count} values get mixed up. To reproduce:
         y4j => Yanks 5 lines (expected)
