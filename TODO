@@ -52,6 +52,8 @@ Bugs
 [ ] Deleting all characters from a line. When there are no characters to the
     right of the cursor, pressing DELETE will delete backwwards instead of
     sucking up the characters from the next line.
+[ ] {count}f{letter} should be aborted if there aren't {count} letters
+    available on the line. Currently it just goes to the last found letter.
 
 [X] Sometimes {count} values get mixed up. To reproduce:
         y4j => Yanks 5 lines (expected)

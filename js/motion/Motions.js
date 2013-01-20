@@ -333,6 +333,7 @@ var Motions = {
                 if (isRepeat) {
                     startCol++;
                 }
+                // Don't break. Fall through to the 'f' motion logic.
 
             case 'f':
                 var endOffset = endOffset || 0;
@@ -351,6 +352,31 @@ var Motions = {
                     motionResult.endCol = startOffset + charIndex + endOffset;
                     motionResult.type = 'characterwise';
                     motionResult.inclusive = true;
+                } else {
+                    this.logger.debug('Did not find character "' + letter + '". Doing nothing.');
+                }
+                break;
+
+            case 'T':
+                var endOffset = 1;
+                // If this is {count}T{letter} then subtract 1 from the
+                // startCol so that we don't just end up finding the same
+                // letter position {count} times.
+                if (isRepeat) {
+                    startCol--;
+                }
+                // Don't break. Fall through to 'F' motion logic.
+
+            case 'F':
+                var searchString = lines[startRow].substring(0, startCol);
+                var letter = normalCommand.findLetter;
+                var charIndex = searchString.lastIndexOf(letter);
+                if (charIndex > -1) {
+                    motionResult.higherOrLower = 'lower';
+                    motionResult.lowerPosition.col = charIndex + endOffset;
+                    motionResult.endCol = charIndex + endOffset;
+                    motionResult.type = 'characterwise';
+                    motionResult.inclusive = false;
                 } else {
                     this.logger.debug('Did not find character "' + letter + '". Doing nothing.');
                 }
