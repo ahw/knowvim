@@ -5,8 +5,9 @@ Features
 [ ] Update mark positions for every delete and insertion.
 
 [ ] Positioning. Figure out how the column position is determined after
-    vertical movements and especially characterwise yanks and such. Maybe
-    create a Positioning.js module with methods like
+    vertical movements and especially characterwise yanks and such. Other
+    situations: backspacing into previous lines. Maybe create a
+    Positioning.js module with methods like
   
     var col = getColumnPosition({
         startCol : Number

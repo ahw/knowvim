@@ -56,7 +56,7 @@ var ApplicationView = Backbone.View.extend({
                     key = '\n';
                     break;
                 case 46:
-                    key = 'DEL';
+                    key = 'DELETE';
                     break;
                 case 9:
                     e.preventDefault();
