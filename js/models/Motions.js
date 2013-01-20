@@ -325,6 +325,10 @@ var Motions = {
                 motionResult.inclusive = false;
                 break;
 
+            case 'f':
+                this.logger.warn('The find motion has not been implemented.');
+                break;
+
             default:
                 this.logger.warn('The "' + normalCommand.motionName + '" motion has not been implemented. Defaulting to no motion.');
         }
