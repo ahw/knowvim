@@ -325,6 +325,27 @@ var Motions = {
                 motionResult.inclusive = false;
                 break;
 
+            case 'f':
+                var colOffset = startCol + 1;
+                var searchString = lines[startRow].substring(colOffset);
+                var letter = normalCommand.findLetter;
+                // Note that charIndex represents a relative position and
+                // must be added to colOffset to get the absolute position of
+                // this character.
+                var charIndex = searchString.indexOf(letter);
+                this.logger.debug('Searching for "' + letter + '" in string "' + searchString + '"');
+                if (charIndex > -1) {
+                    this.logger.debug('Found character "' + letter + '" at index ' + (colOffset + charIndex));
+                    motionResult.higherOrLower = 'higher';
+                    motionResult.higherPosition.col = colOffset + charIndex;
+                    motionResult.endCol = colOffset + charIndex;
+                    motionResult.type = 'characterwise';
+                    motionResult.inclusive = true;
+                } else {
+                    this.logger.debug('Did not find character "' + letter + '". Doing nothing.');
+                }
+                break;
+
             default:
                 this.logger.warn('The "' + normalCommand.motionName + '" motion has not been implemented. Defaulting to no motion.');
         }
