@@ -55,6 +55,9 @@ var Logger = function(args) {
             console.log(this.prefix + msg);
     };
 
+    // Alias info to log.
+    this.info = this.log;
+
     this.warn = function(msg, obj) {
         if (!this.isEnabled() || !this.meetsThreshold('warn'))
             return;

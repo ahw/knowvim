@@ -20,7 +20,7 @@ var NormalHandler = Backbone.DeepModel.extend({
 
     initialize : function(options) {
         var model = this;
-        var parser = new Parser({ normalHandler : model });
+        var parser = new NormalParser({ normalHandler : model });
         var tokenizer = new Tokenizer({ parser : parser });
         model.set({
             vim : options.vim,

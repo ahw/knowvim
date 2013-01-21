@@ -1,4 +1,4 @@
-var Parser = function(options) {
+var NormalParser = function(options) {
 
     var logger = new Logger({
         module : 'parser',
@@ -31,7 +31,7 @@ var Parser = function(options) {
      * command, which itself is a particular 'motionName'. See example
      * below.
      *
-     *  var p = new Parser();
+     *  var p = new NormalParser();
      *  p.receiveToken(new Token({type : 'register', value : 'a'});
      *  // => validNextTokens = {
      *  //  count : 'operationCount',
@@ -54,7 +54,7 @@ var Parser = function(options) {
 
     /**
      * This function is used to initialize/reset the validNextTokens object.
-     * It is called when a new Parser object is created.
+     * It is called when a new NormalParser object is created.
      */
     this.reset = function() {
         logger.log('Resetting to initial state.');
@@ -75,7 +75,7 @@ var Parser = function(options) {
             'delete' : 'operationName'
         };
     };
-    this.reset(); // Call reset when creating a new Parser.
+    this.reset(); // Call reset when creating a new NormalParser.
 
     this.error = function(token) {
         logger.warn('No implementation to handle token ' + token);

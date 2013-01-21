@@ -49,6 +49,10 @@ var Buffer = Backbone.DeepModel.extend({
 
                 // Make the "success" callback.
                 options.success();
+            },
+            error : function(response) {
+                // Make the "error" callback.
+                options.error();
             }
         });
     },

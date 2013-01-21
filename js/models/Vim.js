@@ -16,6 +16,7 @@ var Vim = Backbone.DeepModel.extend({
         mode : Helpers.modeNames.NORMAL,
         normalHandler : null,
         insertHandler : null,
+        executeHandler : null,
 
         // Where the row position _should_ be. This is not always the same
         // as cursorRow, which represents the row position of the cursor.
@@ -53,57 +54,57 @@ var Vim = Backbone.DeepModel.extend({
 
         // --- All other variables below are legacy --- //
 
-        // The command stack holds things like 'd' during a 'dw' command. In
-        // general, it contains the characters entered in a multi-character
-        // command, before the command is completed.
-        command_stack : [],
-        // The number of times to repeat a command. E.g., 5x.
+        // --- // The command stack holds things like 'd' during a 'dw' command. In
+        // --- // general, it contains the characters entered in a multi-character
+        // --- // command, before the command is completed.
+        // --- command_stack : [],
+        // --- // The number of times to repeat a command. E.g., 5x.
 
-        modified_since_last_write : false,
-        found_occurrence : false,
-        start_search_row : 0,
-        made_full_search_cycle : false,
-        num_search_terms_found : 0,
-        num_search_terms_total : 0,
-        start_search_col : 0,
-        next_search_index : 0,
-        num_substitutions : 0,
-        search_options : "",
-        last_pattern : "",
-        new_term : "",
-        current_sb_col : 0,
-        previous_key : "",
-        current_row : 0,
-        current_col : 0,
-        preferred_col : 0,
-        current_inputline : null,
-        num_lines : 0,
-        term_bg : "#DDF",
-        term_fg : "#555",
-        highlight_bg : "#d5d5f8",
-        highlight_fg : "#333",
-        lineno_bg : "#DDF",
-        lineno_fg : "green",
-        main_bg : "#DDF",
-        vimwindow_bg : "#DDF",
-        colorscheme : "default",
-        current_line_is_blank : false,
-        paste_reg : "",
-        last_command : "",
-        num_display_lines : 0,
-        top_visible_row : 0,
-        source_code_undo : [],
-        current_col_undo : [],
-        current_row_undo : [],
-        num_lines_undo : [],
-        write_output : false,
-        visual_line_start_row : 0,
-        hl_span_open : '<span class="visual_line" style="color:white; background-color:green">',
-        hl_span_close : '</span>',
-        visual_yank_buffer : [],
-        beta_color : "green",
-        marked_positions : {},
-        cancelkeypress : false
+        // --- modified_since_last_write : false,
+        // --- found_occurrence : false,
+        // --- start_search_row : 0,
+        // --- made_full_search_cycle : false,
+        // --- num_search_terms_found : 0,
+        // --- num_search_terms_total : 0,
+        // --- start_search_col : 0,
+        // --- next_search_index : 0,
+        // --- num_substitutions : 0,
+        // --- search_options : "",
+        // --- last_pattern : "",
+        // --- new_term : "",
+        // --- current_sb_col : 0,
+        // --- previous_key : "",
+        // --- current_row : 0,
+        // --- current_col : 0,
+        // --- preferred_col : 0,
+        // --- current_inputline : null,
+        // --- num_lines : 0,
+        // --- term_bg : "#DDF",
+        // --- term_fg : "#555",
+        // --- highlight_bg : "#d5d5f8",
+        // --- highlight_fg : "#333",
+        // --- lineno_bg : "#DDF",
+        // --- lineno_fg : "green",
+        // --- main_bg : "#DDF",
+        // --- vimwindow_bg : "#DDF",
+        // --- colorscheme : "default",
+        // --- current_line_is_blank : false,
+        // --- paste_reg : "",
+        // --- last_command : "",
+        // --- num_display_lines : 0,
+        // --- top_visible_row : 0,
+        // --- source_code_undo : [],
+        // --- current_col_undo : [],
+        // --- current_row_undo : [],
+        // --- num_lines_undo : [],
+        // --- write_output : false,
+        // --- visual_line_start_row : 0,
+        // --- hl_span_open : '<span class="visual_line" style="color:white; background-color:green">',
+        // --- hl_span_close : '</span>',
+        // --- visual_yank_buffer : [],
+        // --- beta_color : "green",
+        // --- marked_positions : {},
+        // --- cancelkeypress : false
     },
 
     initialize : function(options) {
@@ -119,7 +120,8 @@ var Vim = Backbone.DeepModel.extend({
         // Initialize the NormalHandler and InsertHandler
         model.set({
             normalHandler : new NormalHandler({ vim : model }),
-            insertHandler : new InsertHandler({ vim : model })
+            insertHandler : new InsertHandler({ vim : model }),
+            executeHandler : new ExecuteHandler({ vim : model })
         });
 
     },
@@ -133,16 +135,24 @@ var Vim = Backbone.DeepModel.extend({
         this.logger().log('Opening buffer '  + name);
         var model = this;
         var buffer = new Buffer({name : name});
-        // Silently set the new buffer.
-        model.set({
-            buffer : buffer
-        }, { silent: true });
         buffer.fetch({
             success : function() {
-                // Manually trigger the change event on success.
-                model.change();
+                // Set the new buffer and reset state.
+                model.set({
+                    buffer : buffer,
+                    row : 0,
+                    col : 0,
+                    cursorRow : 0,
+                    cursorCol : 0,
+                    marks : {},
+                    registers : {}
+                });
+
                 // Call the callback function
                 callback();
+            },
+            error : function() {
+                model.logger().warn('Error fetching buffer with name "' + name + '". Keeping current buffer as-is.');
             }
         });
     },
@@ -156,6 +166,9 @@ var Vim = Backbone.DeepModel.extend({
             case Helpers.modeNames.INSERT:
                 this.get('insertHandler').receiveKey(key);
                 break;
+            case Helpers.modeNames.EXECUTE:
+                this.get('executeHandler').receiveKey(key);
+                break;
             default:
                 this.logger().warn('Somehow got into unknown mode "' + this.get('mode') + '"');
         }
@@ -168,7 +181,7 @@ var Vim = Backbone.DeepModel.extend({
                 this.set({statusBar : '-- INSERT --'});
                 break;
             case Helpers.modeNames.EXECUTE:
-                this.set({statusBar : ': '});
+                this.set({statusBar : ':'});
                 break;
             case Helpers.modeNames.SEARCH:
                 this.set({statusBar : '/'});

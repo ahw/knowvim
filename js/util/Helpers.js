@@ -13,6 +13,13 @@ var Helpers = {
         VISUAL : 'VISUAL',
         SEARCH : 'SEARCH',
         EXECUTE : 'EXECUTE'
+    },
+
+    executeCommands : {
+        COLORSCHEME : 'colorscheme',
+        OPEN : 'open',
+        WRITE : 'write'
     }
+
 
 };

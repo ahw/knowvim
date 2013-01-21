@@ -26,8 +26,8 @@ Features
 
 [X] f motion
 [X] t motion
-[ ] F motion
-[ ] T motion
+[X] F motion
+[X] T motion
 
 [ ] / forward search
 [ ] ? backward search
@@ -36,6 +36,7 @@ Features
 [X] Deletes
 [X] Puts
 
+[ ] Support combined execute commands. E.g., wq.
 Code Maintenance
 ----------------
 [ ] Create map of error codes and messages (e.g., E20 => Mark not set)
