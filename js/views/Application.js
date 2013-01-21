@@ -49,14 +49,14 @@ var ApplicationView = Backbone.View.extend({
                     break;
                 case 8:
                     e.preventDefault();
-                    key = 'BACKSPACE';
+                    key = Helpers.controlCharacters.BACKSPACE;
                     break;
                 case 13:
                     e.preventDefault();
                     key = '\n';
                     break;
                 case 46:
-                    key = 'DELETE';
+                    key = Helpers.controlCharacters.DELETE;
                     break;
                 case 9:
                     e.preventDefault();

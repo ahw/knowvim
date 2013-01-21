@@ -19,7 +19,11 @@ var Helpers = {
         COLORSCHEME : 'colorscheme',
         OPEN : 'open',
         WRITE : 'write'
-    }
+    },
 
+    controlCharacters : {
+        BACKSPACE : 'BACKSPACE',
+        DELETE : 'DELETE'
+    }
 
 };

@@ -52,6 +52,9 @@ var Vim = Backbone.DeepModel.extend({
         // The set of all Registers
         registers : {},
 
+        // The cursor position within the statu bar.
+        statusBarCol : 0,
+
         // --- All other variables below are legacy --- //
 
         // --- // The command stack holds things like 'd' during a 'dw' command. In
@@ -72,10 +75,7 @@ var Vim = Backbone.DeepModel.extend({
         // --- search_options : "",
         // --- last_pattern : "",
         // --- new_term : "",
-        // --- current_sb_col : 0,
         // --- previous_key : "",
-        // --- current_row : 0,
-        // --- current_col : 0,
         // --- preferred_col : 0,
         // --- current_inputline : null,
         // --- num_lines : 0,
@@ -149,7 +149,8 @@ var Vim = Backbone.DeepModel.extend({
                 });
 
                 // Call the callback function
-                callback();
+                if (callback)
+                    callback();
             },
             error : function() {
                 model.logger().warn('Error fetching buffer with name "' + name + '". Keeping current buffer as-is.');
@@ -187,7 +188,10 @@ var Vim = Backbone.DeepModel.extend({
                 this.set({statusBar : '/'});
                 break;
             case Helpers.modeNames.NORMAL:
-                this.set({statusBar : ''});
+                this.set({
+                    statusBar : '',
+                    statusBarCol : 0
+                });
                 break;
         }
         // Now that the status bar has been updated, change the actual mode.

@@ -6,19 +6,20 @@
 var ExecuteHandler = function(args) {
 
     var logger = new Logger({
-        module : 'execute',
-        prefix : 'EXECUTE'
+        module : 'execute|handler',
+        prefix : 'EXECUTE-HANDLER'
     });
 
     this.vim = args.vim;
     this.parser = new ExecuteParser({ executeHandler : this });
 
     this.done = function() {
-        var executeCommand = this.parser.parseExecuteCommand();
+        // Parse all text on the status bar from the colon onwards.
+        // TODO: This feels ugly.
+        var executeCommand = this.parser.parseExecuteCommand(statusBar().substring(1));
         logger.info('Finished parsing execute comamnd:', executeCommand);
-        var commands = Helpers.executeCommands;
         switch(executeCommand.type) {
-            case commands.OPEN:
+            case Helpers.executeCommands.OPEN:
                 this.vim.openBuffer(executeCommand.value);
                 break;
             default:
@@ -26,6 +27,16 @@ var ExecuteHandler = function(args) {
         }
         logger.info('Changing to NORMAL mode');
         this.vim.changeMode(Helpers.modeNames.NORMAL);
+    };
+
+    // Helper to get the statusBarCol
+    var statusBarCol = function() {
+        return this.vim.get('statusBarCol');
+    };
+
+    // Helper to get the statusBar
+    var statusBar = function() {
+        return this.vim.get('statusBar');
     };
 
     this.receiveKey = function(key) {
@@ -41,11 +52,32 @@ var ExecuteHandler = function(args) {
                 this.done();
                 break;
 
-            default:
-                this.parser.receiveKey(key);
-                var statusBar = this.vim.get('statusBar');
+            case Helpers.controlCharacters.BACKSPACE:
+                var newStatusBar = KeyboardOperations.applyControlCharacter({
+                    line : statusBar(),
+                    control : Helpers.controlCharacters.BACKSPACE,
+                    cursorPosition : statusBarCol() + 1
+                });
                 this.vim.set({
-                    statusBar : statusBar + key
+                    statusBarCol : statusBarCol() - 1,
+                    statusBar : newStatusBar
+                });
+                if (newStatusBar == "") {
+                    logger.info('Removed all characters; changing to NORMAL mode');
+                    this.vim.changeMode(Helpers.modeNames.NORMAL);
+                }
+                break;
+
+            case Helpers.controlCharacters.DELETE:
+                logger.debug('Received DELETE');
+                logger.warn('No implementation to handle "' + Helpers.controlCharacters.DELETE + '" controls from EXECUTE mode');
+                break;
+
+            default:
+                logger.debug('Received "' + key + '"');
+                this.vim.set({
+                    statusBar : statusBar() + key,
+                    statusBarCol : statusBarCol() + 1
                 });
         }
     };

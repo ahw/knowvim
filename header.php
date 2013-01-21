@@ -98,6 +98,7 @@ if ($browser == 'mobile') {
 <script type="text/javascript" src="/js/parser/ExecuteParser.js"></script>
 <script type="text/javascript" src="/js/motion/Motions.js"></script>
 <script type="text/javascript" src="/js/util/Positioning.js"></script>
+<script type="text/javascript" src="/js/util/KeyboardOperations.js"></script>
 <script type="text/javascript" src="/js/operations/YankOperations.js"></script>
 <script type="text/javascript" src="/js/operations/DeleteOperations.js"></script>
 <script type="text/javascript" src="/js/operations/MarkOperations.js"></script>

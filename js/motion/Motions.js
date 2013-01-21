@@ -246,6 +246,24 @@ var Motions = {
                 motionResult.higherOrLower = 'higher';
                 break;
 
+            case Helpers.controlCharacters.BACKSPACE:
+                var endRow = startRow;
+                var endCol = startCol;
+                if (startCol > 0) {
+                    endCol = startCol - 1;
+                } else if (startRow > 0) {
+                    endRow = startRow - 1;
+                    endCol = lines[endRow].length - 1;
+                }
+                motionResult.type = 'characterwise';
+                motionResult.endCol = endCol;
+                motionResult.endRow = endRow;
+                motionResult.inclusive = false;
+                motionResult.higherOrLower = 'lower';
+                motionResult.lowerPosition = endCol;
+                break;
+
+
             case 'd':
             case 'y':
                 // If "d" or "y" are given as the motionName we'll assume

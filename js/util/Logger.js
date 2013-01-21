@@ -1,7 +1,7 @@
 /**
  * A home-brewed Logger class. There are probably others out there, but this
  * will do what I want for now. If the URL query string has ?log=module_name
- * then this class logs all messages from "module". Otherwise, call to
+ * then this class logs all messages from "module_name". Otherwise, call to
  * this logger return nothing.
  */
 var Logger = function(args) {

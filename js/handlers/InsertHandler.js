@@ -38,7 +38,7 @@ var InsertHandler = function(args) {
                 this.vim.changeMode(mode);
                 break;
 
-            case 'BACKSPACE':
+            case Helpers.controlCharacters.BACKSPACE:
                 var lines = this.getLines();
                 var cursorRow = this.getCursorRow();
                 var cursorCol = this.getCursorCol();

@@ -4,6 +4,10 @@ var Tokenizer = function(options) {
     this.state = 'READY';
     this.currentToken = null;
     var motionKeys = /^[hjkl0\$wb\{\}HL]$/;
+    var controlKeys = new RegExp(
+            Helpers.controlCharacters.BACKSPACE + "|" +
+            Helpers.controlCharacters.DELETE
+        );
     var findKeys = /^[ftFT]$/;
     var searchKeys = /^[/\?]$/;
     var positiveValues = /^[123456789]$/;
@@ -181,6 +185,15 @@ var Tokenizer = function(options) {
                     });
                     this.state = states.READY;
                     this.parser.receiveToken(t);
+
+                } else if (controlKeys.test(ch)) {
+                    var t = new Token({
+                        type : 'motion',
+                        value : ch
+                    });
+                    this.state = states.READY;
+                    this.parser.receiveToken(t);
+
                 } else if (findKeys.test(ch)) {
                     var t = new Token({
                         type : 'find',

@@ -14,7 +14,7 @@ var EditorView = Backbone.View.extend({
         closingTag : '</span>'
     },
     logger : new Logger({
-        module : 'editor',
+        module : 'editor|view',
         prefix : 'EDITOR'
     }),
 
@@ -28,6 +28,7 @@ var EditorView = Backbone.View.extend({
      */
     initialize : function(options) {
         var view = this;
+        var logger = this.logger;
         if (options && options.model) {
             view.model = options.model; // Assume model is a Vim.
         } else {
@@ -52,12 +53,16 @@ var EditorView = Backbone.View.extend({
         view.model.on('change:statusBar', function() {
             view.renderStatusBar();
         });
+
+        view.model.on('change:statusBarCol', function() {
+            logger.warn('Status bar cursor position has changed, but doing nothing');
+            // --- view.updateStatusBarCursor();
+        });
     },
 
     /**
      * @method updateCursor Renders the cursor block at the position given
-     * by "cursorRow" and "cursorCol". This function first removes the
-     * cursor block at the position given by "row" and "col".
+     * by "cursorRow" and "cursorCol".
      */
     updateCursor : function() {
         var row = this.model.get('row'); // The row we're moving to
@@ -84,7 +89,11 @@ var EditorView = Backbone.View.extend({
             this.logger.debug('Moving within same lines = "' + newLine + '"');
         }
         // Add cursor tags to the new line.
-        newLine = this.addCursorTags(newLine, row, col);
+        newLine = this.addCursorTags({
+            line : newLine,
+            row : row,
+            col : col
+        });
         $($('.line')[row]).html(newLine);
 
         // Make the current row and col positions the new cursorRow and
@@ -93,6 +102,23 @@ var EditorView = Backbone.View.extend({
             cursorRow : row,
             cursorCol : col
         });
+    },
+
+    /**
+     * @method updateStatusBarCursor Renders the cursor block at the
+     * position given by "statusBarCol".
+     */
+    updateStatusBarCursor : function() {
+        var col = this.model.get('statusBarCol');
+        var statusBar = this.model.get('statusBar');
+        // Sort of abusing the addCursorTags function. If we call it with
+        // null as the 'row' argument then nothing bad should happen.
+        var statusBar = this.addCursorTags({
+            line : statusBar,
+            row : null,
+            col : col
+        });
+        this.model.set({ statusBar : statusBar });
     },
 
     /**
@@ -108,11 +134,11 @@ var EditorView = Backbone.View.extend({
      * @method addCursorTags Helper function for adding the cursor's
      * `span` tags around the character at the current `col` position.
      */
-    addCursorTags : function(line, row, col) {
-        if (line) {
-            var leftSide = line.substring(0, col);
-            var middle = line.charAt(col);
-            var rightSide = line.substring(col + 1, line.length);
+    addCursorTags : function(args) {
+        if (args.line) {
+            var leftSide = args.line.substring(0, args.col);
+            var middle = args.line.charAt(args.col);
+            var rightSide = args.line.substring(args.col + 1, args.line.length);
             var newContents = leftSide
                 + this.cursor.openingTag
                 + middle
@@ -120,7 +146,7 @@ var EditorView = Backbone.View.extend({
                 + rightSide;
             return newContents;
         } else {
-            this.convertEmptyToSpace(row);
+            this.convertEmptyToSpace(args.row);
             return this.cursor.openingTag + ' ' + this.cursor.closingTag;
         }
     },
@@ -168,7 +194,6 @@ var EditorView = Backbone.View.extend({
      * outOfSyncLineIndices property.
      */
     renderBuffer : function() {
-
         this.model.get('buffer').get('outOfSyncLineIndices').forEach(function(lineIndex) {
             this.logger.log(sprintf('Re-rendering line %s: %s', lineIndex, this.model.get('buffer').get('lines')[lineIndex]));
         });
