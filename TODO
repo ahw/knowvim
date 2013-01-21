@@ -1,8 +1,7 @@
 Features
 --------
-[X] INSERT mode
+[ ] INSERT mode control characters (BACKSPACE, LARROW, etc.)
 [ ] Update mark positions for every delete and insertion.
-
 [ ] Positioning. Figure out how the column position is determined after
     vertical movements and especially characterwise yanks and such. Other
     situations: backspacing into previous lines. Maybe create a
@@ -23,20 +22,21 @@ Features
 [ ] { motion
 [ ] gg motion
 [ ] G motion
-
-[X] f motion
-[X] t motion
-[X] F motion
-[X] T motion
-
 [ ] / forward search
 [ ] ? backward search
 [ ] n motion
 [ ] N motion
+[ ] DELETE functionality in INSERT, NORMAL, and EXECUTE
+[ ] Support combined execute commands. E.g., wq.
+
+[X] INSERT mode (no control chars)
+[X] f motion
+[X] t motion
+[X] F motion
+[X] T motion
 [X] Deletes
 [X] Puts
 
-[ ] Support combined execute commands. E.g., wq.
 Code Maintenance
 ----------------
 [ ] Create map of error codes and messages (e.g., E20 => Mark not set)
