@@ -260,7 +260,7 @@ var Motions = {
                 motionResult.endRow = endRow;
                 motionResult.inclusive = false;
                 motionResult.higherOrLower = 'lower';
-                motionResult.lowerPosition = endCol;
+                motionResult.lowerPosition.col = endCol;
                 break;
 
 
