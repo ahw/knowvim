@@ -16,9 +16,11 @@ var Helpers = {
     },
 
     executeCommands : {
-        COLORSCHEME : 'colorscheme',
         OPEN : 'open',
-        WRITE : 'write'
+        QUIT: 'quit',
+        WRITE : 'write',
+        REGISTERS : 'registers',
+        COLORSCHEME : 'colorscheme'
     },
 
     controlCharacters : {
