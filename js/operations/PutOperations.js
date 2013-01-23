@@ -36,7 +36,7 @@ var PutOperations = {
         var register = vim.get('registers')[registerName];
         if (typeof register == 'undefined') {
             operationResult.error = 'E353: Nothing in register ' + registerName;
-            this.logger.warn('Nothing in register ' + registerName);
+            this.logger.error('Nothing in register ' + registerName);
             return operationResult;
         } else if (register.type == 'linewise') {
             this.logger.debug('Linewise put');
@@ -79,7 +79,7 @@ var PutOperations = {
             lines.splice(startRow + register.text.length - 1, 0, rightChars);
             operationResult.endCol = startCol + 1;
         } else {
-            this.logger.warn('Unknown value "' + register.type + '" for register type');
+            this.logger.error('Unknown value "' + register.type + '" for register type');
         }
 
         return operationResult;

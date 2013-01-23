@@ -153,7 +153,7 @@ var Vim = Backbone.DeepModel.extend({
                     callback();
             },
             error : function() {
-                model.logger().warn('Error fetching buffer with name "' + name + '". Keeping current buffer as-is.');
+                model.logger().error('Error fetching buffer with name "' + name + '". Keeping current buffer as-is.');
             }
         });
     },
@@ -171,7 +171,7 @@ var Vim = Backbone.DeepModel.extend({
                 this.get('executeHandler').receiveKey(key);
                 break;
             default:
-                this.logger().warn('Somehow got into unknown mode "' + this.get('mode') + '"');
+                this.logger().error('Somehow got into unknown mode "' + this.get('mode') + '"');
         }
     },
 

@@ -283,7 +283,7 @@ var Motions = {
             case "'":
                 var markName = normalCommand.markName;
                 if (typeof vim.get('marks')[markName] == 'undefined') {
-                    this.logger.warn('Mark "' + markName + '" not set');
+                    this.logger.error('Mark "' + markName + '" not set');
                     motionResult.error = 'E20: Mark not set';
                     break;
                 }

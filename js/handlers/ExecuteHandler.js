@@ -14,16 +14,18 @@ var ExecuteHandler = function(args) {
     this.parser = new ExecuteParser({ executeHandler : this });
 
     this.done = function() {
+        logger.info('Parsing command string: "' + statusBar() + '"');
         // Parse all text on the status bar from the colon onwards.
         // TODO: This feels ugly.
         var executeCommand = this.parser.parseExecuteCommand(statusBar().substring(1));
         logger.info('Finished parsing execute comamnd:', executeCommand);
-        switch(executeCommand.type) {
+
+        switch(executeCommand.name) {
             case Helpers.executeCommands.OPEN:
-                this.vim.openBuffer(executeCommand.value);
+                this.vim.openBuffer(executeCommand.arg);
                 break;
             default:
-                logger.warn('No implementation for command type:', executeCommand.type);
+                logger.error('No implementation for command:', executeCommand.name);
         }
         logger.info('Changing to NORMAL mode');
         this.vim.changeMode(Helpers.modeNames.NORMAL);
@@ -74,7 +76,6 @@ var ExecuteHandler = function(args) {
                 break;
 
             default:
-                logger.debug('Received "' + key + '"');
                 this.vim.set({
                     statusBar : statusBar() + key,
                     statusBarCol : statusBarCol() + 1
