@@ -24,6 +24,8 @@ var ExecuteHandler = function(args) {
             case Helpers.executeCommands.OPEN:
                 this.vim.openBuffer(executeCommand.arg);
                 break;
+            case Helpers.executeCommands.REGISTERS:
+                break;
             default:
                 logger.error('No implementation for command:', executeCommand.name);
         }

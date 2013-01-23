@@ -68,4 +68,14 @@ var Logger = function(args) {
             console.warn(this.prefix + msg);
     };
 
+    this.error = function(msg, obj) {
+        if (!this.isEnabled() || !this.meetsThreshold('error'))
+            return;
+
+        if (obj)
+            console.error(this.prefix + msg, obj);
+        else
+            console.error(this.prefix + msg);
+    };
+
 };

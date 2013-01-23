@@ -1,7 +1,7 @@
 var MarkOperations = {
 
     logger : new Logger({
-        module : 'operations',
+        module : 'operations|mark',
         prefix : 'MARK'
     }),
 

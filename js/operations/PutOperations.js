@@ -1,6 +1,6 @@
 var PutOperations = {
     logger : new Logger({
-        module : 'operations',
+        module : 'operations|put',
         prefix : 'PUT'
     }),
 
@@ -42,11 +42,10 @@ var PutOperations = {
             this.logger.debug('Linewise put');
             var offset = 1;
             var putLogger = this.logger;
-            this.logger.debug('lines = ', lines);
+            this.logger.debug('Putting ' + lines.length + ' lines');
             register.text.forEach(function(line) {
-                lines.splice(startRow + offset, 0, line.content);
-                putLogger.log('Splicing at index ' + (startRow + offset) + ': "' + line.content + '" lines.splice(' + (startRow + offset) + ', 0, ' + line.content + ')');
-                putLogger.debug('lines = ', lines);
+                lines.splice(startRow + offset, 0, line);
+                putLogger.log('Splicing at index ' + (startRow + offset) + ': "' + line + '" lines.splice(' + (startRow + offset) + ', 0, ' + line + ')');
                 offset++;
             });
             var position = Positioning.getPositionAfterLinewisePutBelow({
@@ -56,14 +55,16 @@ var PutOperations = {
             });
             operationResult.endRow = position.row;
             operationResult.endCol = position.col;
-        } else if (register.type == 'characterwise') {
-            this.logger.debug('Characterwise put');
+        } else if (register.type == 'characterwise' && register.text.length > 1) {
+            this.logger.debug('Characterwise put spanning multiple lines');
             // Concatenate the characters to the left of the cursor with the
             // first line of text in the register.
-            var leftChars = lines[startRow].substring(0, startCol + 1) + register.text[0].content;
+            var leftChars = lines[startRow].substring(0, startCol + 1) + register.text[0];
+            this.logger.debug('leftChars = ' + leftChars);
             // Concatenate the last line of the register with the characters
             // to the right of the cursor.
-            var rightChars = register.text[register.text.length - 1].content + lines[startRow].substring(startCol + 1);
+            var rightChars = register.text[register.text.length - 1] + lines[startRow].substring(startCol + 1);
+            this.logger.debug('rightChars = ' + rightChars);
             this.logger.debug('Original: ' + lines[startRow]);
             lines.splice(startRow, 1, leftChars);
             this.logger.debug('Modified: ' + lines[startRow]);
@@ -72,12 +73,23 @@ var PutOperations = {
                 // If this isn't the first or last line, apply the splice
                 // operation.
                 if (index != 0 && index != register.text.length - 1) {
-                    lines.splice(startRow + offset, 0, line.content);
+                    lines.splice(startRow + offset, 0, line);
                     offset++;
                 }
             });
             lines.splice(startRow + register.text.length - 1, 0, rightChars);
             operationResult.endCol = startCol + 1;
+        } else if (register.type == 'characterwise' && register.text.length == 1) {
+            this.logger.debug('Characterwise on single line');
+            var newLine = lines[startRow].substring(0, startCol + 1)
+                + register.text[0]
+                + lines[startRow].substring(startCol + 1);
+            this.logger.debug('Original: ' + lines[startRow]);
+            lines.splice(startRow, 1, newLine);
+            this.logger.debug('Modified: ' + lines[startRow]);
+            var offset = 1;
+            operationResult.endCol = startCol + 1;
+
         } else {
             this.logger.error('Unknown value "' + register.type + '" for register type');
         }

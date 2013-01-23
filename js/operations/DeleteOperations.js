@@ -1,6 +1,6 @@
 var DeleteOperations = {
     logger : new Logger({
-        module : 'operations',
+        module : 'operations|delete',
         prefix : 'DELETE'
     }),
 

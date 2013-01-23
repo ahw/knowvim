@@ -1,5 +1,6 @@
 Features
 --------
+[ ] :reg
 [ ] INSERT mode control characters (BACKSPACE, LARROW, etc.)
 [ ] Update mark positions for every delete and insertion.
 [ ] Positioning. Figure out how the column position is determined after
