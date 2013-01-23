@@ -27,24 +27,24 @@ Although it's not in a releasable state yet, you can demo the tip of
   If you want individual modules you can specify one or more of the modules
   listed below. To include multiple modules just separate them with a
   semicolon. E.g., `?log=normal` or `?log=normal;parser;tokenizer`.
-  ** `vim`
-  ** `view`
-  ** `motion`
-  ** `normal`
-  ** `insert`
-  ** `operations`
-  ** `delete`
-  ** `yank`
-  ** `put`
-  ** `execute`
-  ** `parser`
-  ** `tokenizer`
+  * `vim`
+  * `view`
+  * `motion`
+  * `normal`
+  * `insert`
+  * `operations`
+  * `delete`
+  * `yank`
+  * `put`
+  * `execute`
+  * `parser`
+  * `tokenizer`
 * http://dev.knowvim.com?level=warn controls the logging threshold. Possible
   values include
-  ** `debug` (default)
-  ** `info`
-  ** `warn`
-  ** `error`
+  * `debug` (default)
+  * `info`
+  * `warn`
+  * `error`
 * http://dev.knowvim.com?macro=jjkd2l will run whatever arbitrary sequence
   of characters you associate with the `macro` query parameter as if they
   were typed into the editor starting from NORMAL mode.
