@@ -7,9 +7,10 @@
 var KeystrokeLogger = function(args) {
 
     this.vim = args.vim;
-    this.isEnabled = /keystrokes=(true|1)/i.test(window.location.search);
+    this.isEnabled = /keystrokes=true|keystrokes=1/i.test(window.location.search);
 
     this.log = function(key) {
+        if (!this.isEnabled) { return }
         var keys = vim.get('keystrokes') || "";
         vim.set({
             keystrokes : keys.concat(key)
