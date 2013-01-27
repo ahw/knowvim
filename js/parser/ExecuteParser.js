@@ -13,6 +13,7 @@ var ExecuteParser = function(options) {
         prefix : 'EXEC PARSER'
     });
 
+    // A map of command names and their aliases to canonical command names.
     var canonicalNames = {
         q           : Helpers.executeCommands.QUIT,
         quit        : Helpers.executeCommands.QUIT,
@@ -60,7 +61,7 @@ var ExecuteParser = function(options) {
                 // All of these cases have one optional argument
                 var matches = commandString.match(/^\w+ ([\w\.]+)/);
                 command.arg = matches ? matches[1] : null;
-                logger.debug('Matched command argument:', command.arg);
+                logger.debug('Matched command argument (may be null):', command.arg);
                 break;
 
             case Helpers.executeCommands.QUIT:

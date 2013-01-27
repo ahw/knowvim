@@ -55,6 +55,9 @@ var Vim = Backbone.DeepModel.extend({
         // The cursor position within the statu bar.
         statusBarCol : 0,
 
+        // The text displayed in the console area of Vim.
+        console : ''
+
         // --- All other variables below are legacy --- //
 
         // --- // The command stack holds things like 'd' during a 'dw' command. In
@@ -198,6 +201,20 @@ var Vim = Backbone.DeepModel.extend({
         // This will trigger the view to change.
         this.logger().log('Mode change : ' + mode);
         this.set({mode : mode});
+    },
+
+    showRegisters : function() {
+        var consoleText = "";
+        var thisLogger = this.logger();
+        var registers = this.get('registers');
+        Object.keys(registers).forEach(function(registerName) {
+            var register = registers[registerName];
+            var joinedText = register.text.join('+');
+            var line = sprintf('"%s   %s', registerName, joinedText);
+            thisLogger.debug(line);
+            consoleText += line;
+        });
+        this.set({console : consoleText});
     }
 
 });

@@ -4,7 +4,6 @@
  *  vim : Reference to the Vim model
  */
 var ExecuteHandler = function(args) {
-
     var logger = new Logger({
         module : 'execute|handler',
         prefix : 'EXECUTE-HANDLER'
@@ -25,6 +24,7 @@ var ExecuteHandler = function(args) {
                 this.vim.openBuffer(executeCommand.arg);
                 break;
             case Helpers.executeCommands.REGISTERS:
+                this.vim.showRegisters();
                 break;
             default:
                 logger.error('No implementation for command:', executeCommand.name);

@@ -58,6 +58,10 @@ var EditorView = Backbone.View.extend({
             logger.warn('Status bar cursor position has changed, but doing nothing');
             // --- view.updateStatusBarCursor();
         });
+
+        view.model.on('change:console', function() {
+            view.renderConsole();
+        });
     },
 
     /**
@@ -197,6 +201,13 @@ var EditorView = Backbone.View.extend({
         this.model.get('buffer').get('outOfSyncLineIndices').forEach(function(lineIndex) {
             this.logger.log(sprintf('Re-rendering line %s: %s', lineIndex, this.model.get('buffer').get('lines')[lineIndex]));
         });
+    },
+
+    /**
+     * @method renderConsole
+     */
+    renderConsole : function() {
+        this.logger.debug('Called renderConsole');
     },
 
     /**
