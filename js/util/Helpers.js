@@ -3,7 +3,7 @@ var Helpers = {
     modeNamesByKey : {
         'i' : 'INSERT',
         'v' : 'VISUAL',
-        ':' : 'EXECUTE',
+        ':' : 'CMDLINE',
         'ESC' : 'NORMAL'
     },
 
@@ -12,7 +12,7 @@ var Helpers = {
         NORMAL : 'NORMAL',
         VISUAL : 'VISUAL',
         SEARCH : 'SEARCH',
-        EXECUTE : 'EXECUTE'
+        CMDLINE : 'CMDLINE'
     },
 
     executeCommands : {

@@ -27,7 +27,7 @@ Features
 [ ] ? backward search
 [ ] n motion
 [ ] N motion
-[ ] DELETE functionality in INSERT, NORMAL, and EXECUTE
+[ ] DELETE functionality in INSERT, NORMAL, and CMDLINE
 [ ] Support combined execute commands. E.g., wq.
 
 [X] INSERT mode (no control chars)

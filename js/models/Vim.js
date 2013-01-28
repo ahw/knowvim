@@ -170,7 +170,7 @@ var Vim = Backbone.DeepModel.extend({
             case Helpers.modeNames.INSERT:
                 this.get('insertHandler').receiveKey(key);
                 break;
-            case Helpers.modeNames.EXECUTE:
+            case Helpers.modeNames.CMDLINE:
                 this.get('executeHandler').receiveKey(key);
                 break;
             default:
@@ -184,7 +184,7 @@ var Vim = Backbone.DeepModel.extend({
             case Helpers.modeNames.INSERT:
                 this.set({statusBar : '-- INSERT --'});
                 break;
-            case Helpers.modeNames.EXECUTE:
+            case Helpers.modeNames.CMDLINE:
                 this.set({statusBar : ':'});
                 break;
             case Helpers.modeNames.SEARCH:

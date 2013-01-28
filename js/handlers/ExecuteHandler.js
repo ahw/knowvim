@@ -1,12 +1,12 @@
 /**
- * The Vim EXECUTE mode handler.  Expected properties of args:
+ * The Vim CMDLINE mode handler.  Expected properties of args:
  *
  *  vim : Reference to the Vim model
  */
 var ExecuteHandler = function(args) {
     var logger = new Logger({
         module : 'execute|handler',
-        prefix : 'EXECUTE-HANDLER'
+        prefix : 'CMDLINE-HANDLER'
     });
 
     this.vim = args.vim;
@@ -48,7 +48,7 @@ var ExecuteHandler = function(args) {
         switch(key) {
             case 'ESC':
                 var mode = Helpers.modeNamesByKey[key];
-                logger.log('Setting Vim mode to "' + mode + '" from EXECUTE');
+                logger.log('Setting Vim mode to "' + mode + '" from CMDLINE');
                 this.vim.changeMode(mode);
                 break;
 
@@ -74,7 +74,7 @@ var ExecuteHandler = function(args) {
 
             case Helpers.controlCharacters.DELETE:
                 logger.debug('Received DELETE');
-                logger.warn('No implementation to handle "' + Helpers.controlCharacters.DELETE + '" controls from EXECUTE mode');
+                logger.warn('No implementation to handle "' + Helpers.controlCharacters.DELETE + '" controls from CMDLINE mode');
                 break;
 
             default:

@@ -1,9 +1,9 @@
 /**
- * The EXECUTE mode parser. Important public functions of this module
+ * The CMDLINE mode parser. Important public functions of this module
  * include:
  *
  *  parseExecuteCommand() : Called when the ExecuteHandler receives a
- *      newline character, signaling the end of input in EXECUTE mode.
+ *      newline character, signaling the end of input in CMDLINE mode.
  */
 var ExecuteParser = function(options) {
 
@@ -35,7 +35,7 @@ var ExecuteParser = function(options) {
      * E.g., :wq<ENTER>.
      */
     this.parseExecuteCommand = function(commandString) {
-        var command = {}; // Encapsulates an EXECUTE command.
+        var command = {}; // Encapsulates an CMDLINE command.
         command.commandString = commandString;
 
         // Match the first word chunk in the command string
