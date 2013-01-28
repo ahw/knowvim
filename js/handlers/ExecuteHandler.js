@@ -29,8 +29,8 @@ var ExecuteHandler = function(args) {
             default:
                 logger.error('No implementation for command:', executeCommand.name);
         }
-        logger.info('Changing to NORMAL mode');
-        this.vim.changeMode(Helpers.modeNames.NORMAL);
+        // logger.info('Changing to NORMAL mode');
+        // this.vim.changeMode(Helpers.modeNames.NORMAL);
     };
 
     // Helper to get the statusBarCol

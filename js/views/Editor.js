@@ -9,6 +9,7 @@ var EditorView = Backbone.View.extend({
     statusBar : '#statusbar',
     row : '#row',
     col : '#col',
+    console : '#console',
     cursor : {
         openingTag : '<span id="cursor_char">',
         closingTag : '</span>'
@@ -51,6 +52,7 @@ var EditorView = Backbone.View.extend({
         });
 
         view.model.on('change:statusBar', function() {
+            logger.debug('Rendering status bar');
             view.renderStatusBar();
         });
 
@@ -60,6 +62,7 @@ var EditorView = Backbone.View.extend({
         });
 
         view.model.on('change:console', function() {
+            logger.debug('Rendering console');
             view.renderConsole();
         });
     },
@@ -208,6 +211,14 @@ var EditorView = Backbone.View.extend({
      */
     renderConsole : function() {
         this.logger.debug('Called renderConsole');
+        var markup = "";
+        var console = this.model.get('console');
+        var logger = this.logger;
+        console.forEach(function(line) {
+            markup += sprintf('<pre>%s</pre>\n', line);
+            logger.debug('markup = ' + markup);
+        });
+        $(this.console).html(markup);
     },
 
     /**

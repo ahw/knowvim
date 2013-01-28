@@ -3,6 +3,9 @@
     <div id="bottom_bar">
         <pre id="statusbar"></pre><pre id="row">1</pre><pre>,</pre><pre id="col">1</pre>
     </div> <!-- end #bottom_bar -->
+
+    <div id="console">
+    </div>
 </div> <!-- end #vimwindow -->
 
 <div style="text-align:center">

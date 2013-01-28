@@ -204,7 +204,7 @@ var Vim = Backbone.DeepModel.extend({
     },
 
     showRegisters : function() {
-        var consoleText = "";
+        var consoleText = [];
         var thisLogger = this.logger();
         var registers = this.get('registers');
         Object.keys(registers).forEach(function(registerName) {
@@ -212,9 +212,12 @@ var Vim = Backbone.DeepModel.extend({
             var joinedText = register.text.join('+');
             var line = sprintf('"%s   %s', registerName, joinedText);
             thisLogger.debug(line);
-            consoleText += line;
+            consoleText.push(line);
         });
-        this.set({console : consoleText});
+        this.set({
+            statusBar : '--- Registers ---',
+            console : consoleText
+        });
     }
 
 });

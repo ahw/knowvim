@@ -12,8 +12,9 @@ var Macros = {
     getQueryStringMacro : function() {
         var matches = window.location.search.match(/macro=([^&]+)/);
         if (matches) {
-            this.logger.log('Found macro string: ' + matches[1]);
-            return matches[1];
+            var macroString = decodeURIComponent(matches[1]);
+            this.logger.log('Found macro string: ' + macroString);
+            return macroString;
         } else {
             return null;
         }
