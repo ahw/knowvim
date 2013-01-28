@@ -135,13 +135,6 @@ if ($browser == 'mobile') {
 
 <body>
 
-<?php
-require("settings-panel.php");
-require("instruction-panel.php");
-require("basic-commands-panel.php");
-require("advanced-commands-panel.php");
-?>
-
 <div id="main" class="mainbox">
 <h1>
 <?php
