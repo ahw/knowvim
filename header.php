@@ -95,7 +95,7 @@ if ($browser == 'mobile') {
 <script type="text/javascript" src="/js/tokenizer/Token.js"></script>
 <script type="text/javascript" src="/js/tokenizer/Tokenizer.js"></script>
 <script type="text/javascript" src="/js/parser/NormalParser.js"></script>
-<script type="text/javascript" src="/js/parser/ExecuteParser.js"></script>
+<script type="text/javascript" src="/js/parser/CmdlineParser.js"></script>
 <script type="text/javascript" src="/js/motion/Motions.js"></script>
 <script type="text/javascript" src="/js/util/Positioning.js"></script>
 <script type="text/javascript" src="/js/util/KeyboardOperations.js"></script>
@@ -108,7 +108,7 @@ if ($browser == 'mobile') {
 <script type="text/javascript" src="/js/models/Buffer.js"></script>
 <script type="text/javascript" src="/js/handlers/NormalHandler.js"></script>
 <script type="text/javascript" src="/js/handlers/InsertHandler.js"></script>
-<script type="text/javascript" src="/js/handlers/ExecuteHandler.js"></script>
+<script type="text/javascript" src="/js/handlers/CmdlineHandler.js"></script>
 <script type="text/javascript" src="/js/models/Vim.js"></script>
 <script type="text/javascript" src="/js/views/Application.js"></script>
 <script type="text/javascript" src="/js/views/Editor.js"></script>

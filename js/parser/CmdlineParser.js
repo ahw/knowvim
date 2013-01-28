@@ -2,10 +2,10 @@
  * The CMDLINE mode parser. Important public functions of this module
  * include:
  *
- *  parseExecuteCommand() : Called when the ExecuteHandler receives a
+ *  parseCmdlineCommand() : Called when the CmdlineHandler receives a
  *      newline character, signaling the end of input in CMDLINE mode.
  */
-var ExecuteParser = function(options) {
+var CmdlineParser = function(options) {
 
     this.executeHandler = options.executeHandler;
     var logger = new Logger({
@@ -34,7 +34,7 @@ var ExecuteParser = function(options) {
      * Function called after user presses ENTER on the vim command line.
      * E.g., :wq<ENTER>.
      */
-    this.parseExecuteCommand = function(commandString) {
+    this.parseCmdlineCommand = function(commandString) {
         var command = {}; // Encapsulates an CMDLINE command.
         command.commandString = commandString;
 

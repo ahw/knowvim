@@ -12,7 +12,8 @@ var Helpers = {
         NORMAL : 'NORMAL',
         VISUAL : 'VISUAL',
         SEARCH : 'SEARCH',
-        CMDLINE : 'CMDLINE'
+        CMDLINE : 'CMDLINE',
+        REGISTERVIEW : 'REGISTERVIEW'
     },
 
     executeCommands : {

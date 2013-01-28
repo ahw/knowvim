@@ -124,7 +124,7 @@ var Vim = Backbone.DeepModel.extend({
         model.set({
             normalHandler : new NormalHandler({ vim : model }),
             insertHandler : new InsertHandler({ vim : model }),
-            executeHandler : new ExecuteHandler({ vim : model })
+            executeHandler : new CmdlineHandler({ vim : model })
         });
 
     },

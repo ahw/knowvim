@@ -3,20 +3,20 @@
  *
  *  vim : Reference to the Vim model
  */
-var ExecuteHandler = function(args) {
+var CmdlineHandler = function(args) {
     var logger = new Logger({
         module : 'execute|handler',
         prefix : 'CMDLINE-HANDLER'
     });
 
     this.vim = args.vim;
-    this.parser = new ExecuteParser({ executeHandler : this });
+    this.parser = new CmdlineParser({ executeHandler : this });
 
     this.done = function() {
         logger.info('Parsing command string: "' + statusBar() + '"');
         // Parse all text on the status bar from the colon onwards.
         // TODO: This feels ugly.
-        var executeCommand = this.parser.parseExecuteCommand(statusBar().substring(1));
+        var executeCommand = this.parser.parseCmdlineCommand(statusBar().substring(1));
         logger.info('Finished parsing execute comamnd:', executeCommand);
 
         switch(executeCommand.name) {

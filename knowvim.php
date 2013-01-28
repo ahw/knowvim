@@ -4,9 +4,9 @@ Try Vim, right in your browser!  Newbies can experiment and learn while
 veterans smile knowingly and try to use commands that break my code.
 Enjoy!</p>
 
-<pre class="num">  1</pre><pre class="line">xxx</pre>
-<pre class="num">  2</pre><pre class="line">yyyyyyyy</pre>
-<pre class="num">  3</pre><pre class="line">zzzz</pre>
+<pre class="num">  1</pre><pre class="line">There was an error loading the buffer.</pre>
+<pre class="num">  2</pre><pre class="line"></pre>
+<pre class="num">  3</pre><pre class="line"></pre>
 <pre class="num">  4</pre><pre class="line"> </pre>
 <pre class="num">  5</pre><pre class="line"> </pre>
 <pre class="num">  6</pre><pre class="line"> </pre>
