@@ -104,6 +104,7 @@ if ($browser == 'mobile') {
 <script type="text/javascript" src="/js/operations/MarkOperations.js"></script>
 <script type="text/javascript" src="/js/operations/PutOperations.js"></script>
 <script type="text/javascript" src="/js/util/Macros.js"></script>
+<script type="text/javascript" src="/js/util/Colors.js"></script>
 
 <script type="text/javascript" src="/js/models/Buffer.js"></script>
 <script type="text/javascript" src="/js/handlers/NormalHandler.js"></script>

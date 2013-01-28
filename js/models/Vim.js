@@ -16,7 +16,7 @@ var Vim = Backbone.DeepModel.extend({
         mode : Helpers.modeNames.NORMAL,
         normalHandler : null,
         insertHandler : null,
-        executeHandler : null,
+        cmdlineHandler : null,
 
         // Where the row position _should_ be. This is not always the same
         // as cursorRow, which represents the row position of the cursor.
@@ -124,7 +124,7 @@ var Vim = Backbone.DeepModel.extend({
         model.set({
             normalHandler : new NormalHandler({ vim : model }),
             insertHandler : new InsertHandler({ vim : model }),
-            executeHandler : new CmdlineHandler({ vim : model })
+            cmdlineHandler : new CmdlineHandler({ vim : model })
         });
 
     },
@@ -171,7 +171,7 @@ var Vim = Backbone.DeepModel.extend({
                 this.get('insertHandler').receiveKey(key);
                 break;
             case Helpers.modeNames.CMDLINE:
-                this.get('executeHandler').receiveKey(key);
+                this.get('cmdlineHandler').receiveKey(key);
                 break;
             default:
                 this.logger().error('Somehow got into unknown mode "' + this.get('mode') + '"');
@@ -209,13 +209,15 @@ var Vim = Backbone.DeepModel.extend({
         var registers = this.get('registers');
         Object.keys(registers).forEach(function(registerName) {
             var register = registers[registerName];
-            var joinedText = register.text.join('+');
+            var newlineDelimiter = Colorizer.color('^J', 'dodgerblue');
+            var joinedText = register.text.join(newlineDelimiter);
             var line = sprintf('"%s   %s', registerName, joinedText);
             thisLogger.debug(line);
             consoleText.push(line);
         });
+        consoleText.push(Colorizer.color('Press any key to continue', 'darkblue'));
         this.set({
-            statusBar : '--- Registers ---',
+            statusBar : Colorizer.color('--- Registers ---', 'darkblue'),
             console : consoleText
         });
     }

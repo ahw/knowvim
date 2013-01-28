@@ -216,7 +216,7 @@ var EditorView = Backbone.View.extend({
         var logger = this.logger;
         console.forEach(function(line) {
             markup += sprintf('<pre>%s</pre>\n', line);
-            logger.debug('markup = ' + markup);
+            logger.debug('Rendering console line: "' + markup + '"');
         });
         $(this.console).html(markup);
     },

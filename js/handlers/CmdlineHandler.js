@@ -11,6 +11,7 @@ var CmdlineHandler = function(args) {
 
     this.vim = args.vim;
     this.parser = new CmdlineParser({ executeHandler : this });
+    this.isInShowRegisterMode = false;
 
     this.done = function() {
         logger.info('Parsing command string: "' + statusBar() + '"');
@@ -22,15 +23,16 @@ var CmdlineHandler = function(args) {
         switch(executeCommand.name) {
             case Helpers.executeCommands.OPEN:
                 this.vim.openBuffer(executeCommand.arg);
+                this.vim.changeMode(Helpers.modeNames.NORMAL);
                 break;
             case Helpers.executeCommands.REGISTERS:
                 this.vim.showRegisters();
+                this.isInShowRegisterMode = true;
                 break;
             default:
                 logger.error('No implementation for command:', executeCommand.name);
+                this.vim.changeMode(Helpers.modeNames.NORMAL);
         }
-        // logger.info('Changing to NORMAL mode');
-        // this.vim.changeMode(Helpers.modeNames.NORMAL);
     };
 
     // Helper to get the statusBarCol
@@ -44,6 +46,17 @@ var CmdlineHandler = function(args) {
     };
 
     this.receiveKey = function(key) {
+
+        // Small hack: if we recently executed a :reg command then Vim
+        // should go into a special "mini" mode where the list of register
+        // contents is shown and the next input key closes the list and goes
+        // back to NORMAL.
+        if (this.isInShowRegisterMode) {
+            this.vim.set({ console : [] }, {silent : true });
+            this.vim.changeMode(Helpers.modeNames.NORMAL);
+            this.isInShowRegisterMode = false;
+            return;
+        }
 
         switch(key) {
             case 'ESC':
