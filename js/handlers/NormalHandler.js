@@ -50,7 +50,7 @@ var NormalHandler = Backbone.DeepModel.extend({
         return this.get('logger');
     },
 
-    input : function(key) {
+    receiveKey : function(key) {
         // Send the input to the tokenizer.
         this.get('tokenizer').receiveChar(key);
     },

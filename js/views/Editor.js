@@ -231,7 +231,7 @@ var EditorView = Backbone.View.extend({
      * <code>this.model</code> is a <code>Vim</code> model.
      */
     keyHandler : function(key) {
-        this.model.keyHandler(key);
+        this.model.receiveKey(key);
     }
 
 });

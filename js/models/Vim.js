@@ -161,11 +161,11 @@ var Vim = Backbone.DeepModel.extend({
         });
     },
 
-    keyHandler : function(key) {
+    receiveKey : function(key) {
         this.get('keystrokeLogger').log(key);
         switch(this.get('mode')) {
             case Helpers.modeNames.NORMAL:
-                this.get('normalHandler').input(key);
+                this.get('normalHandler').receiveKey(key);
                 break;
             case Helpers.modeNames.INSERT:
                 this.get('insertHandler').receiveKey(key);

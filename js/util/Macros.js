@@ -31,8 +31,10 @@ var Macros = {
         var macroString = args.macroString;
 
         this.logger.log('Running macro string ' + macroString);
+        // --- var re = /(<.+>|.)/g;
+        // --- macroString.match(re).forEach(function(letter) {
         macroString.split("").forEach(function(letter) {
-            vim.keyHandler(letter);
+            vim.receiveKey(letter);
         });
         this.logger.log('Finished running macro string ' + macroString);
     }
