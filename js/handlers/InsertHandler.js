@@ -82,8 +82,43 @@ var InsertHandler = function(args) {
                 var cursorCol = this.getCursorCol();
                 var leftChars = lines[cursorRow].substring(0, cursorCol);
                 var rightChars = lines[cursorRow].substring(cursorCol + 1);
-                lines[cursorRow] = leftChars + rightChars;
-                var newCursorCol = Math.min(lines[cursorRow].length - 1, cursorCol);
+                var cursorChar = lines[cursorRow].charAt(cursorCol);
+                var newCursorCol = cursorCol;
+                logger.debug(sprintf('Left, cursor, right: [%s] [%s] [%s]', leftChars, cursorChar, rightChars));
+                if (rightChars == "" && cursorChar == " " && cursorRow == (lines.length - 1)) {
+                    logger.info('Received DELETE from end of (last) line. Doing nothing');
+
+                    // Assert: we're on the end of the last line. Do
+                    // nothing.
+                } else if (rightChars == "" && cursorRow == (lines.length - 1)) {
+                    logger.info('Received DELETE from end of last line. Not slurping.');
+                    // Assert: deleting the last character of the last line.
+                    // Remove it, but know that there isn't a next line to
+                    // slurp.
+                    lines[cursorRow] = leftChars;
+                    newCursorCol = cursorCol - 1;
+                } else if (rightChars == "") {
+                    logger.info('Received DELETE from end of line. Slurping next line.');
+                    // Assert: there is nothing left on this line. Start
+                    // deleting from the next line's contents.  Remember to
+                    // delete the space which is making it possible to
+                    // render the cursor.
+                    lines[cursorRow] = leftChars + lines[cursorRow + 1];
+                    newCursorCol = cursorCol + 1;
+                } else {
+                    logger.info('Received DELETE from middle of line');
+                    // Assert: the easy case. The cursor is somewhere in the
+                    // middle of the line and there's stuff to delete.
+
+                    // As per Vim behavior, if there is nothing on the right
+                    // side of the cursor, keep it at the current position
+                    // anyway and use a space to maintain it.
+                    if (rightChars == "")
+                        rightChars = " ";
+                    lines[cursorRow] = leftChars + rightChars;
+                    newCursorCol = Math.min(lines[cursorRow].length - 1, cursorCol);
+                }
+
                 this.vim.set({
                     col : newCursorCol
                 });
