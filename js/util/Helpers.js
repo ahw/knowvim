@@ -27,6 +27,20 @@ var Helpers = {
     controlCharacters : {
         BACKSPACE : 'BACKSPACE',
         DELETE : 'DELETE'
+    },
+
+    registerTypes : {
+        UNNAMED : '"',
+        SMALL_DELETE : '-',
+        READ_ONLY : {
+            LAST_INSERTED_TEXT : '.',
+            CURRENT_FILENAME : '%',
+            ALTERNATE_FILENAME : '#',
+            LAST_EXECUTED_COMMAND : ':'
+        },
+        BLACK_HOLE : '_',
+        LAST_SEARCH_PATTERN : '/'
     }
+
 
 };

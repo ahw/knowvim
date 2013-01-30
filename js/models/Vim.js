@@ -212,14 +212,15 @@ var Vim = Backbone.DeepModel.extend({
             var newlineDelimiter = Colorizer.color('^J', 'dodgerblue');
             var joinedText = register.text.join(newlineDelimiter);
             var line = sprintf('"%s   %s', registerName, joinedText);
-            thisLogger.debug(line);
             consoleText.push(line);
+            thisLogger.debug('Adding line to Vim console:', line);
         });
         consoleText.push(Colorizer.color('Press any key to continue', 'darkblue'));
         this.set({
             statusBar : Colorizer.color('--- Registers ---', 'darkblue'),
             console : consoleText
         });
+        this.logger().debug('Vim.console:', this.get('console'));
     }
 
 });

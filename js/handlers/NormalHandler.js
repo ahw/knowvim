@@ -79,9 +79,15 @@ var NormalHandler = Backbone.DeepModel.extend({
                 var attributes = {
                     row : operationResult.endRow,
                     col : operationResult.endCol,
-                    statusBar : operationResult.error ? operationResult.error : ""
+                    statusBar : operationResult.error || ""
                 };
                 attributes['registers.' + operationResult.registerName] = {
+                    type : operationResult.motionResult.type,
+                    text : operationResult.text
+                };
+
+                // Always set the " register
+                attributes['registers.' + Helpers.registerTypes.UNNAMED] = {
                     type : operationResult.motionResult.type,
                     text : operationResult.text
                 };
@@ -95,12 +101,19 @@ var NormalHandler = Backbone.DeepModel.extend({
 
             case 'y':
                 var operationResult = YankOperations.getYankOperationResult(args);
+
                 var attributes = {
                     row : operationResult.endRow,
                     col : operationResult.endCol,
-                    statusBar : operationResult.error ? operationResult.error : ""
+                    statusBar : operationResult.error || ""
                 };
                 attributes['registers.' + operationResult.registerName] = {
+                    type : operationResult.motionResult.type,
+                    text : operationResult.text
+                };
+
+                // Always set the " register
+                attributes['registers.' + Helpers.registerTypes.UNNAMED] = {
                     type : operationResult.motionResult.type,
                     text : operationResult.text
                 };

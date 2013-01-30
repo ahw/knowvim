@@ -1,6 +1,5 @@
 Features
 --------
-[ ] :reg
 [ ] INSERT mode control characters (BACKSPACE, LARROW, etc.)
 [ ] Update mark positions for every delete and insertion.
 [ ] Positioning. Figure out how the column position is determined after
@@ -37,11 +36,13 @@ Features
 [X] T motion
 [X] Deletes
 [X] Puts
+[X] :reg
 
 Code Maintenance
 ----------------
 [ ] Create map of error codes and messages (e.g., E20 => Mark not set)
 [ ] Remove Positioning module since its only used in one spot.
+[ ] Create colorscheme module so we don't have to use magic strings
 
 Bugs
 ----

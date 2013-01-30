@@ -186,10 +186,10 @@ var EditorView = Backbone.View.extend({
         // If the buffer has been cleared (i.e., lines.length == 0), then we
         // have to manually insert a single line here.
         if (lines.length == 0)
-            markup = sprintf("<pre class=\"num\">%3d</pre><pre class=\"line\">%s</pre>\n", 1, "");
+            markup = sprintf('<pre class="num">%3d</pre><pre class="line">%s</pre>\n', 1, "");
 
         for (var i = 0; i < lines.length; i++) {
-            markup += sprintf("<pre class=\"num\">%3d</pre><pre class=\"line\">%s</pre>\n", i+1, lines[i]);
+            markup += sprintf('<pre class="num">%3d</pre><pre class="line">%s</pre>\n', i+1, lines[i]);
         }
         $(this.buffer).html(markup);
         return this;
@@ -213,11 +213,11 @@ var EditorView = Backbone.View.extend({
         this.logger.debug('Called renderConsole');
         var markup = "";
         var console = this.model.get('console');
-        var logger = this.logger;
         console.forEach(function(line) {
-            markup += sprintf('<pre>%s</pre>\n', line);
-            logger.debug('Rendering console line: "' + markup + '"');
+            markup += sprintf('<pre class="console-line">%s</pre>\n', line);
         });
+        this.logger.debug('Markup for rendering console given below');
+        this.logger.debug(markup);
         $(this.console).html(markup);
     },
 

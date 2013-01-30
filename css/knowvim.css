@@ -275,6 +275,10 @@ pre {
     display:inline-block;
 }
 
+.console-line {
+    display:block;
+}
+
 .hidden {
     display:none;
 }

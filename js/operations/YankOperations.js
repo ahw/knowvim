@@ -40,7 +40,7 @@ var YankOperations = {
         // Default register name is the unnamed register, '"'.
         var registerName = normalCommand.registerName
             ? normalCommand.registerName
-            : '"';
+            : Helpers.registerTypes.UNNAMED
 
         // Set up the skeleton operationResult.
         var operationResult = {}
