@@ -30,6 +30,7 @@ Features
 [ ] Handle <CR> sequences in the macro query parameter.
 
 [X] INSERT mode (no control chars)
+[X] I, a, A INSERT mode transition types
 [X] f motion
 [X] t motion
 [X] F motion

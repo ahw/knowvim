@@ -81,11 +81,6 @@ var NormalParser = function(options) {
         logger.warn('No implementation to handle token ' + token);
     };
 
-    this.sendModeChange = function(mode) {
-        logger.log('Received mode change "' + mode + '"');
-        this.normalHandler.receiveModeChange(mode);
-    };
-
     this.done = function() {
         this.normalHandler.receiveNormalCommand(normalCommand);
         logger.log('Submitting normal command ' + normalCommand.commandString, normalCommand);
@@ -120,7 +115,7 @@ var NormalParser = function(options) {
     };
 
     this.receiveToken = function(token) {
-        logger.log('Received token ' + token);
+        logger.debug('Received token ' + token);
         if (validNextTokens[token.type]) {
             // If this token type is valid, assign the appropriate property
             // in the normalCommand structure. Remember that the values of
@@ -144,7 +139,7 @@ var NormalParser = function(options) {
                 expectedTokenTypes += tokenType + ', ';
             });
             expectedTokenTypes.substr(0, expectedTokenTypes.length - 1);
-            logger.warn('Invalid token ' + token + '. Expected one of ' + expectedTokenTypes);
+            logger.error('Invalid token ' + token + '. Expected one of ' + expectedTokenTypes);
         }
 
         switch(token.type) {
@@ -235,8 +230,7 @@ var NormalParser = function(options) {
                 break;
 
             case 'mode':
-                this.reset();
-                this.sendModeChange(Helpers.modeNamesByKey[token.value]);
+                this.done();
                 break;
 
             default:

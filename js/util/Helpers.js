@@ -2,6 +2,9 @@ var Helpers = {
 
     modeNamesByKey : {
         'i' : 'INSERT',
+        'I' : 'INSERT',
+        'a' : 'INSERT',
+        'A' : 'INSERT',
         'v' : 'VISUAL',
         ':' : 'CMDLINE',
         '<ESC>' : 'NORMAL'

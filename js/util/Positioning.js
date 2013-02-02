@@ -11,7 +11,7 @@ var Positioning = {
 
     /**
      * Returns an object whose "row" and "col" properties represent the new
-     * cursor position afte a linewise delete. Expected properties of args:
+     * cursor position after a linewise delete. Expected properties of args:
      *
      *  lines : the array of Strings representing the buffer after a delete
      *  motionResult : the motionResult object associated with the delete
@@ -44,7 +44,7 @@ var Positioning = {
 
     /**
      * Returns an object whose "row" and "col" properties represent the new
-     * cursor position afte a linewise delete. Expected properties of args:
+     * cursor position after a linewise delete. Expected properties of args:
      *
      *  lines : the array of Strings representing the buffer after a put
      *  startRow : Number the starting row before the put

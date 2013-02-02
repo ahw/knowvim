@@ -31,55 +31,67 @@ var InsertHandler = function(args) {
 
     this.receiveKey = function(key) {
         logger.debug('Received key:', key);
+
+        var handler = this;
+        var lines = handler.getLines();
+        var cursorRow = handler.getCursorRow();
+        var cursorCol = handler.getCursorCol();
+
         switch(key) {
             case Helpers.controlCharacters.ESC:
+                // Trim the extra space being used to render the cursor
+                if (lines[cursorRow].substring(cursorCol) == " ")
+                    lines[cursorRow] = lines[cursorRow].trimRight();
+
+                // Move the cursor one space to the left if possible
+                if (cursorCol > 0)
+                    cursorCol--;
+
+                // Set the col position silently. It'll get triggered when
+                // the mode changes.
+                handler.vim.set({col : cursorCol}, {silent : true});
+
                 var mode = Helpers.modeNamesByKey[key];
-                logger.log('Setting Vim mode to "' + mode + '" from INSERT');
-                this.vim.changeMode(mode);
+                logger.info('Setting Vim mode to "' + mode + '" from INSERT');
+                handler.vim.changeMode(mode);
                 break;
 
             case Helpers.controlCharacters.BACKSPACE:
-                var lines = this.getLines();
-                var cursorRow = this.getCursorRow();
-                var cursorCol = this.getCursorCol();
                 if (cursorCol == 0 && cursorRow == 0) {
                     logger.debug('Backspacing from position (1, 1); not moving');
-                    this.done();
+                    handler.done();
 
                 } else if (cursorCol == 0 && cursorRow != 0) {
                     // Assert: we're at the beginning of a line but can
                     // backspace up into another line.
                     var newCursorCol = lines[cursorRow - 1].length;
 
-                    // Concatenate text from this row to the end of the
+                    // Concatenate text from handler row to the end of the
                     // previous row.
                     lines[cursorRow - 1] = lines[cursorRow - 1].concat(lines[cursorRow]);
 
-                    // Remove this row
+                    // Remove handler row
                     lines.splice(cursorRow, 1);
                     // TODO: Figure out how to handle column positioning
-                    this.vim.set({
+                    handler.vim.set({
                         row : cursorRow - 1,
                         col : newCursorCol
                     });
-                    this.done();
+                    handler.done();
 
                 } else {
                     var newCursorCol = Math.max(0, cursorCol - 1);
                     var leftChars = lines[cursorRow].substring(0, newCursorCol);
                     var rightChars = lines[cursorRow].substring(cursorCol);
                     lines[cursorRow] = leftChars + rightChars;
-                    this.vim.set({
+                    handler.vim.set({
                         col : newCursorCol
                     });
-                    this.done();
+                    handler.done();
                 }
                 break;
 
             case Helpers.controlCharacters.DELETE:
-                var lines = this.getLines();
-                var cursorRow = this.getCursorRow();
-                var cursorCol = this.getCursorCol();
                 var leftChars = lines[cursorRow].substring(0, cursorCol);
                 var rightChars = lines[cursorRow].substring(cursorCol + 1);
                 var cursorChar = lines[cursorRow].charAt(cursorCol);
@@ -98,12 +110,12 @@ var InsertHandler = function(args) {
                     cursorCol--;
                 } else if (rightChars == "") {
                     logger.info('Received DELETE from end of line. Slurping next line.');
-                    // Assert: there is nothing left on this line. Start
+                    // Assert: there is nothing left on handler line. Start
                     // deleting from the next line's contents.  Remember to
                     // delete the space which is making it possible to
                     // render the cursor.
                     lines[cursorRow] = leftChars + lines[cursorRow + 1];
-                    // Remove the next line (which was slurped into this one)
+                    // Remove the next line (which was slurped into handler one)
                     lines.splice(cursorRow + 1, 1);
                 } else {
                     logger.info('Received DELETE from middle of line');
@@ -119,23 +131,22 @@ var InsertHandler = function(args) {
                     cursorCol = Math.min(lines[cursorRow].length - 1, cursorCol);
                 }
 
-                this.vim.set({
+                handler.vim.set({
                     col : cursorCol
                 });
-                this.done();
+                handler.done();
                 break;
 
             default:
-                var lines = this.getLines();
-                var rowIndex = this.vim.get('cursorRow');
-                var colIndex = this.vim.get('cursorCol');
+                var rowIndex = handler.getCursorRow();
+                var colIndex = handler.getCursorCol();
                 var leftChars = lines[rowIndex].substring(0, colIndex);
                 var rightChars = lines[rowIndex].substring(colIndex);
                 lines[rowIndex] = leftChars + key + rightChars;
-                this.vim.set({
+                handler.vim.set({
                     col : colIndex + 1
                 });
-                this.done();
+                handler.done();
         }
     };
 };

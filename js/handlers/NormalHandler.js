@@ -56,15 +56,12 @@ var NormalHandler = Backbone.DeepModel.extend({
         this.get('tokenizer').receiveChar(key);
     },
 
-    receiveModeChange : function(mode) {
-        this.logger().log('Setting Vim mode to "' + mode + '" from NORMAL');
-        this.get('vim').changeMode(mode);
-    },
-
-    receiveNormalCommand : function(normalCommand) {
-        this.logger().log('Received normal command "' + normalCommand.commandString + '"', normalCommand);
-        var deleteOrYank = /^(delete|yank)$/;
-
+    /**
+     * Handle any normal command which has an "operation" property. Note
+     * that arbitrary motions may be incorporated into command.
+     */
+    handleOperation : function(normalCommand) {
+        this.logger().debug('Handling operation which may include some motion');
         var args = {
             normalCommand : normalCommand,
             startRow : this.cursorRow(),
@@ -144,23 +141,98 @@ var NormalHandler = Backbone.DeepModel.extend({
                 break;
 
             default:
-                // Assert: No operation given. This must be a motion only.
-                // If there is a motion component to the command, get the motion
-                // result. If normalCommand.motionCount exists, the motion
-                // result will reflect this repetition.
-                var motionResult = Motions.getMotionResult({
-                    normalCommand : normalCommand,
-                    startRow : this.cursorRow(),
-                    startCol : this.cursorCol(),
-                    lines : this.lines(),
-                    vim : this.get('vim')
-                });
-                this.logger().log('Finished computing motion result:', motionResult);
-                this.get('vim').set({
-                    row : motionResult.endRow,
-                    col : motionResult.endCol,
-                    statusBar : motionResult.error ? motionResult.error : ""
-                });
+                this.logger().error('Unknown operation:', normalCommand.operationName);
+        }
+    },
+
+    /**
+     * Handle normal commands which are strictly "motion" commands.
+     */
+    handleMotion : function(normalCommand) {
+        this.logger().debug('Handling motion only');
+        // If normalCommand.motionCount exists, the motion result
+        // will reflect this repetition.
+        var motionResult = Motions.getMotionResult({
+            normalCommand : normalCommand,
+            startRow : this.cursorRow(),
+            startCol : this.cursorCol(),
+            lines : this.lines(),
+            vim : this.get('vim')
+        });
+        this.logger().log('Finished computing motion result:', motionResult);
+        this.get('vim').set({
+            row : motionResult.endRow,
+            col : motionResult.endCol,
+            statusBar : motionResult.error ? motionResult.error : ""
+        });
+    },
+
+    /**
+     * Handle mode-changing normal commands.
+     */
+    handleModeChange : function(normalCommand) {
+        this.logger().debug('Handling Mode change');
+
+        // If this is a transition to INSERT mode we may have to adjust the
+        // cursor position depending on which of the many possible ways to
+        // enter INSERT mode was used.
+        var modeName = Helpers.modeNamesByKey[normalCommand.mode];
+        if (modeName == Helpers.modeNames.INSERT) {
+            var cursorRow = this.cursorRow();
+            var cursorCol = this.cursorCol();
+            var lines = this.lines();
+            var bufferHasChanged = false;
+            switch(normalCommand.mode) {
+                // Default case is 'i', where cursor position doesn't change.
+                case 'a':
+                    if (cursorCol == lines[cursorRow].length - 1) {
+                        lines[cursorRow] = lines[cursorRow] + " ";
+                        bufferHasChanged = true;
+                    }
+                    cursorCol++;
+                    break;
+                case 'A':
+                    lines[cursorRow] = lines[cursorRow] + " ";
+                    bufferHasChanged = true;
+                    cursorCol = lines[cursorRow].length - 1;
+                    break;
+                case 'I':
+                    cursorCol = Math.max(0, lines[cursorRow].search(/\S/));
+                    break;
+            }
+            // Silently set the new column position. It'll get updated when
+            // the mode changes.
+            this.get('vim').set({col : cursorCol}, {silent : true});
+        }
+        this.logger().info('Setting Vim mode to "' + modeName + '" from NORMAL');
+        this.get('vim').changeMode(modeName);
+
+        if (bufferHasChanged) {
+            // Manually fire a change event to change the buffer.
+            this.get('vim').trigger('change:buffer');
+        }
+    },
+
+    receiveNormalCommand : function(normalCommand) {
+        this.logger().log('Received normal command "' + normalCommand.commandString + '"', normalCommand);
+        var deleteOrYank = /^(delete|yank)$/;
+
+        var args = {
+            normalCommand : normalCommand,
+            startRow : this.cursorRow(),
+            startCol : this.cursorCol(),
+            lines : this.lines(),
+            vim : this.get('vim')
+        };
+
+        if (normalCommand.operationName) {
+            this.handleOperation(normalCommand);
+        } else if (normalCommand.motionName) {
+            this.handleMotion(normalCommand);
+        } else if (normalCommand.mode) {
+            this.handleModeChange(normalCommand);
+        } else {
+            this.logger().error('Invalid normal command:', normalCommand);
         }
     }
 });
