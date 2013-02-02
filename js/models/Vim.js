@@ -148,7 +148,12 @@ var Vim = Backbone.DeepModel.extend({
                     cursorRow : 0,
                     cursorCol : 0,
                     marks : {},
-                    registers : {}
+                    registers : {
+                        '%' : { // The filename register
+                            type : 'linewise',
+                            text : [name]
+                        }
+                    }
                 });
 
                 // Call the callback function
@@ -207,13 +212,17 @@ var Vim = Backbone.DeepModel.extend({
         var consoleText = [];
         var thisLogger = this.logger();
         var registers = this.get('registers');
-        Object.keys(registers).forEach(function(registerName) {
+        // Iterate over the array of possible registers in the correct order
+        Helpers.getOrderedRegisterNames().forEach(function(registerName) {
             var register = registers[registerName];
-            var newlineDelimiter = Colorizer.color('^J', 'dodgerblue');
-            var joinedText = register.text.join(newlineDelimiter);
-            var line = sprintf('"%s   %s', registerName, joinedText);
-            consoleText.push(line);
-            thisLogger.debug('Adding line to Vim console:', line);
+            // Check if this register is set.
+            if (typeof register != 'undefined') {
+                var newlineDelimiter = Colorizer.color('^J', 'dodgerblue');
+                var joinedText = register.text.join(newlineDelimiter);
+                var line = sprintf('"%s   %s', registerName, joinedText);
+                consoleText.push(line);
+                thisLogger.debug('Adding line to Vim console:', line);
+            }
         });
         consoleText.push(Colorizer.color('Press any key to continue', 'darkblue'));
         this.set({
