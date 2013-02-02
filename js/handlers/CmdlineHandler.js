@@ -5,7 +5,7 @@
  */
 var CmdlineHandler = function(args) {
     var logger = new Logger({
-        module : 'execute|handler',
+        module : 'cmdline|handler',
         prefix : 'CMDLINE-HANDLER'
     });
 
@@ -46,7 +46,7 @@ var CmdlineHandler = function(args) {
     };
 
     this.receiveKey = function(key) {
-
+        logger.debug('Received key:', key);
         // Small hack: if we recently executed a :reg command then Vim
         // should go into a special "mini" mode where the list of register
         // contents is shown and the next input key closes the list and goes

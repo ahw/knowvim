@@ -7,7 +7,7 @@
 var InsertHandler = function(args) {
 
     var logger = new Logger({
-        module : 'insert',
+        module : 'insert|handler',
         prefix : 'INSERT'
     });
 
@@ -30,7 +30,7 @@ var InsertHandler = function(args) {
     };
 
     this.receiveKey = function(key) {
-
+        logger.debug('Received key:', key);
         switch(key) {
             case 'ESC':
                 var mode = Helpers.modeNamesByKey[key];

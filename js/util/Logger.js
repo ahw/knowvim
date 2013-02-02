@@ -35,47 +35,41 @@ var Logger = function(args) {
         error : 3
     };
 
-    this.debug = function(msg, obj) {
-        if (!this.isEnabled() || !this.meetsThreshold('debug'))
-            return;
-
-        if (obj)
-            console.debug(this.prefix + msg, obj);
-        else
-            console.debug(this.prefix + msg);
+    this.colors = {
+        debug : 'color:gray',
+        info  : 'color:blue',
+        warn  : 'color:black; background:yellow',
+        error : 'color:white; background:red'
     };
 
-    this.log = function(msg, obj) {
-        if (!this.isEnabled() || !this.meetsThreshold('info'))
+    this.printMessage = function(level, msg, obj) {
+        if (!this.isEnabled() || !this.meetsThreshold(level))
             return;
 
+        var augmentedMsg = sprintf('%5s - %s %s', level, this.prefix, msg);
         if (obj)
-            console.log(this.prefix + msg, obj);
+            console[level]('%c' + augmentedMsg, this.colors[level], obj);
         else
-            console.log(this.prefix + msg);
+            console[level]('%c' + augmentedMsg, this.colors[level]);
+    };
+
+    this.debug = function(msg, obj) {
+        this.printMessage('debug', msg, obj);
+    };
+
+    this.info = function(msg, obj) {
+        this.printMessage('info', msg, obj);
     };
 
     // Alias info to log.
-    this.info = this.log;
+    this.log = this.info;
 
     this.warn = function(msg, obj) {
-        if (!this.isEnabled() || !this.meetsThreshold('warn'))
-            return;
-
-        if (obj)
-            console.warn(this.prefix + msg, obj);
-        else
-            console.warn(this.prefix + msg);
+        this.printMessage('warn', msg, obj);
     };
 
     this.error = function(msg, obj) {
-        if (!this.isEnabled() || !this.meetsThreshold('error'))
-            return;
-
-        if (obj)
-            console.error(this.prefix + msg, obj);
-        else
-            console.error(this.prefix + msg);
+        this.printMessage('error', msg, obj);
     };
 
 };

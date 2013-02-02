@@ -3,7 +3,7 @@ var NormalHandler = Backbone.DeepModel.extend({
     // Defaults.
     defaults : {
         logger : new Logger({
-            module : 'normal',
+            module : 'normal|handler',
             prefix : 'NORMAL'
         }),
         parser : null,
@@ -51,6 +51,7 @@ var NormalHandler = Backbone.DeepModel.extend({
     },
 
     receiveKey : function(key) {
+        this.logger().debug('Received key:', key);
         // Send the input to the tokenizer.
         this.get('tokenizer').receiveChar(key);
     },

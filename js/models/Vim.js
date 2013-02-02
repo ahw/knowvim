@@ -167,19 +167,20 @@ var Vim = Backbone.DeepModel.extend({
     },
 
     receiveKey : function(key) {
-        this.get('keystrokeLogger').log(key);
-        switch(this.get('mode')) {
+        var model = this;
+        model.get('keystrokeLogger').log(key);
+        switch(model.get('mode')) {
             case Helpers.modeNames.NORMAL:
-                this.get('normalHandler').receiveKey(key);
+                model.get('normalHandler').receiveKey(key);
                 break;
             case Helpers.modeNames.INSERT:
-                this.get('insertHandler').receiveKey(key);
+                model.get('insertHandler').receiveKey(key);
                 break;
             case Helpers.modeNames.CMDLINE:
-                this.get('cmdlineHandler').receiveKey(key);
+                model.get('cmdlineHandler').receiveKey(key);
                 break;
             default:
-                this.logger().error('Somehow got into unknown mode "' + this.get('mode') + '"');
+                model.logger().error('Somehow got into unknown mode "' + model.get('mode') + '"');
         }
     },
 
