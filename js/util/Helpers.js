@@ -25,8 +25,14 @@ var Helpers = {
     },
 
     controlCharacters : {
-        BACKSPACE : 'BACKSPACE',
-        DELETE : 'DELETE'
+        ESC : '<ESC>',
+        TAB : '<TAB>',
+        DELETE : '<DELETE>',
+        LARROW : '<LARROW>',
+        UARROW : '<UARROW>',
+        RARROW : '<RARROW>',
+        DARROW : '<DARROW>',
+        BACKSPACE : '<BACKSPACE>'
     },
 
     registerTypes : {
@@ -42,24 +48,13 @@ var Helpers = {
         LAST_SEARCH_PATTERN : '/'
     },
 
-    // -- letters : function() {
-    // --     var letterArray = [];
-    // --     for (var i = 97; i <= 122; i++) {
-    // --         letterArray.push(String.fromCharCode(i));
-    // --     }
-    // --     return letterArray;
-    // -- },
-
-    // -- numbers : function() {
-    // --     return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    // -- },
-
     getOrderedRegisterNames : function() {
-        // -- return ['"'].concat(this.numbers()).concat(this.letters()).concat(['-', '.', ':', '%', '#', '/', '=']);
         return [
             '"',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+            'u', 'v', 'w', 'x', 'y', 'z',
             '-', '.', ':', '%', '#', '/', '='
         ];
     }

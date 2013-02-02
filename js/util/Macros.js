@@ -1,7 +1,7 @@
 var Macros = {
 
     logger : new Logger({
-        module : 'vim',
+        module : 'vim|macro',
         prefix : 'MACRO'
     }),
 
@@ -30,10 +30,12 @@ var Macros = {
         var vim = args.vim;
         var macroString = args.macroString;
 
-        this.logger.log('Running macro string ' + macroString);
-        // --- var re = /(<.+>|.)/g;
-        // --- macroString.match(re).forEach(function(letter) {
-        macroString.split("").forEach(function(letter) {
+        var thisLogger = this.logger;
+        thisLogger.log('Running macro string ' + macroString);
+        var re = /(<[^<>]+>|.)/g;
+        // macroString.split("").forEach(function(letter) {
+        macroString.match(re).forEach(function(letter) {
+            thisLogger.debug("Inputing key: " + letter);
             vim.receiveKey(letter);
         });
         this.logger.log('Finished running macro string ' + macroString);

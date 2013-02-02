@@ -76,14 +76,13 @@ var InsertHandler = function(args) {
                 }
                 break;
 
-            case 'DELETE':
+            case Helpers.controlCharacters.DELETE:
                 var lines = this.getLines();
                 var cursorRow = this.getCursorRow();
                 var cursorCol = this.getCursorCol();
                 var leftChars = lines[cursorRow].substring(0, cursorCol);
                 var rightChars = lines[cursorRow].substring(cursorCol + 1);
                 var cursorChar = lines[cursorRow].charAt(cursorCol);
-                var newCursorCol = cursorCol;
                 logger.debug(sprintf('Left, cursor, right: [%s] [%s] [%s]', leftChars, cursorChar, rightChars));
                 if (rightChars == "" && cursorChar == " " && cursorRow == (lines.length - 1)) {
                     logger.info('Received DELETE from end of (last) line. Doing nothing');
@@ -96,7 +95,7 @@ var InsertHandler = function(args) {
                     // Remove it, but know that there isn't a next line to
                     // slurp.
                     lines[cursorRow] = leftChars;
-                    newCursorCol = cursorCol - 1;
+                    cursorCol--;
                 } else if (rightChars == "") {
                     logger.info('Received DELETE from end of line. Slurping next line.');
                     // Assert: there is nothing left on this line. Start
@@ -104,7 +103,8 @@ var InsertHandler = function(args) {
                     // delete the space which is making it possible to
                     // render the cursor.
                     lines[cursorRow] = leftChars + lines[cursorRow + 1];
-                    newCursorCol = cursorCol + 1;
+                    // Remove the next line (which was slurped into this one)
+                    lines.splice(cursorRow + 1, 1);
                 } else {
                     logger.info('Received DELETE from middle of line');
                     // Assert: the easy case. The cursor is somewhere in the
@@ -116,11 +116,11 @@ var InsertHandler = function(args) {
                     if (rightChars == "")
                         rightChars = " ";
                     lines[cursorRow] = leftChars + rightChars;
-                    newCursorCol = Math.min(lines[cursorRow].length - 1, cursorCol);
+                    cursorCol = Math.min(lines[cursorRow].length - 1, cursorCol);
                 }
 
                 this.vim.set({
-                    col : newCursorCol
+                    col : cursorCol
                 });
                 this.done();
                 break;
