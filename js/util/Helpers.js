@@ -4,7 +4,7 @@ var Helpers = {
         'i' : 'INSERT',
         'v' : 'VISUAL',
         ':' : 'CMDLINE',
-        'ESC' : 'NORMAL'
+        '<ESC>' : 'NORMAL'
     },
 
     modeNames : {

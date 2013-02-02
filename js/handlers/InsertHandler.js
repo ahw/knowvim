@@ -32,7 +32,7 @@ var InsertHandler = function(args) {
     this.receiveKey = function(key) {
         logger.debug('Received key:', key);
         switch(key) {
-            case 'ESC':
+            case Helpers.controlCharacters.ESC:
                 var mode = Helpers.modeNamesByKey[key];
                 logger.log('Setting Vim mode to "' + mode + '" from INSERT');
                 this.vim.changeMode(mode);
