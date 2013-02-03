@@ -17,7 +17,7 @@ var Motions = {
      *  vim : The Vim model
      */
     getMotionResult : function(args) {
-        this.logger.log('Called getMotionResult with args', args);
+        this.logger.debug('Called getMotionResult with args', args);
 
         // Compute convenience variables
         var normalCommand = args.normalCommand;
@@ -38,7 +38,7 @@ var Motions = {
 
         var motionResult = {};
 
-        this.logger.log('Calling applyMotion for "' + normalCommand.motionName + '" motion.');
+        this.logger.debug('Calling applyMotion for "' + normalCommand.motionName + '" motion.');
         motionResult = this.applyMotion({
             normalCommand : normalCommand,
             startRow : startRow,
@@ -48,7 +48,7 @@ var Motions = {
         });
 
         for (var i = 0; i < totalMotionCount - 1; i++) {
-            this.logger.log('Calling applyMotion for "' + normalCommand.motionName + '" motion iteration #' + (i+2));
+            this.logger.debug('Calling applyMotion for "' + normalCommand.motionName + '" motion iteration #' + (i+2));
             // For each iteration, compute the motionResult starting
             // from the previous motion's end positions.
             motionResult = this.applyMotion({
@@ -119,7 +119,7 @@ var Motions = {
      *  command, for all N in {2, 3, 4, ...}
      */
     applyMotion : function(args) {
-        this.logger.log('Called applyMotion with args', args);
+        this.logger.debug('Called applyMotion with args', args);
         var normalCommand = args.normalCommand;
         var startRow = args.startRow;
         var startCol = args.startCol;

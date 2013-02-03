@@ -72,7 +72,8 @@ var NormalParser = function(options) {
             'put' : 'operationName',
             'yank' : 'operationName',
             'mark' : 'operationName',
-            'delete' : 'operationName'
+            'delete' : 'operationName',
+            'change' : 'operationName'
         };
     };
     this.reset(); // Call reset when creating a new NormalParser.
@@ -82,8 +83,8 @@ var NormalParser = function(options) {
     };
 
     this.done = function() {
-        this.normalHandler.receiveNormalCommand(normalCommand);
         logger.log('Submitting normal command ' + normalCommand.commandString, normalCommand);
+        this.normalHandler.receiveNormalCommand(normalCommand);
         normalCommand = {};
         this.reset();
     };
@@ -139,7 +140,8 @@ var NormalParser = function(options) {
                 expectedTokenTypes += tokenType + ', ';
             });
             expectedTokenTypes.substr(0, expectedTokenTypes.length - 1);
-            logger.error('Invalid token ' + token + '. Expected one of ' + expectedTokenTypes);
+            logger.error('Invalid token ' + token + '. Expected one of ' + expectedTokenTypes + '. Returning early.');
+            return;
         }
 
         switch(token.type) {
@@ -152,7 +154,8 @@ var NormalParser = function(options) {
                     'gotoMark' : 'motionName',
                     'put' : 'operationName',
                     'yank' : 'operationName',
-                    'delete' : 'operationName'
+                    'delete' : 'operationName',
+                    'change' : 'operationName'
                 };
                 break;
 
@@ -202,10 +205,12 @@ var NormalParser = function(options) {
                     'put' : 'operationName',
                     'yank' : 'operationName',
                     'count' : 'count',
-                    'delete' : 'operationName'
+                    'delete' : 'operationName',
+                    'change' : 'operationName'
                 };
                 break;
 
+            case 'change':
             case 'delete':
             case 'yank':
                 this.tryToAssignOperationCount();
