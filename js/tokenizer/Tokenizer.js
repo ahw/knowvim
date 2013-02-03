@@ -21,7 +21,8 @@ var Tokenizer = function(options) {
     var regOperator = '"';
     var operatorSynonyms = {
         'D' : ['d', '$'],
-        'C' : ['c', '$']
+        'C' : ['c', '$'],
+        'x' : ['d', 'l']
     };
     var searchTerm = "";
     var countValue = 0;

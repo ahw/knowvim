@@ -89,9 +89,21 @@ var NormalHandler = Backbone.DeepModel.extend({
                     type : operationResult.motionResult.type,
                     text : operationResult.text
                 };
+
+                if (operationResult.motionResult.type == 'characterwise'
+                    && operationResult.text.length ==1) {
+                    this.logger().info('Setting the "small delete" register (-)', operationResult.text[1]);
+                    // Assert: The amount of deleted text was less than one
+                    // line which means this is a "small delete"
+                    attributes['registers.' + Helpers.registerTypes.SMALL_DELETE] = {
+                        type : operationResult.motionResult.type,
+                        text : operationResult.text
+                    };
+                }
+
                 this.get('vim').set(attributes);
-                this.logger().log('Setting Vim attributes:', attributes);
-                this.logger().log('Finished computing delete operation result:', operationResult);
+                this.logger().info('Setting Vim attributes:', attributes);
+                this.logger().info('Finished computing delete operation result:', operationResult);
 
                 // Manually fire a change event to change the buffer.
                 this.get('vim').trigger('change:buffer');
@@ -116,20 +128,20 @@ var NormalHandler = Backbone.DeepModel.extend({
                     text : operationResult.text
                 };
                 this.get('vim').set(attributes);
-                this.logger().log('Setting Vim attributes:', attributes);
-                this.logger().log('Finished computing yank operation result:', operationResult);
+                this.logger().info('Setting Vim attributes:', attributes);
+                this.logger().info('Finished computing yank operation result:', operationResult);
                 break;
 
             case 'm':
                 var operationResult = MarkOperations.getMarkOperationResult(args);
-                this.logger().log('Finished computing mark operation result:', operationResult);
+                this.logger().info('Finished computing mark operation result:', operationResult);
                 // Do nothing with the result.
                 // TODO: Why return something we don't do anything with it?
                 break;
 
             case 'p':
                 var operationResult = PutOperations.getPutOperationResult(args);
-                this.logger().log('Finished computing put operation result:', operationResult);
+                this.logger().info('Finished computing put operation result:', operationResult);
                 this.logger().debug('Triggering change:buffer event');
                 this.get('vim').trigger('change:buffer');
 
@@ -213,7 +225,7 @@ var NormalHandler = Backbone.DeepModel.extend({
     },
 
     receiveNormalCommand : function(normalCommand) {
-        this.logger().log('Received normal command "' + normalCommand.commandString + '"', normalCommand);
+        this.logger().info('Received normal command "' + normalCommand.commandString + '"', normalCommand);
         var deleteOrYank = /^(delete|yank)$/;
 
         var args = {
