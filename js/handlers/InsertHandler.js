@@ -101,25 +101,24 @@ var InsertHandler = function(args) {
                 var cursorChar = lines[cursorRow].charAt(cursorCol);
                 logger.debug(sprintf('Left, cursor, right: [%s] [%s] [%s]', leftChars, cursorChar, rightChars));
                 if (rightChars == "" && cursorChar == " " && cursorRow == (lines.length - 1)) {
-                    logger.info('Received DELETE from end of (last) line. Doing nothing');
-
+                    logger.info('Received DELETE from end of last line. Doing nothing');
                     // Assert: we're on the end of the last line. Do
                     // nothing.
                 } else if (rightChars == "" && cursorRow == (lines.length - 1)) {
-                    logger.info('Received DELETE from end of last line. Not slurping.');
+                    logger.info('Received DELETE from last char of last line. Removing character under cursor but not slurping.');
                     // Assert: deleting the last character of the last line.
                     // Remove it, but know that there isn't a next line to
                     // slurp.
-                    lines[cursorRow] = leftChars;
-                    cursorCol--;
-                } else if (rightChars == "") {
+                    lines[cursorRow] = leftChars + " ";
+                } else if (rightChars == "" && cursorChar == " ") {
                     logger.info('Received DELETE from end of line. Slurping next line.');
-                    // Assert: there is nothing left on handler line. Start
+                    // Assert: there is nothing left on this line. Start
                     // deleting from the next line's contents.  Remember to
                     // delete the space which is making it possible to
-                    // render the cursor.
-                    lines[cursorRow] = leftChars + lines[cursorRow + 1];
-                    // Remove the next line (which was slurped into handler one)
+                    // render the cursor. If the next line is empty, add a
+                    // space to render the cursor.
+                    lines[cursorRow] = leftChars + (lines[cursorRow + 1] || " ");
+                    // Remove the next line (which was slurped into this one)
                     lines.splice(cursorRow + 1, 1);
                 } else {
                     logger.info('Received DELETE from middle of line');
