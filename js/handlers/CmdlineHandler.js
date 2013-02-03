@@ -59,13 +59,13 @@ var CmdlineHandler = function(args) {
         }
 
         switch(key) {
-            case 'ESC':
+            case Helpers.controlCharacters.ESC:
                 var mode = Helpers.modeNamesByKey[key];
                 logger.log('Setting Vim mode to "' + mode + '" from CMDLINE');
                 this.vim.changeMode(mode);
                 break;
 
-            case '\n':
+            case Helpers.controlCharacters.ENTER:
                 this.done();
                 break;
 

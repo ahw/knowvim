@@ -53,7 +53,7 @@ var ApplicationView = Backbone.View.extend({
                     break;
                 case 13:
                     e.preventDefault();
-                    key = '\n';
+                    key = Helpers.controlCharacters.ENTER;
                     break;
                 case 46:
                     key = Helpers.controlCharacters.DELETE;

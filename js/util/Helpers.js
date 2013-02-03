@@ -30,6 +30,7 @@ var Helpers = {
     controlCharacters : {
         ESC : '<ESC>',
         TAB : '<TAB>',
+        ENTER: '<CR>',
         DELETE : '<DELETE>',
         LARROW : '<LARROW>',
         UARROW : '<UARROW>',

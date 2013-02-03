@@ -38,6 +38,10 @@ var InsertHandler = function(args) {
         var cursorCol = handler.getCursorCol();
 
         switch(key) {
+            case Helpers.controlCharacters.ENTER:
+                logger.warn('No implementation for the <CR> key.');
+                break;
+
             case Helpers.controlCharacters.ESC:
                 // Trim the extra space being used to render the cursor
                 if (lines[cursorRow].substring(cursorCol) == " ")

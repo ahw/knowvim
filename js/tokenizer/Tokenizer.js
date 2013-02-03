@@ -123,7 +123,7 @@ var Tokenizer = function(options) {
 
             case states.SEARCH:
                 // TODO: Sanitize input better.
-                if (ch == '\n') {
+                if (ch == Helpers.controlCharacters.ENTER) {
                     var t = new Token({
                         type : 'searchWord',
                         value : searchTerm
