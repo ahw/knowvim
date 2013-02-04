@@ -1,11 +1,20 @@
-V -> [C]M|F|S|A
-  -> D
-  -> Y
-  -> P
+V =>  O | M
+M => CM | F | S | A | [hjklwb0$]
+F => fL | FL | tL | TL
+S => /W | ?W
+A => 'L
+L => [a-z]
+W => .+
+O => D | Y | P | K
+D => [R][C]D
+  => dM
+  => dd
 
-D -> [R][C]d[C]M|F|S|A|d
-M -> h|j|k|l|...
-Y -> [R][C]y[C]M|F|S|A|y
-P -> [C]p
-K -> mL
+Y => [R][C]Y
+  => yM
+  => yy
 
+P => [R][C]P
+  => p | P
+
+K => mL
