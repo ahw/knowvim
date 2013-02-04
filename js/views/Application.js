@@ -33,15 +33,19 @@ var ApplicationView = Backbone.View.extend({
                     key = ' ';
                     break;
                 case 37:
+                    e.preventDefault();
                     key = Helpers.controlCharacters.LARROW;
                     break;
                 case 38:
+                    e.preventDefault();
                     key = Helpers.controlCharacters.UARROW;
                     break;
                 case 39:
+                    e.preventDefault();
                     key = Helpers.controlCharacters.RARROW;
                     break;
                 case 40:
+                    e.preventDefault();
                     key = Helpers.controlCharacters.DARROW;
                     break;
                 case 27:

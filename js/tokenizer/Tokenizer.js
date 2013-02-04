@@ -19,10 +19,14 @@ var Tokenizer = function(options) {
     var jumpOperators = /^['`]$/;
     var modeKeys = /^[iIaAVvR\:]$/;
     var regOperator = '"';
-    var operatorSynonyms = {
+    var synonyms = {
         'D' : ['d', '$'],
         'C' : ['c', '$'],
-        'x' : ['d', 'l']
+        'x' : ['d', 'l'],
+        '<DARROW>' : ['j'],
+        '<UARROW>' : ['k'],
+        '<LARROW>' : ['h'],
+        '<RARROW>' : ['l']
     };
     var searchTerm = "";
     var countValue = 0;
@@ -74,6 +78,7 @@ var Tokenizer = function(options) {
                     tokenizer.state = states.READY;
                     tokenizer.parser.receiveToken(t);
                 } else {
+                    logger.debug('Re-running Tokenizer from READY state');
                     tokenizer.state = states.READY;
                     tokenizer.receiveChar(ch); // Re-run
                 }
@@ -88,6 +93,7 @@ var Tokenizer = function(options) {
                     tokenizer.state = states.READY;
                     tokenizer.parser.receiveToken(t);
                 } else {
+                    logger.debug('Re-running Tokenizer from READY state');
                     tokenizer.state = states.READY;
                     tokenizer.receiveChar(ch); // Re-run
                 }
@@ -102,6 +108,7 @@ var Tokenizer = function(options) {
                     tokenizer.state = states.READY;
                     tokenizer.parser.receiveToken(t);
                 } else {
+                    logger.debug('Re-running Tokenizer from READY state');
                     tokenizer.state = states.READY;
                     tokenizer.receiveChar(ch); // Re-run
                 }
@@ -195,6 +202,7 @@ var Tokenizer = function(options) {
                     countValue = 0;
                     tokenizer.state = states.READY;
                     tokenizer.parser.receiveToken(t);
+                    logger.debug('Re-running Tokenizer from READY state');
                     tokenizer.receiveChar(ch); // Re-run
                 }
                 break;
@@ -307,9 +315,9 @@ var Tokenizer = function(options) {
                     });
                     tokenizer.parser.receiveToken(t);
 
-                } else if (operatorSynonyms[ch]) {
-                    logger.debug('Character ' + ch + ' is a synonym for ' + operatorSynonyms[ch].join(""));
-                    operatorSynonyms[ch].forEach(function(key) {
+                } else if (synonyms[ch]) {
+                    logger.debug('Character ' + ch + ' is a synonym for ' + synonyms[ch].join(""));
+                    synonyms[ch].forEach(function(key) {
                         logger.debug('Re-running tokenizer with character "' + key + '"');
                         tokenizer.receiveChar(key);
                     });
