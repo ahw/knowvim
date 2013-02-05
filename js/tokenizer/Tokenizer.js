@@ -17,7 +17,7 @@ var Tokenizer = function(options) {
     var putOperator = 'p';
     var markOperator = 'm';
     var jumpOperators = /^['`]$/;
-    var modeKeys = /^[iIaAVvR\:]$/;
+    var modeKeys = /^[iIaAoOVvR\:]$/;
     var regOperator = '"';
     var synonyms = {
         'D' : ['d', '$'],

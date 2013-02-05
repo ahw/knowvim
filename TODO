@@ -27,7 +27,6 @@ Features
 [ ] n motion
 [ ] N moti[ ] DELETE functionality in INSERT, NORMAL, and CMDLINE
 [ ] Support combined execute commands. E.g., wq.
-[ ] Handle <CR> sequences in the macro query parameter.
 
 [X] INSERT mode (no control chars)
 [X] I, a, A INSERT mode transition types
@@ -38,6 +37,8 @@ Features
 [X] Deletes
 [X] Puts
 [X] :reg
+[X] NORMAL mode ARROW keys
+[X] Handle <CR> sequences in the macro query parameter.
 
 Code Maintenance
 ----------------

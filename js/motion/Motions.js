@@ -1,6 +1,6 @@
 var Motions = {
     logger : new Logger({
-        module : 'motions',
+        module : 'motion',
         prefix : 'MOTION'
     }),
 
@@ -148,7 +148,6 @@ var Motions = {
         };
 
         switch(normalCommand.motionName) {
-
             case 'h':
                 var endCol = startCol == 0 ? 0 : startCol - 1;
                 motionResult.type = 'characterwise';
@@ -263,7 +262,6 @@ var Motions = {
                 motionResult.lowerPosition.col = endCol;
                 break;
 
-
             case 'd':
             case 'y':
                 // If "d" or "y" are given as the motionName we'll assume
@@ -274,10 +272,6 @@ var Motions = {
                 // remain as-is.
                 motionResult.type = 'linewise';
                 motionResult.higherOrLower = 'sameLine';
-                break;
-
-            case 'w':
-                this.logger.warn('The w motion has not be implemented. Defaulting to no motion.');
                 break;
 
             case "'":

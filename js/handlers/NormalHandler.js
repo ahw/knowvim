@@ -202,18 +202,37 @@ var NormalHandler = Backbone.DeepModel.extend({
                     }
                     cursorCol++;
                     break;
+
                 case 'A':
                     lines[cursorRow] = lines[cursorRow] + " ";
                     bufferHasChanged = true;
                     cursorCol = lines[cursorRow].length - 1;
                     break;
+
                 case 'I':
                     cursorCol = Math.max(0, lines[cursorRow].search(/\S/));
                     break;
+
+                case 'o':
+                    lines.splice(cursorRow + 1, 0, "");
+                    cursorCol = 0; // TODO: Position column correctly.
+                    cursorRow++;
+                    bufferHasChanged = true;
+                    break;
+
+                case 'O':
+                    lines.splice(cursorRow, 0, "");
+                    cursorCol = 0; // TODO: Position column correctly.
+                    bufferHasChanged = true;
+                    break;
+                    
             }
             // Silently set the new column position. It'll get updated when
             // the mode changes.
-            this.get('vim').set({col : cursorCol}, {silent : true});
+            this.get('vim').set({
+                col : cursorCol,
+                row : cursorRow
+            }, {silent : true});
         }
         this.logger().info('Setting Vim mode to "' + modeName + '" from NORMAL');
         this.get('vim').changeMode(modeName);

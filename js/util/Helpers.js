@@ -5,6 +5,8 @@ var Helpers = {
         'I' : 'INSERT',
         'a' : 'INSERT',
         'A' : 'INSERT',
+        'o' : 'INSERT',
+        'O' : 'INSERT',
         'v' : 'VISUAL',
         ':' : 'CMDLINE',
         '<ESC>' : 'NORMAL'
