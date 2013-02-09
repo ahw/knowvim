@@ -97,6 +97,7 @@ if ($browser == 'mobile') {
 <script type="text/javascript" src="/js/parser/NormalParser.js"></script>
 <script type="text/javascript" src="/js/parser/CmdlineParser.js"></script>
 <script type="text/javascript" src="/js/motion/Motions.js"></script>
+<script type="text/javascript" src="/js/motion/WordMotions.js"></script>
 <script type="text/javascript" src="/js/util/Positioning.js"></script>
 <script type="text/javascript" src="/js/util/KeyboardOperations.js"></script>
 <script type="text/javascript" src="/js/operations/YankOperations.js"></script>

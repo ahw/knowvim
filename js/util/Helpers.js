@@ -63,6 +63,25 @@ var Helpers = {
             'u', 'v', 'w', 'x', 'y', 'z',
             '-', '.', ':', '%', '#', '/', '='
         ];
+    },
+
+    getPositionMarkerString : function(start, end, line) {
+        var t = '';
+        for (var i = 0; i < line.length; i++) {
+            if (i == start || i == end)
+                t += '^';
+            else
+                t += ' ';
+        }
+        return t;
+    },
+
+    characterTypes : {
+        WORD : /\w/,
+        BLANK : /\s/,
+        SPECIAL : /[^\w\s]/,
+        NON_BLANK : /[^\s]/
     }
+
 
 };

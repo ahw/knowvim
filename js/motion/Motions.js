@@ -245,6 +245,21 @@ var Motions = {
                 motionResult.higherOrLower = 'higher';
                 break;
 
+            case 'w':
+                motionResult.inclusive = false;
+                motionResult.type = 'characterwise';
+                motionResult.higherOrLower = 'higher';
+                WordMotions.w({
+                    startRow : startRow,
+                    startCol : startCol,
+                    lines : lines,
+                    motionResult : motionResult
+                });
+                this.logger.warn('w motion not fully implemented. Returning spurious results');
+
+                break;
+
+
             case Helpers.controlCharacters.BACKSPACE:
                 var endRow = startRow;
                 var endCol = startCol;
