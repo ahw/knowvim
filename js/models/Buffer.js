@@ -39,8 +39,8 @@ var Buffer = Backbone.DeepModel.extend({
         $.ajax({
             url : '/files/' + model.get('name'),
             success : function(response) {
-                // Trim of the newline that gets appended.
-                response = response.trimRight();
+                // Trim off the newline that gets appended.
+                response = response.substring(0, response.length - 1);
 
                 model.set({
                     raw : response,

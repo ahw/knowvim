@@ -76,7 +76,7 @@ var EditorView = Backbone.View.extend({
         var col = this.model.get('col'); // The col we're moving to
         var cursorRow = this.model.get('cursorRow'); // The current row position of the cursor
         var cursorCol = this.model.get('cursorCol'); // The current col position of the cursor
-        this.logger.log("Updating cursor to (" + row + ", " + col + ")");
+        this.logger.info("Updating cursor to (" + row + ", " + col + ")");
 
         var currentLine, newLine;
         // Get the text of the current line. Note that <span> tags will be
@@ -179,7 +179,7 @@ var EditorView = Backbone.View.extend({
      * chunk into <code>this.buffer</code>.
      */
     renderEntireBuffer : function() {
-        this.logger.log('Rendering entire buffer...');
+        this.logger.debug('Rendering entire buffer');
         var markup = "";
         var lines = this.model.get('buffer').get('lines');
 
@@ -189,6 +189,7 @@ var EditorView = Backbone.View.extend({
             markup = sprintf('<pre class="num">%3d</pre><pre class="line">%s</pre>\n', 1, "");
 
         for (var i = 0; i < lines.length; i++) {
+            this.logger.debug(sprintf('Rendering %3d %s', i+1, lines[i]));
             markup += sprintf('<pre class="num">%3d</pre><pre class="line">%s</pre>\n', i+1, lines[i]);
         }
         $(this.buffer).html(markup);
@@ -202,7 +203,7 @@ var EditorView = Backbone.View.extend({
      */
     renderBuffer : function() {
         this.model.get('buffer').get('outOfSyncLineIndices').forEach(function(lineIndex) {
-            this.logger.log(sprintf('Re-rendering line %s: %s', lineIndex, this.model.get('buffer').get('lines')[lineIndex]));
+            this.logger.info(sprintf('Re-rendering line %s: %s', lineIndex, this.model.get('buffer').get('lines')[lineIndex]));
         });
     },
 
