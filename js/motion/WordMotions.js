@@ -44,10 +44,14 @@ var WordMotions = {
         col--;
 
         while (foundNextPosition == false) {
-            if (rightChars == "") {
-                this.logger.warn('Have examined all characters in this line and still not found next w position');
-                // this.logger.error('No implementation to handle EOL state');
-                // throw new Error('Exiting w-motion early');
+            if (row > lines.length - 1) {
+                // Assert: we've scanned all the characters on the last
+                // line. There are no more rows!
+                this.logger.debug('w-motion has hit EOF; set position to last row and col');
+                row = args.startRow;
+                col = lines[args.startRow].length - 1;
+                motionResult.hitEol = true;
+                break;
             }
 
             // Get the first character
