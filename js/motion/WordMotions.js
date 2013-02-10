@@ -5,11 +5,6 @@ var WordMotions = {
         module : 'motion'
     }),
 
-    BLANK_CHAR     : /\s/,
-    SPECIAL_CHAR   : /[^\w\s]/,
-    ALPHA_NUM_CHAR : /\w/,
-    NON_BLANK_CHAR : /[^\s]/,
-
     /**
      * Get the position of the next w motion.
      *
@@ -29,41 +24,70 @@ var WordMotions = {
      *  motionResult : The motion result object to mutate
      */
     w : function(args) {
-        var startRow = args.startRow;
-        var startCol = args.startCol;
+        var row = args.startRow;
+        var col = args.startCol;
         var lines = args.lines;
         var motionResult = args.motionResult;
 
-        var rowOffset = 0;
-        var colOffset = 0;
-        var line = lines[startRow];
-        var rightChars = line.substring(startCol);
+        var line = lines[row];
+        var rightChars = line.substring(col);
         var ch = rightChars.charAt(0);
-        var charType = this.getCharacterType(ch); // This will get changed soon.
-        var prevChar = ch; // Just for convenience
-        var prevCharType = charType;
+        var charType = this.getCharacterType(ch);
+        // Keeping track of previous character just for the purposes of
+        // logging.
+        var prevChar = null;
+        var prevCharType = this.getCharacterType(prevChar);
         var foundNextPosition = false;
+
+        // Column position decremented by 1 to accomodate for the
+        // incrementing logic in the while loop below.
+        col--;
 
         while (foundNextPosition == false) {
             if (rightChars == "") {
                 this.logger.warn('Have examined all characters in this line and still not found next w position');
-                this.logger.error('No implementation to handle EOL state');
+                // this.logger.error('No implementation to handle EOL state');
+                // throw new Error('Exiting w-motion early');
             }
 
-            rightChars = rightChars.substring(1);
+            // Get the first character
             ch = rightChars.charAt(0);
             charType = this.getCharacterType(ch);
-            colOffset++;
+            // Chop off the first character which we just read
+            rightChars = rightChars.substring(1);
+            col++;
 
             this.logger.debug(sprintf('Entering w-motion FSM with prevChar=%s (%s), currentChar=%s (%s)', prevChar, prevCharType, ch, charType));
             switch(prevCharType) {
+            case 'NULL':
+                if (charType == 'WORD') {
+                    // Nothing
+                } else if (charType == 'BLANK') {
+                    // Nothing
+                } else if (charType == 'SPECIAL') {
+                    // Nothing
+                } else if (charType == 'EMPTY') {
+                    // Take the contents of the next line.
+                    row++;
+                    col = -1;
+                    rightChars = lines[row];
+                } else {
+                    this.logger.error('Invalid character type "' + charType + '"');
+                }
+                break;
+
             case 'WORD':
                 if (charType == 'WORD') {
                     // Nothing.
                 } else if (charType == 'BLANK') {
-                    prevCharType = 'BLANK';
+                    // Nothing
                 } else if (charType == 'SPECIAL') {
                     foundNextPosition = true;
+                } else if (charType = 'EMPTY') {
+                    // Take the contents of the next line.
+                    row++;
+                    col = -1;
+                    rightChars = lines[row];
                 } else {
                     this.logger.error('Invalid character type "' + charType + '"');
                 }
@@ -76,6 +100,11 @@ var WordMotions = {
                     // Nothing.
                 } else if (charType == 'SPECIAL') {
                     foundNextPosition = true;
+                } else if (charType = 'EMPTY') {
+                    // Take the contents of the next line.
+                    row++;
+                    col = -1;
+                    rightChars = lines[row];
                 } else {
                     this.logger.error('Invalid character type "' + charType + '"');
                 }
@@ -85,9 +114,28 @@ var WordMotions = {
                 if (charType == 'WORD') {
                     foundNextPosition = true;
                 } else if (charType == 'BLANK') {
-                    prevCharType = 'BLANK';
+                    // Nothing
                 } else if (charType == 'SPECIAL') {
                     // Nothing.
+                } else if (charType = 'EMPTY') {
+                    // Take the contents of the next line.
+                    row++;
+                    col = -1;
+                    rightChars = lines[row];
+                } else {
+                    this.logger.error('Invalid character type "' + charType + '"');
+                }
+                break;
+
+            case 'EMPTY':
+                if (charType == 'WORD') {
+                    foundNextPosition = true;
+                } else if (charType == 'BLANK') {
+                    // Nothing
+                } else if (charType == 'SPECIAL') {
+                    foundNextPosition = true;
+                } else if (charType = 'EMPTY') {
+                    foundNextPosition = true;
                 } else {
                     this.logger.error('Invalid character type "' + charType + '"');
                 }
@@ -99,96 +147,32 @@ var WordMotions = {
 
         // At this point we've found the next position!
         this.logger.debug('Found the next w position!');
-        this.logger.debug(lines[startRow]);
-        this.logger.debug(Helpers.getPositionMarkerString(startCol, startCol + colOffset, lines[startRow]));
+        this.logger.debug(lines[row]);
+        this.logger.debug(Helpers.getPositionMarkerString(col, lines[row]));
 
-        motionResult.endRow = startRow + rowOffset;
-        motionResult.endCol = startCol + colOffset;
-        motionResult.higherPosition.row = startRow + rowOffset;
-        motionResult.higherPosition.col = startCol + colOffset;
+        motionResult.endRow = row;
+        motionResult.endCol = col;
+        motionResult.higherPosition.row = row;
+        motionResult.higherPosition.col = col;
     },
 
     getCharacterType : function(ch) {
         var charType;
-        if (Helpers.characterTypes.SPECIAL.test(ch)) {
+        if (ch == null) {
+            charType = 'NULL';
+        } else if (Helpers.characterTypes.SPECIAL.test(ch)) {
             charType = 'SPECIAL';
         } else if (Helpers.characterTypes.WORD.test(ch)) {
             charType = 'WORD';
         } else if (Helpers.characterTypes.BLANK.test(ch)) {
             charType = 'BLANK';
+        } else if (Helpers.characterTypes.EMPTY.test(ch)) {
+            charType = 'EMPTY';
         } else {
             this.logger.error('Unknown character type for "' + ch + '"');
             throw new Error('Invalid character type while computing w motion');
         }
         return charType;
-    },
+    }
 
-    // --- w_old : function(args) {
-    // ---     var cursorChar = lines[startRow].charAt(startCol);
-    // ---     var prevChar = startCol > 0 ? lines[startRow].charAt(startCol - 1) : "";
-    // ---     var BLANK_CHAR = this.BLANK_CHAR,
-    // ---         SPECIAL_CHAR = this.SPECIAL_CHAR,
-    // ---         ALPHA_NUM_CHAR = this.ALPHA_NUM_CHAR;
-    // ---         NON_BLANK_CHAR = this.NON_BLANK_CHAR;
-
-    // ---     var nextWordRe = null;
-
-    // ---     if (!ALPHA_NUM_CHAR.test(prevChar) && ALPHA_NUM_CHAR.test(cursorChar)) {
-    // ---         // Cursor is on the beginning of an alphanumeric word. Next word
-    // ---         // can be any word.
-    // ---         nextWordRe = NON_BLANK_CHAR;
-
-    // ---     } else if (ALPHA_NUM_CHAR.test(prevChar) && APHA_NUM_CHAR.test(cursorChar)) {
-    // ---         // Cursor is in the middle of an alphanumeric word. Next word
-    // ---         // will be a special character word.
-    // ---         nextWordRe = SPECIAL_CHAR;
-    // ---     } else if (SPECIAL_CHAR.test(cursorChar)) {
-    // ---         // Cursor is on a special character word. Next word will
-    // ---         // be an alphanumeric word.
-    // ---         nextWordRe = /\w/;
-    // ---     } else if (/\s/.test(cursorChar)) {
-    // ---         // Cursor is on whitespace. Next word can any
-    // ---         // non-whitespace word.
-    // ---         nextWordRe = /[^\s]/;
-    // ---     }
-    // ---     this.logger.debug('Cursor is on character "' + cursorChar + '". Next word will match regexp ' + nextWordRe);
-
-    // ---     var line = lines[startRow],
-    // ---         searchOffset = startCol + 1,
-    // ---         rightChars = line.substring(searchOffset),
-    // ---         isLastLine = (startRow == lines.length - 1),
-    // ---         nextLineIsEmpty = isLastLine ? false : /^\s?$/.test(lines[startRow + 1]);
-
-    // ---     this.logger.debug('Result of isLastLine =>', isLastLine);
-    // ---     this.logger.debug('Result of nextLineIsEmpty =>', nextLineIsEmpty);
-    // ---     this.logger.debug('Searching for next word in substring:', rightChars);
-    // ---     var wordIndex = rightChars.search(nextWordRe);
-    // ---     if (wordIndex >= 0) {
-    // ---         motionResult.endCol = wordIndex + searchOffset;
-    // ---         motionResult.higherPosition.col = wordIndex + searchOffset;
-    // ---         this.logger.debug('Found next word on same line');
-    // ---         this.logger.debug(line);
-    // ---         this.logger.debug(Helpers.getPositionMarkerString(startCol, wordIndex + searchOffset, line));
-    // ---     } else if (!isLastLine && nextLineIsEmpty) {
-    // ---         motionResult.endRow = startRow + 1;
-    // ---         motionResult.endCol = 0;
-    // ---         motionResult.higherPosition.row = startRow + 1;
-    // ---         motionResult.higherPosition.col = 0;
-    // ---         this.logger.debug('Found next word on next line (which is empty)');
-    // ---     } else if (!isLastLine && !nextLineIsEmpty) {
-    // ---         var newWordIndex = lines[startRow + 1].search(/[^\s]/);
-    // ---         motionResult.endRow = startRow + 1;
-    // ---         motionResult.higherPosition.row = startRow + 1;
-    // ---         motionResult.endCol = newWordIndex;
-    // ---         motionResult.higherPosition.col = newWordIndex;
-    // ---         this.logger.debug('Found next word on next line at column ' + newWordIndex);
-    // ---         this.logger.debug(lines[startRow + 1]);
-    // ---         this.logger.debug(Helpers.getPositionMarkerString(0, newWordIndex, lines[startRow + 1]));
-    // ---     } else if (isLastLine) {
-    // ---         motionResult.endCol = line.length - 1;
-    // ---         motionResult.higherPosition.col = line.length - 1;
-    // ---         motionResult.hitEol = true;
-    // ---         this.logger.debug('There is no next word! On the last line. Setting position to end of line.');
-    // ---     }
-    // --- }
 };

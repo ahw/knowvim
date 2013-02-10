@@ -66,6 +66,11 @@ var Helpers = {
     },
 
     getPositionMarkerString : function(start, end, line) {
+        // end argument is optional
+        if (typeof end == 'string') {
+            line = end;
+            end = start;
+        }
         var t = '';
         for (var i = 0; i < line.length; i++) {
             if (i == start || i == end)
@@ -79,6 +84,7 @@ var Helpers = {
     characterTypes : {
         WORD : /\w/,
         BLANK : /\s/,
+        EMPTY : /^$/,
         SPECIAL : /[^\w\s]/,
         NON_BLANK : /[^\s]/
     }

@@ -158,8 +158,10 @@ var Motions = {
                 break;
 
             case 'l':
-                var length = lines[startRow].length;
-                var endCol = startCol == length - 1 ? startCol : startCol + 1;
+                var endCol = startCol == lines[startRow].length - 1 ? startCol : startCol + 1;
+                if (lines[startRow] == "")
+                    endCol = 0;
+
                 motionResult.type = 'characterwise';
                 motionResult.endCol = endCol;
                 motionResult.inclusive = false;
@@ -220,6 +222,8 @@ var Motions = {
                 // Initially set endCol to what we expect (to the position
                 // at the end of the line).
                 var endCol = lines[startRow].length - 1;
+                if (lines[startRow] == "")
+                    endCol = 0;
 
                 if (isRepeat) {
                     // Special case: if this is part of a {count}$ motion,
@@ -255,8 +259,6 @@ var Motions = {
                     lines : lines,
                     motionResult : motionResult
                 });
-                this.logger.warn('w motion not fully implemented. Returning spurious results');
-
                 break;
 
 
@@ -413,5 +415,5 @@ var Motions = {
                 this.logger.warn('The "' + normalCommand.motionName + '" motion has not been implemented. Defaulting to no motion.');
         }
         return motionResult;
-    },
+    }
 };
