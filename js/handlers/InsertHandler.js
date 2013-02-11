@@ -140,6 +140,20 @@ var InsertHandler = function(args) {
                 handler.done();
                 break;
 
+            case Helpers.controlCharacters.LARROW:
+            case Helpers.controlCharacters.RARROW:
+            case Helpers.controlCharacters.UARROW:
+            case Helpers.controlCharacters.DARROW:
+                // A  bit of hack: send arrow commands directly to
+                // NormalHandler to let it deal with all the motion logic.
+                // NormalHandler clears out the statusBar after each
+                // successful motion, so we'll manually set it back when
+                // we're done.
+                logger.debug('Sending an ' + key + ' motion directly to NORMAL handler');
+                vim.get('normalHandler').receiveKey(key);
+                vim.set({statusBar : '-- INSERT --'});
+                break;
+
             default:
                 var rowIndex = handler.getCursorRow();
                 var colIndex = handler.getCursorCol();

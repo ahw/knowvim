@@ -1,7 +1,6 @@
 Features
 --------
 [ ] Line visibilities
-[ ] INSERT mode control characters (BACKSPACE, LARROW, etc.)
 [ ] Update mark positions for every delete and insertion.
 [ ] Positioning. Figure out how the column position is determined after
     vertical movements and especially characterwise yanks and such. Other
@@ -17,7 +16,6 @@ Features
             ...
         }
     });
-[ ] w motion
 [ ] b motion
 [ ] } motion
 [ ] { motion
@@ -42,6 +40,8 @@ Features
 [X] NORMAL mode ARROW keys
 [X] Handle <CR> sequences in the macro query parameter.
 [X] DELETE functionality in INSERT
+[X] w motion
+[X] INSERT mode control characters
 
 Code Maintenance
 ----------------
