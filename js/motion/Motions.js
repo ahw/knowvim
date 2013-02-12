@@ -148,271 +148,306 @@ var Motions = {
         };
 
         switch(normalCommand.motionName) {
-            case 'h':
-                var endCol = startCol == 0 ? 0 : startCol - 1;
-                motionResult.type = 'characterwise';
-                motionResult.endCol = endCol;
-                motionResult.inclusive = false;
-                motionResult.higherOrLower = 'lower';
-                motionResult.lowerPosition.col = endCol;
-                break;
+        case 'h':
+            var endCol = startCol == 0 ? 0 : startCol - 1;
+            motionResult.type = 'characterwise';
+            motionResult.endCol = endCol;
+            motionResult.inclusive = false;
+            motionResult.higherOrLower = 'lower';
+            motionResult.lowerPosition.col = endCol;
+            break;
 
-            case 'l':
-                var endCol = startCol == lines[startRow].length - 1 ? startCol : startCol + 1;
-                if (lines[startRow] == "")
-                    endCol = 0;
+        case 'l':
+            var endCol = startCol == lines[startRow].length - 1 ? startCol : startCol + 1;
+            if (lines[startRow] == "")
+                endCol = 0;
 
-                motionResult.type = 'characterwise';
-                motionResult.endCol = endCol;
-                motionResult.inclusive = false;
-                motionResult.hitEol = endCol == startCol ? true : false;
-                motionResult.higherOrLower = 'higher';
-                motionResult.higherPosition.col = endCol;
-                break;
+            motionResult.type = 'characterwise';
+            motionResult.endCol = endCol;
+            motionResult.inclusive = false;
+            motionResult.hitEol = endCol == startCol ? true : false;
+            motionResult.higherOrLower = 'higher';
+            motionResult.higherPosition.col = endCol;
+            break;
 
-            case 'j':
+        case 'j':
+            var numRows = lines.length;
+            var endRow = startRow == numRows - 1 ? startRow : startRow + 1;
+            // If the new row is shorter, put the column at the
+            // right-most position possible.
+            var endCol = startRow != endRow
+                ? endCol = Math.min(lines[endRow].length - 1, startCol)
+                : startCol;
+            // End column can't be less than 0.
+            endCol = endCol == -1 ? 0 : endCol;
+
+            motionResult.type = 'linewise';
+            motionResult.endRow = endRow;
+            motionResult.endCol = endCol;
+            motionResult.inclusive = true;
+            motionResult.higherOrLower = 'higher';
+            motionResult.higherPosition.row = endRow;
+            motionResult.higherPosition.col = endCol;
+            break;
+
+        case 'k':
+            var endRow = startRow == 0 ? 0 : startRow - 1;
+            // If the new row is shorter, put the column at the
+            // right-most position possible.
+            var endCol =
+                startRow != endRow
+                ? endCol = Math.min(lines[endRow].length - 1, startCol)
+                : startCol;
+            // End column can't be less than 0.
+            endCol = endCol == -1 ? 0 : endCol;
+
+            motionResult.type = 'linewise';
+            motionResult.endRow = endRow;
+            motionResult.endCol = endCol;
+            motionResult.inclusive = true;
+            motionResult.higherOrLower = 'lower';
+            motionResult.lowerPosition.row = endRow;
+            motionResult.lowerPosition.col = endCol;
+            break;
+
+        case '0':
+            motionResult.endCol = 0;
+            motionResult.type = 'characterwise';
+            motionResult.inclusive = false;
+            motionResult.higherOrLower = 'lower';
+            motionResult.lowerPosition.col = 0;
+            break;
+
+        case '$':
+            // Initially set endCol to what we expect (to the position
+            // at the end of the line).
+            var endCol = lines[startRow].length - 1;
+            if (lines[startRow] == "")
+                endCol = 0;
+
+            if (isRepeat) {
+                // Special case: if this is part of a {count}$ motion,
+                // each successive iteration should move the cursor
+                // down one line and to the end.
                 var numRows = lines.length;
-                var endRow = startRow == numRows - 1 ? startRow : startRow + 1;
-                // If the new row is shorter, put the column at the
-                // right-most position possible.
-                var endCol = startRow != endRow
-                    ? endCol = Math.min(lines[endRow].length - 1, startCol)
-                    : startCol;
-                // End column can't be less than 0.
-                endCol = endCol == -1 ? 0 : endCol;
-
-                motionResult.type = 'linewise';
+                var endRow =
+                    startRow == numRows - 1
+                    ? startRow
+                    : startRow + 1;
+                // End position must be 0 even if length of content 0.
+                endCol = Math.max(0, lines[endRow].length - 1);
                 motionResult.endRow = endRow;
-                motionResult.endCol = endCol;
-                motionResult.inclusive = true;
                 motionResult.higherOrLower = 'higher';
                 motionResult.higherPosition.row = endRow;
-                motionResult.higherPosition.col = endCol;
+            }
+
+            motionResult.endCol = endCol;
+            motionResult.higherPosition.col = endCol;
+            motionResult.type = 'characterwise';
+            motionResult.hitEol = true;
+            motionResult.inclusive = false;
+            motionResult.higherOrLower = 'higher';
+            break;
+
+        case '}':
+            motionResult.inclusive = false;
+            motionResult.type = 'linewise';
+            motionResult.higherOrLower = 'higher';
+            ObjectMotions.forwardParagraph({
+                startRow : startRow,
+                startCol : startCol,
+                lines : lines,
+                motionResult : motionResult
+            });
+            break;
+
+        case '{':
+            motionResult.inclusive = false;
+            motionResult.type = 'linewise';
+            motionResult.higherOrLower = 'lower';
+            ObjectMotions.backwardParagraph({
+                startRow : startRow,
+                startCol : startCol,
+                lines : lines,
+                motionResult : motionResult
+            });
+            break;
+
+        case 'w':
+            motionResult.inclusive = false;
+            motionResult.type = 'characterwise';
+            motionResult.higherOrLower = 'higher';
+            WordMotions.w({
+                startRow : startRow,
+                startCol : startCol,
+                lines : lines,
+                motionResult : motionResult
+            });
+            break;
+
+        case '/':
+            motionResult.inclusive = false;
+            motionResult.type = 'characterwise';
+            motionResult.higherOrLower = 'UKNOWN';
+            JumpMotions['/']({
+                startRow : startRow,
+                startCol : startCol,
+                lines : lines,
+                motionResult : motionResult,
+                searchWord : normalCommand.searchWord
+            });
+
+        case Helpers.controlCharacters.BACKSPACE:
+            var endRow = startRow;
+            var endCol = startCol;
+            if (startCol > 0) {
+                endCol = startCol - 1;
+            } else if (startRow > 0) {
+                endRow = startRow - 1;
+                endCol = lines[endRow].length - 1;
+            }
+            motionResult.type = 'characterwise';
+            motionResult.endCol = endCol;
+            motionResult.endRow = endRow;
+            motionResult.inclusive = false;
+            motionResult.higherOrLower = 'lower';
+            motionResult.lowerPosition.col = endCol;
+            break;
+
+        case 'd':
+        case 'y':
+            // If "d" or "y" are given as the motionName we'll assume
+            // they were in the context of a "dd" or "yy" command. In
+            // this case, the intent is to delete or yank the current
+            // line. Note that the default values for
+            // motionResult.startRow and motinoResult.endRow should
+            // remain as-is.
+            motionResult.type = 'linewise';
+            motionResult.higherOrLower = 'sameLine';
+            break;
+
+        case "'":
+            var markName = normalCommand.markName;
+            if (typeof vim.get('marks')[markName] == 'undefined') {
+                this.logger.error('Mark "' + markName + '" not set');
+                motionResult.error = 'E20: Mark not set';
                 break;
+            }
+            var newRow = vim.get('marks')[markName].row;
+            var newCol = Math.max(0, lines[newRow].search(/\S/));
+            motionResult.endRow = newRow;
+            motionResult.endCol = newCol;
+            motionResult.type = 'linewise';
+            motionResult.inclusive = true;
 
-            case 'k':
-                var endRow = startRow == 0 ? 0 : startRow - 1;
-                // If the new row is shorter, put the column at the
-                // right-most position possible.
-                var endCol =
-                    startRow != endRow
-                    ? endCol = Math.min(lines[endRow].length - 1, startCol)
-                    : startCol;
-                // End column can't be less than 0.
-                endCol = endCol == -1 ? 0 : endCol;
-
-                motionResult.type = 'linewise';
-                motionResult.endRow = endRow;
-                motionResult.endCol = endCol;
-                motionResult.inclusive = true;
-                motionResult.higherOrLower = 'lower';
-                motionResult.lowerPosition.row = endRow;
-                motionResult.lowerPosition.col = endCol;
-                break;
-
-            case '0':
-                motionResult.endCol = 0;
-                motionResult.type = 'characterwise';
-                motionResult.inclusive = false;
-                motionResult.higherOrLower = 'lower';
-                motionResult.lowerPosition.col = 0;
-                break;
-
-            case '$':
-                // Initially set endCol to what we expect (to the position
-                // at the end of the line).
-                var endCol = lines[startRow].length - 1;
-                if (lines[startRow] == "")
-                    endCol = 0;
-
-                if (isRepeat) {
-                    // Special case: if this is part of a {count}$ motion,
-                    // each successive iteration should move the cursor
-                    // down one line and to the end.
-                    var numRows = lines.length;
-                    var endRow =
-                        startRow == numRows - 1
-                        ? startRow
-                        : startRow + 1;
-                    // End position must be 0 even if length of content 0.
-                    endCol = Math.max(0, lines[endRow].length - 1);
-                    motionResult.endRow = endRow;
-                    motionResult.higherOrLower = 'higher';
-                    motionResult.higherPosition.row = endRow;
-                }
-
-                motionResult.endCol = endCol;
-                motionResult.higherPosition.col = endCol;
-                motionResult.type = 'characterwise';
-                motionResult.hitEol = true;
-                motionResult.inclusive = false;
+            if (newRow == startRow && newCol > startCol) {
                 motionResult.higherOrLower = 'higher';
-                break;
-
-            case 'w':
-                motionResult.inclusive = false;
-                motionResult.type = 'characterwise';
-                motionResult.higherOrLower = 'higher';
-                WordMotions.w({
-                    startRow : startRow,
-                    startCol : startCol,
-                    lines : lines,
-                    motionResult : motionResult
-                });
-                break;
-
-
-            case Helpers.controlCharacters.BACKSPACE:
-                var endRow = startRow;
-                var endCol = startCol;
-                if (startCol > 0) {
-                    endCol = startCol - 1;
-                } else if (startRow > 0) {
-                    endRow = startRow - 1;
-                    endCol = lines[endRow].length - 1;
-                }
-                motionResult.type = 'characterwise';
-                motionResult.endCol = endCol;
-                motionResult.endRow = endRow;
-                motionResult.inclusive = false;
+                motionResult.higherPosition.col = newCol;
+            } else if (newRow == startRow && newCol < startCol) {
                 motionResult.higherOrLower = 'lower';
-                motionResult.lowerPosition.col = endCol;
-                break;
+                motionResult.lowerPosition.col = newCol;
+            } else if (newRow < startRow) {
+                motionResult.higherOrLower = 'lower';
+                motionResult.lowerPosition.row = newRow;
+                motionResult.lowerPosition.col = newCol;
+            } else if (newRow > startRow) {
+                motionResult.higherOrLower = 'higher';
+                motionResult.higherPosition.row = newRow;
+                motionResult.higherPosition.col = newCol;
+            }
+            break;
 
-            case 'd':
-            case 'y':
-                // If "d" or "y" are given as the motionName we'll assume
-                // they were in the context of a "dd" or "yy" command. In
-                // this case, the intent is to delete or yank the current
-                // line. Note that the default values for
-                // motionResult.startRow and motinoResult.endRow should
-                // remain as-is.
-                motionResult.type = 'linewise';
-                motionResult.higherOrLower = 'sameLine';
+        case '`':
+            var markName = normalCommand.markName;
+            if (typeof vim.get('marks')[markName] == 'undefined') {
+                this.logger.warn('Mark "' + markName + '" not set');
+                motionResult.error = 'E20: Mark not set';
                 break;
+            }
+            var newRow = vim.get('marks')[markName].row;
+            var newCol = vim.get('marks')[markName].col;
 
-            case "'":
-                var markName = normalCommand.markName;
-                if (typeof vim.get('marks')[markName] == 'undefined') {
-                    this.logger.error('Mark "' + markName + '" not set');
-                    motionResult.error = 'E20: Mark not set';
-                    break;
-                }
-                var newRow = vim.get('marks')[markName].row;
-                var newCol = Math.max(0, lines[newRow].search(/\S/));
-                motionResult.endRow = newRow;
-                motionResult.endCol = newCol;
-                motionResult.type = 'linewise';
+            if (newRow == startRow && newCol > startCol) {
+                motionResult.higherOrLower = 'higher';
+                motionResult.higherPosition.col = newCol;
+            } else if (newRow == startRow && newCol < startCol) {
+                motionResult.higherOrLower = 'lower';
+                motionResult.lowerPosition.col = newCol;
+            } else if (newRow < startRow) {
+                motionResult.higherOrLower = 'lower';
+                motionResult.lowerPosition.row = newRow;
+                motionResult.lowerPosition.col = newCol;
+            } else if (newRow > startRow) {
+                motionResult.higherOrLower = 'higher';
+                motionResult.higherPosition.row = newRow;
+                motionResult.higherPosition.col = newCol;
+            }
+
+            motionResult.endRow = vim.get('marks')[markName].row;
+            motionResult.endCol = vim.get('marks')[markName].col;
+            motionResult.type = 'characterwise';
+            motionResult.inclusive = false;
+            break;
+
+        case 't':
+            var endOffset = -1;
+            // If this is {count}t{letter} then add 1 to the startCol so
+            // we don't just end up finding the same letter position
+            // {count} times.
+            if (isRepeat) {
+                startCol++;
+            }
+            // Don't break. Fall through to the 'f' motion logic.
+
+        case 'f':
+            var endOffset = endOffset || 0;
+            var startOffset = startCol + 1;
+            var searchString = lines[startRow].substring(startOffset);
+            var letter = normalCommand.findLetter;
+            // Note that charIndex represents a relative position and
+            // must be added to startOffset to get the absolute position of
+            // this character.
+            var charIndex = searchString.indexOf(letter);
+            this.logger.debug('Searching for "' + letter + '" in string "' + searchString + '"');
+            if (charIndex > -1) {
+                this.logger.debug('Found character "' + letter + '" at index ' + (startOffset + charIndex));
+                motionResult.higherOrLower = 'higher';
+                motionResult.higherPosition.col = startOffset + charIndex + endOffset;
+                motionResult.endCol = startOffset + charIndex + endOffset;
+                motionResult.type = 'characterwise';
                 motionResult.inclusive = true;
+            } else {
+                this.logger.debug('Did not find character "' + letter + '". Doing nothing.');
+            }
+            break;
 
-                if (newRow == startRow && newCol > startCol) {
-                    motionResult.higherOrLower = 'higher';
-                    motionResult.higherPosition.col = newCol;
-                } else if (newRow == startRow && newCol < startCol) {
-                    motionResult.higherOrLower = 'lower';
-                    motionResult.lowerPosition.col = newCol;
-                } else if (newRow < startRow) {
-                    motionResult.higherOrLower = 'lower';
-                    motionResult.lowerPosition.row = newRow;
-                    motionResult.lowerPosition.col = newCol;
-                } else if (newRow > startRow) {
-                    motionResult.higherOrLower = 'higher';
-                    motionResult.higherPosition.row = newRow;
-                    motionResult.higherPosition.col = newCol;
-                }
-                break;
+        case 'T':
+            var endOffset = 1;
+            // If this is {count}T{letter} then subtract 1 from the
+            // startCol so that we don't just end up finding the same
+            // letter position {count} times.
+            if (isRepeat) {
+                startCol--;
+            }
+            // Don't break. Fall through to 'F' motion logic.
 
-            case '`':
-                var markName = normalCommand.markName;
-                if (typeof vim.get('marks')[markName] == 'undefined') {
-                    this.logger.warn('Mark "' + markName + '" not set');
-                    motionResult.error = 'E20: Mark not set';
-                    break;
-                }
-                var newRow = vim.get('marks')[markName].row;
-                var newCol = vim.get('marks')[markName].col;
-
-                if (newRow == startRow && newCol > startCol) {
-                    motionResult.higherOrLower = 'higher';
-                    motionResult.higherPosition.col = newCol;
-                } else if (newRow == startRow && newCol < startCol) {
-                    motionResult.higherOrLower = 'lower';
-                    motionResult.lowerPosition.col = newCol;
-                } else if (newRow < startRow) {
-                    motionResult.higherOrLower = 'lower';
-                    motionResult.lowerPosition.row = newRow;
-                    motionResult.lowerPosition.col = newCol;
-                } else if (newRow > startRow) {
-                    motionResult.higherOrLower = 'higher';
-                    motionResult.higherPosition.row = newRow;
-                    motionResult.higherPosition.col = newCol;
-                }
-
-                motionResult.endRow = vim.get('marks')[markName].row;
-                motionResult.endCol = vim.get('marks')[markName].col;
+        case 'F':
+            var searchString = lines[startRow].substring(0, startCol);
+            var letter = normalCommand.findLetter;
+            var charIndex = searchString.lastIndexOf(letter);
+            if (charIndex > -1) {
+                motionResult.higherOrLower = 'lower';
+                motionResult.lowerPosition.col = charIndex + endOffset;
+                motionResult.endCol = charIndex + endOffset;
                 motionResult.type = 'characterwise';
                 motionResult.inclusive = false;
-                break;
+            } else {
+                this.logger.debug('Did not find character "' + letter + '". Doing nothing.');
+            }
+            break;
 
-            case 't':
-                var endOffset = -1;
-                // If this is {count}t{letter} then add 1 to the startCol so
-                // we don't just end up finding the same letter position
-                // {count} times.
-                if (isRepeat) {
-                    startCol++;
-                }
-                // Don't break. Fall through to the 'f' motion logic.
-
-            case 'f':
-                var endOffset = endOffset || 0;
-                var startOffset = startCol + 1;
-                var searchString = lines[startRow].substring(startOffset);
-                var letter = normalCommand.findLetter;
-                // Note that charIndex represents a relative position and
-                // must be added to startOffset to get the absolute position of
-                // this character.
-                var charIndex = searchString.indexOf(letter);
-                this.logger.debug('Searching for "' + letter + '" in string "' + searchString + '"');
-                if (charIndex > -1) {
-                    this.logger.debug('Found character "' + letter + '" at index ' + (startOffset + charIndex));
-                    motionResult.higherOrLower = 'higher';
-                    motionResult.higherPosition.col = startOffset + charIndex + endOffset;
-                    motionResult.endCol = startOffset + charIndex + endOffset;
-                    motionResult.type = 'characterwise';
-                    motionResult.inclusive = true;
-                } else {
-                    this.logger.debug('Did not find character "' + letter + '". Doing nothing.');
-                }
-                break;
-
-            case 'T':
-                var endOffset = 1;
-                // If this is {count}T{letter} then subtract 1 from the
-                // startCol so that we don't just end up finding the same
-                // letter position {count} times.
-                if (isRepeat) {
-                    startCol--;
-                }
-                // Don't break. Fall through to 'F' motion logic.
-
-            case 'F':
-                var searchString = lines[startRow].substring(0, startCol);
-                var letter = normalCommand.findLetter;
-                var charIndex = searchString.lastIndexOf(letter);
-                if (charIndex > -1) {
-                    motionResult.higherOrLower = 'lower';
-                    motionResult.lowerPosition.col = charIndex + endOffset;
-                    motionResult.endCol = charIndex + endOffset;
-                    motionResult.type = 'characterwise';
-                    motionResult.inclusive = false;
-                } else {
-                    this.logger.debug('Did not find character "' + letter + '". Doing nothing.');
-                }
-                break;
-
-            default:
-                this.logger.warn('The "' + normalCommand.motionName + '" motion has not been implemented. Defaulting to no motion.');
+        default:
+            this.logger.warn('The "' + normalCommand.motionName + '" motion has not been implemented. Defaulting to no motion.');
         }
         return motionResult;
     }

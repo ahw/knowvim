@@ -160,7 +160,7 @@ var EditorView = Backbone.View.extend({
             return newContents;
         } else {
             // this.convertEmptyToSpace(args.row);
-            this.logger.warn('Rendering the curosr on an empty line');
+            this.logger.debug('Rendering the curosr on an empty line');
             return this.cursor.openingTag + ' ' + this.cursor.closingTag;
         }
     },

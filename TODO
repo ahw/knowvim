@@ -17,8 +17,6 @@ Features
         }
     });
 [ ] b motion
-[ ] } motion
-[ ] { motion
 [ ] gg motion
 [ ] G motion
 [ ] / forward search
@@ -42,6 +40,8 @@ Features
 [X] DELETE functionality in INSERT
 [X] w motion
 [X] INSERT mode control characters
+[X] } motion
+[X] { motion
 
 Code Maintenance
 ----------------
@@ -68,6 +68,8 @@ Bugs
     sucking up the characters from the next line.
 [ ] {count}f{letter} should be aborted if there aren't {count} letters
     available on the line. Currently it just goes to the last found letter.
+[ ] Delete operations involving paragraph movements { or } should end with
+    the cursor at the beginning of a single blank line.
 
 [X] Sometimes {count} values get mixed up. To reproduce:
         y4j => Yanks 5 lines (expected)

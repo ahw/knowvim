@@ -34,5 +34,27 @@ var MarkOperations = {
         this.logger.log('Set mark "' + markName + '"');
         this.logger.log('All marks:', vim.get('marks'));
         return operationResult;
+    },
+
+    /**
+     * Adjusts the row and column "coordinates" of each mark based on the
+     * results of some operation. Expected properties of args:
+     *
+     *  motionResult : The object returned from Motions.getMotionResult
+     *  vim : Reference to the Vim model
+     */
+    adjustMarksAfterOperation : function(args) {
+        var motionResult = args.motionResult;
+        var vim = args.vim;
+
+        Object.keys(vim.get('marks')).forEach(function(markName) {
+            var row = vim.get('marks')[markName].row;
+            var col = vim.get('marks')[markName].col;
+
+            if (motionResult.lowerPosition.row > row) {
+                // This mark needs no adjusting
+            }
+        }, this);
     }
+
 };
