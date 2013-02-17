@@ -26,12 +26,13 @@ var Motions = {
         }
 
         // Compute convenience variables
-        var normalCommand = args.normalCommand;
-        var startRow = args.startRow;
-        var startCol = args.startCol;
-        var lines = args.lines;
-        var vim = args.vim;
-        var totalMotionCount = 1; // Default motion count value is 1.
+        var normalCommand = args.normalCommand
+          , startRow = args.startRow
+          , startCol = args.startCol
+          , lines = args.lines
+          , vim = args.vim
+          , totalMotionCount = 1; // Default motion count value is 1.
+
         // If this normalCommand has an operationCount, multiply the
         // motionCount by that value since it is equivalent to simply apply
         // the motion (operationCount * motionCount) number of times.
@@ -84,26 +85,36 @@ var Motions = {
         // position, then reset lower position. Conversely, if the overall
         // motion moved the cursor to a lower row/col position, then reset
         // the higher position.
-        if (motionResult.higherOrLower == 'higher') {
-            motionResult.lowerPosition.row = startRow;
-            motionResult.lowerPosition.col = startCol;
-        } else if (motionResult.higherOrLower == 'lower') {
-            motionResult.higherPosition.row = startRow;
-            motionResult.higherPosition.col = startCol;
-        } else if (motionResult.higherOrLower == 'sameLine') {
-            // This is deprecated.
-            this.logger.error('motionResult.higherOrLower == "sameLine". This should not happen');
-            motionResult.lowerPosition.row = startRow;
-            motionResult.lowerPosition.col = startCol;
-            motionResult.higherPosition.row = startRow;
-            motionResult.higherPosition.col = startCol;
+        if (motionResult.startRow > motionResult.endRow) {
+            motionResult.higherOrLower = 'lower';
+            motionResult.lowerPosition.row = motionResult.endRow;
+            motionResult.lowerPosition.col = motionResult.endCol;
+            motionResult.higherPosition.row = motionResult.startRow;
+            motionResult.higherPosition.col = motionResult.startCol;
+
+        } else if (motionResult.startRow < motionResult.endRow) {
+            motionResult.higherOrLower = 'higher';
+            motionResult.lowerPosition.row = motionResult.startRow;
+            motionResult.lowerPosition.col = motionResult.startCol;
+            motionResult.higherPosition.row = motionResult.endRow;
+            motionResult.higherPosition.col = motionResult.endCol;
+
+        } else if (motionResult.startCol < motionResult.endCol) {
+            motionResult.higherOrLower = 'higher';
+            motionResult.lowerPosition.row = motionResult.startRow;
+            motionResult.lowerPosition.col = motionResult.startCol;
+            motionResult.higherPosition.row = motionResult.endRow;
+            motionResult.higherPosition.col = motionResult.endCol;
+
+        } else if (motionResult.startCol > motionResult.endCol) {
+            motionResult.higherOrLower = 'lower';
+            motionResult.lowerPosition.row = motionResult.endRow;
+            motionResult.lowerPosition.col = motionResult.endCol;
+            motionResult.higherPosition.row = motionResult.startRow;
+            motionResult.higherPosition.col = motionResult.startCol;
+
         } else {
-            this.logger.warn('Not changing motionResult.higherPosition or motionResult.lowerPosition because higherOrLower == ' + motionResult.higherOrLower);
-            this.logger.warn('Setting lowerPosition row/col AND higherPosition row/col to the original start values');
-            motionResult.lowerPosition.row = startRow;
-            motionResult.lowerPosition.col = startCol;
-            motionResult.higherPosition.row = startRow;
-            motionResult.higherPosition.col = startCol;
+            this.logger.warn('Not changing motionResult.higherPosition or motionResult.lowerPosition because startRow == endRow, startCol == endCol');
         }
 
         this.logger.info('Returning motionResult', motionResult);
@@ -128,12 +139,13 @@ var Motions = {
      */
     applyMotion : function(args) {
         this.logger.debug('Called applyMotion with args', args);
-        var normalCommand = args.normalCommand;
-        var startRow = args.startRow;
-        var startCol = args.startCol;
-        var lines = args.lines;
-        var vim = args.vim;
-        var isRepeat = args.isRepeat ? args.isRepeat : false;
+        var normalCommand = args.normalCommand
+          , startRow = args.startRow
+          , startCol = args.startCol
+          , lines = args.lines
+          , count = args.count
+          , vim = args.vim
+          , isRepeat = args.isRepeat ? args.isRepeat : false;
 
         // Define the default motionResult object.
         var motionResult = {
@@ -280,6 +292,31 @@ var Motions = {
                 motionResult : motionResult
             });
             break;
+
+        case 'G':
+            // The [count] given to G is a special case, instead of
+            // repeating the motion [count] times, we jump to the line
+            // number given by [count]. See :help G
+            motionResult.inclusive = true;
+            motionResult.type = 'linewise';
+
+            // If normalCommand.motionCount == null then we move to last line of file by
+            // default.
+            if (typeof normalCommand.motionCount == 'undefined') {
+                this.logger.warn('Received G command with null count; moving to bottom of file');
+                normalCommand.motionCount = lines.length;
+            }
+
+            var lineNo = normalCommand.motionCount - 1;
+            // Bound lineNo between 0 and last line
+            lineNo = Math.min(lines.length - 1, lineNo);
+            lineNo = Math.max(0, lineNo);
+
+            var endCol = Math.max(0, lines[lineNo].search(/\S/));
+            motionResult.endRow = lineNo;
+            motionResult.endCol = endCol;
+            break;
+
 
         case 'w':
             motionResult.inclusive = false;

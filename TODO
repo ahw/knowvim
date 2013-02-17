@@ -78,3 +78,21 @@ Bugs
         4yj => Yanks 5 lines in register r (expected)
         "ry4j => Yanks 5 lines in register r (expected)
         "r4yj => Yanks 17 lines into register r (unexpected)
+
+
+Things Handled in Original Knowvim.com
+--------------------------------------
+
+[#] j Move down    [#] dd Delete line       [ ] :w  Write file           [#] i      INSERT           [ ] /pattern Search          
+[#] k Move up      [#] x  Delete char       [ ] :wq Write and quit       [#] a      INSERT (after)   [ ] n        Next occurrence          
+[#] h Move left    [#] yy Yank line (copy)  [ ] :q! Quit without write   [#] <ESC>  NORMAL           [ ] N        Prev. occurrence          
+[#] l Move right   [#] p  Paste line below  [#] :o  Open                 [ ] .      Repeat           [ ] u        Undo
+
+[ ] H     Top visible line     [#] w   Next word       [#] dw  Delete word              [ ] V              VISUAL LINE
+[ ] L     Bottom visible line  [ ] b   Prev. word      [#] D   Delete to end            [ ] R              REPLACE
+[#] }     Next p-graph         [#] 0   Start of line   [#] d}  Delete next p-graph      [#] I              INSERT (at beginning)
+[#] {     Prev. p-graph        [#] $   End of line     [ ] d{  Delete previous p-graph  [#] A              INSERT (at end)
+[ ] gg    Very top             [ ] gqj Format line     [ ] dgg Delete to top            [ ] s              Delete char + INSERT
+[ ] G     Very bottom          [ ] gq} Format p-graph  [ ] dG  Delete to bottom         [ ] S              Erase + INSERT
+[ ] ~     Toggle case          [ ] gqG Format to end   [ ] cw  dw + INSERT              [ ] r[char]        Replace single
+[#] m[x]  Mark pos. as x       [#] 'x  Goto pos. x     [ ] C   D + INSERT               [ ] :%s/old/new/gc Search and replace

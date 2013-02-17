@@ -2,7 +2,7 @@ var Tokenizer = function(options) {
     this.parser = options.parser;
     this.state = 'READY';
     this.currentToken = null;
-    var motionKeys = /^[hjkl0\$wb\{\}HL]$/;
+    var motionKeys = /^[hjkl0\$wb\{\}HLG]$/;
     var controlKeys = new RegExp(
             Helpers.controlCharacters.BACKSPACE + "|" +
             Helpers.controlCharacters.DELETE
