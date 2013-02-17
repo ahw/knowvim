@@ -183,8 +183,7 @@ var NormalHandler = Backbone.DeepModel.extend({
                 // If all the lines were deleted from the buffer, make sure
                 // there is at least one empty one.
                 if (this.lines().length == 0) {
-                    this.logger().warn('Buffer is entirely empty. Pushing a single empty string');
-                    this.lines().push("");
+                    this.logger().warn('Buffer is entirely empty.');
                 }
             
 
@@ -247,6 +246,10 @@ var NormalHandler = Backbone.DeepModel.extend({
         this.logger().debug('Handling motion only');
         // If normalCommand.motionCount exists, the motion result
         // will reflect this repetition.
+        if (this.lines().length == 0) {
+            this.logger().warn('Buffer is entirely empty; returning early');
+            return;
+        }
         var motionResult = Motions.getMotionResult({
             normalCommand : normalCommand,
             startRow : this.cursorRow(),
@@ -276,8 +279,20 @@ var NormalHandler = Backbone.DeepModel.extend({
             var cursorCol = this.cursorCol();
             var lines = this.lines();
             var bufferHasChanged = false;
+
+            // If the Buffer is entirely empty, we'll have to add a single
+            // line to it first.
+            if (lines.length == 0)
+                lines.push("");
+
             switch(normalCommand.mode) {
-                // Default case is 'i', where cursor position doesn't change.
+                case 'i':
+                    if (lines[cursorRow] == "") {
+                        lines[cursorRow] = " ";
+                        bufferHasChange = true;
+                    }
+                    break;
+
                 case 'a':
                     if (cursorCol == lines[cursorRow].length - 1) {
                         lines[cursorRow] = lines[cursorRow] + " ";
@@ -294,17 +309,21 @@ var NormalHandler = Backbone.DeepModel.extend({
 
                 case 'I':
                     cursorCol = Math.max(0, lines[cursorRow].search(/\S/));
+                    if (lines[cursorRow] == "") {
+                        lines[cursorRow] = " ";
+                        bufferHasChange = true;
+                    }
                     break;
 
                 case 'o':
-                    lines.splice(cursorRow + 1, 0, "");
+                    lines.splice(cursorRow + 1, 0, " ");
                     cursorCol = 0; // TODO: Position column correctly.
                     cursorRow++;
                     bufferHasChanged = true;
                     break;
 
                 case 'O':
-                    lines.splice(cursorRow, 0, "");
+                    lines.splice(cursorRow, 0, " ");
                     cursorCol = 0; // TODO: Position column correctly.
                     bufferHasChanged = true;
                     break;

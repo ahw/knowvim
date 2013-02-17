@@ -57,6 +57,8 @@ Performance
 
 Bugs
 ----
+[ ] Handle cases where Buffer is entirely empty. This is partially handled
+    in NormalHandler and Motions at least spits out a warning for now.
 [ ] Change empty lines to blank spaces only when the cursor is over them.
     When the cursor leaves, change the line contents back to the empty
     string (currently they are left as a single space). To reproduce edit a

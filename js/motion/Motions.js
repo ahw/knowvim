@@ -19,6 +19,11 @@ var Motions = {
     getMotionResult : function(args) {
         this.logger.debug('Called getMotionResult with args', args);
 
+        if (args.lines.length == 0) {
+            this.logger.warn('Buffer is entirely empty; returning early');
+            return;
+        }
+
         // Compute convenience variables
         var normalCommand = args.normalCommand;
         var startRow = args.startRow;
