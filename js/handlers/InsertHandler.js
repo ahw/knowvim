@@ -39,7 +39,16 @@ var InsertHandler = function(args) {
 
         switch(key) {
             case Helpers.controlCharacters.ENTER:
-                logger.warn('No implementation for the <CR> key.');
+                var leftChars = lines[cursorRow].substring(0, cursorCol);
+                var rightChars = lines[cursorRow].substring(cursorCol);
+                lines[cursorRow] = leftChars;
+                lines.splice(cursorRow + 1, 0, rightChars);
+
+                // TODO: Handle positioning better.
+                // Set the col position silently. It'll get updated when the
+                // buffer updates.
+                handler.vim.set({col : 0, row : cursorRow + 1}, {silent : true});
+                handler.done();
                 break;
 
             case Helpers.controlCharacters.ESC:
@@ -56,7 +65,7 @@ var InsertHandler = function(args) {
                 handler.vim.set({col : cursorCol}, {silent : true});
 
                 var mode = Helpers.modeNamesByKey[key];
-                logger.info('Setting Vim mode to "' + mode + '" from INSERT');
+                logger.info('Setting Vim mode to ' + mode + ' from INSERT');
                 handler.vim.changeMode(mode);
                 break;
 

@@ -69,6 +69,11 @@ var NormalHandler = Backbone.DeepModel.extend({
             vim : this.get('vim')
         });
 
+        if (motionResult == null) {
+            this.logger().warn('Motion result returned null; returning early from handleOperation');
+            return;
+        }
+
         // :help operator:
         //
         // Which motions are linewise, inclusive or exclusive is mentioned
@@ -246,10 +251,6 @@ var NormalHandler = Backbone.DeepModel.extend({
         this.logger().debug('Handling motion only');
         // If normalCommand.motionCount exists, the motion result
         // will reflect this repetition.
-        if (this.lines().length == 0) {
-            this.logger().warn('Buffer is entirely empty; returning early');
-            return;
-        }
         var motionResult = Motions.getMotionResult({
             normalCommand : normalCommand,
             startRow : this.cursorRow(),
@@ -257,6 +258,12 @@ var NormalHandler = Backbone.DeepModel.extend({
             lines : this.lines(),
             vim : this.get('vim')
         });
+
+        if (motionResult == null) {
+            this.logger().warn('Motion result returned Buffer is entirely empty; returning early');
+            return;
+        }
+
         this.get('vim').set({
             row : motionResult.endRow,
             col : motionResult.endCol,
@@ -280,8 +287,8 @@ var NormalHandler = Backbone.DeepModel.extend({
             var lines = this.lines();
             var bufferHasChanged = false;
 
-            // If the Buffer is entirely empty, we'll have to add a single
-            // line to it first.
+            // If there are no lines in the buffer, push an empty string to
+            // make the following logic work.
             if (lines.length == 0)
                 lines.push("");
 
@@ -347,7 +354,6 @@ var NormalHandler = Backbone.DeepModel.extend({
 
     receiveNormalCommand : function(normalCommand) {
         this.logger().info('Received normal command "' + normalCommand.commandString + '"', normalCommand);
-        var deleteOrYank = /^(delete|yank)$/;
 
         var args = {
             normalCommand : normalCommand,

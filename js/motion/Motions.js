@@ -21,6 +21,7 @@ var Motions = {
 
         if (args.lines.length == 0) {
             this.logger.warn('Buffer is entirely empty; returning early');
+            this.logger.info('Returning motionResult', motionResult);
             return;
         }
 
@@ -105,7 +106,7 @@ var Motions = {
             motionResult.higherPosition.col = startCol;
         }
 
-        this.logger.log('Returning motionResult', motionResult);
+        this.logger.info('Returning motionResult', motionResult);
         return motionResult;
     },
 
