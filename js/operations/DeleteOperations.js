@@ -14,6 +14,7 @@ var DeleteOperations = {
      *
      *  normalCommand : The object received in
      *      NormalHandler.receiveNormalCommand.
+     *  motionResult : The object returned from Motions.getMotionResult
      *  lines : An array of strings representing the buffer
      *  startRow : Number
      *  startCol : Number
@@ -24,17 +25,17 @@ var DeleteOperations = {
         // Yank with the exact same arguments.
         var operationResult = YankOperations.getYankOperationResult(args);
 
-        var lines = args.lines;
-        var numLines = operationResult.text.length;
-        var motionResult = operationResult.motionResult;
-        var lowerRow = operationResult.motionResult.lowerPosition.row;
-        var higherRow = operationResult.motionResult.higherPosition.row;
-        var lowerCol = operationResult.motionResult.lowerPosition.col;
-        var higherCol = operationResult.motionResult.higherPosition.col;
+        var lines = args.lines
+          , numLines = operationResult.text.length
+          , motionResult = operationResult.motionResult
+          , lowerRow = operationResult.motionResult.lowerPosition.row
+          , higherRow = operationResult.motionResult.higherPosition.row
+          , lowerCol = operationResult.motionResult.lowerPosition.col
+          , higherCol = operationResult.motionResult.higherPosition.col;
 
         switch(operationResult.motionResult.type) {
             case 'linewise':
-                this.logger.log('Removing ' + numLines + ' lines starting at line # ' + (lowerRow + 1));
+                this.logger.debug('Removing ' + numLines + ' lines starting at line # ' + (lowerRow + 1));
                 lines.splice(lowerRow, numLines);
                 var position = Positioning.getPositionAfterLinewiseDelete({
                     lines : lines,
@@ -64,11 +65,11 @@ var DeleteOperations = {
                 this.logger.debug('rightChars = "' + rightChars + '"');
 
                 if (higherRow - lowerRow == 0) {
-                    this.logger.log('Characterwise delete on same line');
+                    this.logger.debug('Characterwise delete on same line');
                     // Assert: lowerRow and higherRow are the same thing.
                     lines[lowerRow] = leftChars + rightChars;
                 } else {
-                    this.logger.log('Characterwise delete on multiple lines');
+                    this.logger.debug('Characterwise delete on multiple lines');
                     // Assert: characterwise motion spans multiple lines.
                     lines.splice(lowerRow + 1, numLines - 1);
                     lines[lowerRow] = leftChars + rightChars;
@@ -82,8 +83,8 @@ var DeleteOperations = {
                     // to remain.
                     if (/^[\s]*$/.test(rightChars)) {
                         this.logger.debug('Should turn into a linewise');
-                        this.logger.debug('lowerRow = ' + lowerRow);
-                        this.logger.debug('higherRow = ' + higherRow);
+                        this.logger.debug('lowerRow = ', lines[lowerRow]);
+                        this.logger.debug('higherRow = ',  lines[higherRow]);
                         lines.splice(higherRow, 1);
                     }
                 }
@@ -93,7 +94,7 @@ var DeleteOperations = {
                 // the last character of the line. The above logic will
                 // not delete this last character.
                 if (motionResult.hitEol) {
-                    this.logger.log('Moving column position back by one position since we deleted the last character.');
+                    this.logger.debug('Moving column position back by one position since we deleted the last character.');
                     operationResult.endCol = Math.max(0, lines[lowerRow].length - 1);
                 }
 

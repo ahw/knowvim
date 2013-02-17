@@ -1,5 +1,4 @@
 var Tokenizer = function(options) {
-
     this.parser = options.parser;
     this.state = 'READY';
     this.currentToken = null;
@@ -58,11 +57,18 @@ var Tokenizer = function(options) {
     };
 
     /**
+     * Send a token to the Parser.
+     */
+    this.pushToken = function(token) {
+        logger.info('Sending token to Parser', token);
+        this.parser.receiveToken(token);
+    };
+
+    /**
      * The heart of the Tokenizer object. Implementes a finite state machine
      * for tokenizing a character input stream.
      */
     this.receiveChar = function(ch) {
-
         // TODO: Remove the magin strings here and use some sort of
         // enum-like construct.
         logger.debug('Received "' + ch + '"');
@@ -76,7 +82,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.READY;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
                 } else {
                     logger.debug('Re-running Tokenizer from READY state');
                     tokenizer.state = states.READY;
@@ -91,7 +97,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.READY;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
                 } else {
                     logger.debug('Re-running Tokenizer from READY state');
                     tokenizer.state = states.READY;
@@ -106,7 +112,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.READY;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
                 } else {
                     logger.debug('Re-running Tokenizer from READY state');
                     tokenizer.state = states.READY;
@@ -121,7 +127,7 @@ var Tokenizer = function(options) {
                         type : 'findLetter',
                         value : ch
                     });
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
                 } else {
                     tokenizer.warnAboutIllegalCharacter(ch, ' a single letter or symbol.');
                     tokenizer.reset();
@@ -138,7 +144,7 @@ var Tokenizer = function(options) {
                     });
                     tokenizer.state = states.READY;
                     searchTerm = "";
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
                 } else if (ch.length == 1) {
                     searchTerm += ch;
                     tokenizer.state = states.SEARCH;
@@ -154,7 +160,7 @@ var Tokenizer = function(options) {
                         type : 'markName',
                         value : ch
                     });
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
                     tokenizer.state = states.READY;
                 } else {
                     tokenizer.warnAboutIllegalCharacter(ch, ' a valid mark identifier (something which matches [a-z])');
@@ -168,7 +174,7 @@ var Tokenizer = function(options) {
                         type : 'markName',
                         value : ch
                     });
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
                     tokenizer.state = states.READY;
                 } else {
                     tokenizer.warnAboutIllegalCharacter(ch, ' a valid mark identifier (something which matches [a-z])');
@@ -182,7 +188,7 @@ var Tokenizer = function(options) {
                         type : 'registerName',
                         value : ch
                     });
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
                     tokenizer.state = states.READY;
                 } else {
                     tokenizer.warnAboutIllegalCharacter(ch, ' a valid register identifier (something which matches [a-zA-Z0-9\\.%#\\:\\-"] )');
@@ -201,7 +207,7 @@ var Tokenizer = function(options) {
                     });
                     countValue = 0;
                     tokenizer.state = states.READY;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
                     logger.debug('Re-running Tokenizer from READY state');
                     tokenizer.receiveChar(ch); // Re-run
                 }
@@ -214,7 +220,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.READY;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
 
                 } else if (controlKeys.test(ch)) {
                     var t = new Token({
@@ -222,7 +228,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.READY;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
 
                 } else if (findKeys.test(ch)) {
                     var t = new Token({
@@ -230,7 +236,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.FIND;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
 
                 } else if (ch == deleteOperator) {
                     var t = new Token({
@@ -238,7 +244,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.DELETE;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
 
                 } else if (ch == changeOperator) {
                     var t = new Token({
@@ -246,7 +252,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.CHANGE;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
 
                 } else if (ch == yankOperator) {
                     var t = new Token({
@@ -254,7 +260,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.YANK;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
 
                 } else if (ch == putOperator) {
                     var t = new Token({
@@ -262,7 +268,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.READY;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
 
                 } else if (searchKeys.test(ch)) {
                     var t = new Token({
@@ -270,7 +276,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.SEARCH;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
 
                 } else if (jumpOperators.test(ch)) {
                     var t = new Token({
@@ -278,7 +284,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.GOTO_MARK;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
 
                 } else if (ch == markOperator) {
                     var t = new Token({
@@ -286,7 +292,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.MARK;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
 
                 } else if (ch == regOperator) {
                     var t = new Token({
@@ -294,7 +300,7 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.REGISTER;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
 
                 } else if (/^[123456789]$/.test(ch)) {
                     countValue = parseInt(ch);
@@ -306,14 +312,14 @@ var Tokenizer = function(options) {
                         value : ch
                     });
                     tokenizer.state = states.READY;
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
                 
                 } else if (modeKeys.test(ch)) {
                     var t = new Token({
                         type : 'mode',
                         value : ch
                     });
-                    tokenizer.parser.receiveToken(t);
+                    tokenizer.pushToken(t);
 
                 } else if (synonyms[ch]) {
                     logger.debug('Character ' + ch + ' is a synonym for ' + synonyms[ch].join(""));
@@ -332,5 +338,4 @@ var Tokenizer = function(options) {
                     tokenizer.state = states.READY;
         }
     };
-
 };

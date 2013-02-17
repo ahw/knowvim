@@ -85,6 +85,8 @@ var Motions = {
             motionResult.higherPosition.row = startRow;
             motionResult.higherPosition.col = startCol;
         } else if (motionResult.higherOrLower == 'sameLine') {
+            // This is deprecated.
+            this.logger.error('motionResult.higherOrLower == "sameLine". This should not happen');
             motionResult.lowerPosition.row = startRow;
             motionResult.lowerPosition.col = startCol;
             motionResult.higherPosition.row = startRow;
@@ -251,7 +253,7 @@ var Motions = {
 
         case '}':
             motionResult.inclusive = false;
-            motionResult.type = 'linewise';
+            motionResult.type = 'characterwise';
             motionResult.higherOrLower = 'higher';
             ObjectMotions.forwardParagraph({
                 startRow : startRow,
@@ -323,7 +325,7 @@ var Motions = {
             // motionResult.startRow and motinoResult.endRow should
             // remain as-is.
             motionResult.type = 'linewise';
-            motionResult.higherOrLower = 'sameLine';
+            motionResult.higherOrLower = null;
             break;
 
         case "'":

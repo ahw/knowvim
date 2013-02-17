@@ -24,20 +24,20 @@ var WordMotions = {
      *  motionResult : The motion result object to mutate
      */
     w : function(args) {
-        var row = args.startRow;
-        var col = args.startCol;
-        var lines = args.lines;
-        var motionResult = args.motionResult;
+        var row = args.startRow
+          , col = args.startCol
+          , lines = args.lines
+          , motionResult = args.motionResult;
 
-        var line = lines[row];
-        var rightChars = line.substring(col);
-        var ch = rightChars.charAt(0);
-        var charType = this.getCharacterType(ch);
+        var line = lines[row]
+          , rightChars = line.substring(col)
+          , ch = rightChars.charAt(0)
+          , charType = this.getCharacterType(ch);
         // Keeping track of previous character just for the purposes of
         // logging.
-        var prevChar = null;
-        var prevCharType = this.getCharacterType(prevChar);
-        var foundNextPosition = false;
+        var prevChar = null
+          , prevCharType = this.getCharacterType(prevChar)
+          , foundNextPosition = false;
 
         // Column position decremented by 1 to accomodate for the
         // incrementing logic in the while loop below.

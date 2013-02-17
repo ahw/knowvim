@@ -12,30 +12,22 @@ var YankOperations = {
      *
      *  normalCommand : The object received in
      *      NormalHandler.receiveNormalCommand.
+     *  motionResult : The object returned from Motions.getMotionResult
      *  lines : An array of strings representing the buffer
      *  startRow : Number
      *  startCol : Number
      */
     getYankOperationResult : function(args) {
-        this.logger.log('Called getYankOperationResult');
+        this.logger.debug('Called getYankOperationResult');
 
         // Compute convenience variables
-        var normalCommand = args.normalCommand;
-        var startRow = args.startRow;
-        var startCol = args.startCol;
-        var lines = args.lines;
-        var vim = args.vim;
-        var operationCount = normalCommand.operationCount ? normalCommand.operationCount : 1;
-
-
-        // First, get the motionResult.
-        var motionResult = Motions.getMotionResult({
-            normalCommand : normalCommand,
-            startRow : startRow,
-            startCol : startCol,
-            lines : lines,
-            vim : vim
-        });
+        var normalCommand = args.normalCommand
+          , startRow = args.startRow
+          , startCol = args.startCol
+          , lines = args.lines
+          , vim = args.vim
+          , motionResult = args.motionResult
+          , operationCount = normalCommand.operationCount ? normalCommand.operationCount : 1;
 
         // Default register name is the unnamed register, '"'.
         var registerName = normalCommand.registerName
@@ -60,12 +52,12 @@ var YankOperations = {
         if (operationResult.text.length > 2)
             operationResult.error = operationResult.text.length + ' lines yanked';
 
-        this.logger.log('Yanked the following text into register ' + registerName);
+        this.logger.debug('Yanked the following text into register ' + registerName);
         var operationLogger = this.logger;
         operationResult.text.forEach(function(line) {
-            operationLogger.log(sprintf('=> "%s"', line));
+            operationLogger.debug(sprintf('=> "%s"', line));
         });
-        this.logger.log('Returning operationResult', operationResult);
+        this.logger.info('Returning operationResult', operationResult);
         return operationResult;
     },
 
@@ -83,12 +75,12 @@ var YankOperations = {
      *    this operation
      */
     applyOperation : function(args) {   
-        this.logger.log('Called applyOperation with args:' , args);
-        var operationName = args.operationName;
-        var motionResult = args.motionResult;
-        var lines = args.lines;
-        var text = args.text ? args.text : [];
-        var isRepeat = args.isRepeat ? args.isRepeat : false;
+        this.logger.debug('Called applyOperation with args:' , args);
+        var operationName = args.operationName
+          , motionResult = args.motionResult
+          , lines = args.lines
+          , text = args.text ? args.text : []
+          , isRepeat = args.isRepeat ? args.isRepeat : false;
 
         // Define the operationResult object.
         var operationResult = {
@@ -124,7 +116,7 @@ var YankOperations = {
      * Make a linewise yank.
      */
     yankLinewise : function(args) {
-        this.logger.log('Called yankLinewise with args:', args);
+        this.logger.debug('Called yankLinewise with args:', args);
 
         var lines = args.lines;
         var operationResult = args.operationResult;
@@ -156,10 +148,10 @@ var YankOperations = {
      * involved.
      */
     yankCharacterwise : function(args) {
-        var motionResult = args.motionResult;
-        var lines = args.lines;
-        var operationResult = args.operationResult;
-        var lowerRow = args.motionResult.lowerPosition.row;
+        var motionResult = args.motionResult
+          , lines = args.lines
+          , operationResult = args.operationResult
+          , lowerRow = args.motionResult.lowerPosition.row;
 
         var spansMultipleLines =
             motionResult.startRow == motionResult.endRow
@@ -178,12 +170,18 @@ var YankOperations = {
         }
 
         // If the motion is inclusive, then add 1 to the end index.
-        if (motionResult.inclusive)
+        if (motionResult.inclusive) {
+            this.logger.warn('Motion result is inclusive; adding 1 to the endCol value');
+            this.logger.debug('TODO -- Should not adjust motionResult from within YankOperations');
             motionResult.endCol++;
+        }
 
         // If we hit the end of the line, add 1 to the end index
-        if (motionResult.hitEol)
+        if (motionResult.hitEol) {
+            this.logger.warn('Motion result hit EOL; adding 1 to the endCol value');
+            this.logger.debug('TODO -- Should not adjust motionResult from within YankOperations');
             motionResult.endCol++;
+        }
 
         if (!spansMultipleLines) {
             this.yankCharacterwiseSingleLine({
@@ -206,16 +204,12 @@ var YankOperations = {
      * always (and only) apply within a single line.
      */
     yankCharacterwiseSingleLine : function(args) {
-        this.logger.log('Called yankCharacterwiseSingleLine with args:', args);
-        var lines = args.lines;
-        var startRow = args.motionResult.startRow;
-        var minCol = Math.min(
-            args.motionResult.startCol,
-            args.motionResult.endCol);
-        var maxCol = Math.max(
-            args.motionResult.startCol,
-            args.motionResult.endCol);
-        var operationResult = args.operationResult;
+        this.logger.debug('Called yankCharacterwiseSingleLine with args:', args);
+        var lines = args.lines
+          , startRow = args.motionResult.startRow
+          , minCol = Math.min(args.motionResult.startCol, args.motionResult.endCol)
+          , maxCol = Math.max(args.motionResult.startCol, args.motionResult.endCol)
+          , operationResult = args.operationResult;
         // Yank all characters in the range [minCol, maxCol)
         var yankedChars = lines[startRow].substring(minCol, maxCol);
         operationResult.text.push(yankedChars);
@@ -232,20 +226,20 @@ var YankOperations = {
      * always apply over multiple lines.
      */
     yankCharacterwiseMultipleLines : function(args) {
-        this.logger.log('Called yankCharacterwiseMultipleLines with args:', args);
+        this.logger.debug('Called yankCharacterwiseMultipleLines with args:', args);
 
-        var lines = args.lines;
-        var lowerRow = args.motionResult.lowerPosition.row;
-        var lowerCol = args.motionResult.lowerPosition.col;
-        var higherRow = args.motionResult.higherPosition.row;
-        var higherCol = args.motionResult.higherPosition.col;
-        var operationResult = args.operationResult;
-        var yankedLines = [];
+        var lines = args.lines
+          , lowerRow = args.motionResult.lowerPosition.row
+          , lowerCol = args.motionResult.lowerPosition.col
+          , higherRow = args.motionResult.higherPosition.row
+          , higherCol = args.motionResult.higherPosition.col
+          , operationResult = args.operationResult
+          , yankedLines = [];
 
         // Yank characters in the lower row in the range [lowerCol, EOL).
         yankedLines.push(lines[lowerRow].substring(lowerCol));
 
-        this.logger.log('Yanking "' + yankedLines[0] + '" (partial)');
+        this.logger.debug('Yanking "' + yankedLines[0] + '" (partial)');
 
         // If there are entire lines between lowerRow and higherRow, add them to
         // the yankedLines structure.
@@ -254,22 +248,22 @@ var YankOperations = {
             // which means there must be entire lines in
             // between that should be yanked.
             yankedLines = yankedLines.concat(lines.slice(lowerRow + 1, higherRow));
-            this.logger.log('Yanking all lines ' + (lowerRow + 1 + 1) + ' through ' + (higherRow + 1));
+            this.logger.debug('Yanking all lines ' + (lowerRow + 1 + 1) + ' through ' + (higherRow + 1));
         }
 
         // Yank the characters in the last line in the range [0, higherCol).
         yankedLines.push(lines[higherRow].substr(0, higherCol));
-        this.logger.log('Yanking "' + yankedLines[yankedLines.length-1] + '" (partial)');
+        this.logger.debug('Yanking "' + yankedLines[yankedLines.length-1] + '" (partial)');
 
         // Assign yankedLines to the text property.
         operationResult.text = yankedLines;
 
         // Update the positions using the operationResult object given in
         // the function arguments.
-        this.logger.log('Set operationResult row and col ending positions: row = ' + lowerRow + ',  col = ' + lowerCol);
+        this.logger.debug('Set operationResult row and col ending positions: row = ' + lowerRow + ',  col = ' + lowerCol);
         operationResult.endRow = lowerRow;
         operationResult.endCol = lowerCol;
 
-        this.logger.log('Returning operationResult:', operationResult);
+        this.logger.info('Returning operationResult:', operationResult);
     }
 };
