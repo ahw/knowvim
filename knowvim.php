@@ -25,3 +25,4 @@ Enjoy!</p>
 <pre class="num"> 19</pre><pre class="line"> </pre>
 <pre class="num"> 20</pre><pre class="line"> </pre>
 <?php require('footer.php'); ?>
+<script src="js/init.js"></script>

@@ -100,7 +100,7 @@ a:visited { color:#555; } /* visited link    */
 a:hover { color: #DDD; }
 a:active { color: #DDD; }
 /* a:hover { color:#A0C0FF; } mouse over link */
-/* a:active { color:#DDF; } selected link   */
+/* a:active { color:#DEF5FF; } selected link   */
 
 .align-right {
     float:right;
@@ -127,7 +127,7 @@ html {
 
 body {
     text-align:center; /* for IE */
-    background-color:#DDF;
+    background-color:#DEF5FF;
 }
 
 .mainbox {
@@ -143,8 +143,8 @@ body {
     background-repeat:no-repeat;
     background-attachment:fixed;
     background-position:center;
-    background-color:#DDF;
-    border:1px #ccf solid;
+    background-color:#DEF5FF;
+    border:1px #D4F2FF solid;
     border-radius: 10px;
 }
 
@@ -180,7 +180,7 @@ h2.longtext {
     display:none;
     border-width:1px;
     border-style:solid;
-    border-color:#DDF;
+    border-color:#D4F2FF;
     display:none;
     margin-bottom:-25px;
     background-color:white;
@@ -195,7 +195,7 @@ h2.longtext {
 #about {
     border-width:1px;
     border-style:solid;
-    border-color:#DDF;
+    border-color:#D4F2FF;
     background-color:white;
 }
 
@@ -261,7 +261,7 @@ pre {
     font-size:12pt;
     border:none;
     color:#555;
-    background-color:#DDF;
+    background-color:#DEF5FF;
     width:800px;
     display:inline-block;
 }
@@ -270,7 +270,7 @@ pre {
     font-size:12pt;
     border:none;
     color:#555;
-    background-color:#DDF;
+    background-color:#DEF5FF;
     width:800px;
     display:inline-block;
 }
