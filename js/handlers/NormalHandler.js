@@ -260,7 +260,11 @@ var NormalHandler = Backbone.DeepModel.extend({
         });
 
         if (motionResult == null) {
-            this.logger().warn('Motion result returned Buffer is entirely empty; returning early');
+            this.logger().warn('Received null motion result; returning early');
+            this.logger().debug('Positions before return:', {
+                row : this.get('vim').get('row'),
+                col : this.get('vim').get('col')
+            });
             return;
         }
 

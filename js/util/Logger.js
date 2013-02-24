@@ -43,7 +43,7 @@ var Logger = function(args) {
         debug : 'color:gray',
         info  : 'color:blue',
         warn  : 'color:black; background:yellow',
-        error : 'color:white; background:red'
+        error : 'color:red; text-decoration:underline'
     };
 
     this.printMessage = function(level, msg, obj) {

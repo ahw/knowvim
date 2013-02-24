@@ -21,8 +21,8 @@ var Motions = {
 
         if (args.lines.length == 0) {
             this.logger.warn('Buffer is entirely empty; returning early');
-            this.logger.info('Returning motionResult', motionResult);
-            return;
+            this.logger.info('Returning null motionResult');
+            return null;
         }
 
         // Compute convenience variables
