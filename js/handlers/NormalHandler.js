@@ -29,14 +29,14 @@ var NormalHandler = Backbone.DeepModel.extend({
         });
     },
 
-    // Helper function to get the cursorRow.
-    cursorRow : function() {
-        return this.get('vim').get('cursorRow');
+    // Helper function to get the row.
+    row : function() {
+        return this.get('vim').get('row');
     },
 
-    // Helper function to get the cursorCol.
-    cursorCol : function() {
-        return this.get('vim').get('cursorCol');
+    // Helper function to get the col.
+    col : function() {
+        return this.get('vim').get('col');
     },
 
     // Helper for returning this.get('buffer').get('lines')
@@ -64,8 +64,8 @@ var NormalHandler = Backbone.DeepModel.extend({
         var motionResult = Motions.getMotionResult({
             normalCommand : normalCommand,
             lines : this.lines(),
-            startRow : this.cursorRow(),
-            startCol : this.cursorCol(),
+            startRow : this.row(),
+            startCol : this.col(),
             vim : this.get('vim')
         });
 
@@ -143,8 +143,8 @@ var NormalHandler = Backbone.DeepModel.extend({
         var args = {
             normalCommand : normalCommand,
             motionResult : motionResult,
-            startRow : this.cursorRow(),
-            startCol : this.cursorCol(),
+            startRow : this.row(),
+            startCol : this.col(),
             lines : this.lines(),
             vim : this.get('vim')
         };
@@ -253,8 +253,8 @@ var NormalHandler = Backbone.DeepModel.extend({
         // will reflect this repetition.
         var motionResult = Motions.getMotionResult({
             normalCommand : normalCommand,
-            startRow : this.cursorRow(),
-            startCol : this.cursorCol(),
+            startRow : this.row(),
+            startCol : this.col(),
             lines : this.lines(),
             vim : this.get('vim')
         });
@@ -282,8 +282,8 @@ var NormalHandler = Backbone.DeepModel.extend({
         // enter INSERT mode was used.
         var modeName = Helpers.modeNamesByKey[normalCommand.mode];
         if (modeName == Helpers.modeNames.INSERT) {
-            var cursorRow = this.cursorRow();
-            var cursorCol = this.cursorCol();
+            var row = this.row();
+            var col = this.col();
             var lines = this.lines();
             var bufferHasChanged = false;
 
@@ -294,44 +294,44 @@ var NormalHandler = Backbone.DeepModel.extend({
 
             switch(normalCommand.mode) {
                 case 'i':
-                    if (lines[cursorRow] == "") {
-                        lines[cursorRow] = " ";
-                        bufferHasChange = true;
+                    if (lines[row] == "") {
+                        lines[row] = " ";
+                        bufferHasChanged = true;
                     }
                     break;
 
                 case 'a':
-                    if (cursorCol == lines[cursorRow].length - 1) {
-                        lines[cursorRow] = lines[cursorRow] + " ";
+                    if (col == lines[row].length - 1) {
+                        lines[row] = lines[row] + " ";
                         bufferHasChanged = true;
                     }
-                    cursorCol++;
+                    col++;
                     break;
 
                 case 'A':
-                    lines[cursorRow] = lines[cursorRow] + " ";
+                    lines[row] = lines[row] + " ";
                     bufferHasChanged = true;
-                    cursorCol = lines[cursorRow].length - 1;
+                    col = lines[row].length - 1;
                     break;
 
                 case 'I':
-                    cursorCol = Math.max(0, lines[cursorRow].search(/\S/));
-                    if (lines[cursorRow] == "") {
-                        lines[cursorRow] = " ";
-                        bufferHasChange = true;
+                    col = Math.max(0, lines[row].search(/\S/));
+                    if (lines[row] == "") {
+                        lines[row] = " ";
+                        bufferHasChanged = true;
                     }
                     break;
 
                 case 'o':
-                    lines.splice(cursorRow + 1, 0, " ");
-                    cursorCol = 0; // TODO: Position column correctly.
-                    cursorRow++;
+                    lines.splice(row + 1, 0, " ");
+                    col = 0; // TODO: Position column correctly.
+                    row++;
                     bufferHasChanged = true;
                     break;
 
                 case 'O':
-                    lines.splice(cursorRow, 0, " ");
-                    cursorCol = 0; // TODO: Position column correctly.
+                    lines.splice(row, 0, " ");
+                    col = 0; // TODO: Position column correctly.
                     bufferHasChanged = true;
                     break;
                     
@@ -339,8 +339,8 @@ var NormalHandler = Backbone.DeepModel.extend({
             // Silently set the new column position. It'll get updated when
             // the mode changes.
             this.get('vim').set({
-                col : cursorCol,
-                row : cursorRow
+                col : col,
+                row : row
             }, {silent : true});
         }
         this.logger().info('Setting Vim mode to "' + modeName + '" from NORMAL');
@@ -357,8 +357,8 @@ var NormalHandler = Backbone.DeepModel.extend({
 
         var args = {
             normalCommand : normalCommand,
-            startRow : this.cursorRow(),
-            startCol : this.cursorCol(),
+            startRow : this.row(),
+            startCol : this.col(),
             lines : this.lines(),
             vim : this.get('vim')
         };

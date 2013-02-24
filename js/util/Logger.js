@@ -7,11 +7,15 @@
 var Logger = function(args) {
 
     this.module = args.module;
-    this.prefix = args.prefix + ': ';
+    this.prefix = args.prefix + ':';
 
     this.isEnabled = function() {
-        var re = new RegExp("\\?.*log=[a-zA-Z0-9;]*(" + this.module + "|all)");
-        return re.test(window.location.search);
+        // Matches log=mod1;mod2;mod3
+        var isEnabledRegex = new RegExp("\\?.*log=[^&]*(" + this.module + "|all)");
+        // Mathces log=-mod1;-mod2;-mod3
+        var isNotEnabledRegex = new RegExp("\\?.*log=[^&]*-" + this.module);
+        return (isEnabledRegex.test(window.location.search)
+            && !isNotEnabledRegex.test(window.location.search));
     };
 
     this.meetsThreshold = function(inputLevel) {
@@ -47,7 +51,7 @@ var Logger = function(args) {
             return;
 
         var augmentedMsg = sprintf('%5s - %s %s', level, this.prefix, msg);
-        if (obj)
+        if (typeof obj != 'undefined')
             console[level]('%c' + augmentedMsg, this.colors[level], obj);
         else
             console[level]('%c' + augmentedMsg, this.colors[level]);

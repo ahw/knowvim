@@ -1,6 +1,5 @@
 <?php require('header.php'); ?>
 <link rel="stylesheet" type="text/css" href="/css/mocha.css"/>
-<link rel="stylesheet" type="text/css" href="/css/mocha-overrides.css"/>
 
 <h1 style="text-align:left"><a href="/test.php">knowvim tests</a></h1>
 <div id="mocha">

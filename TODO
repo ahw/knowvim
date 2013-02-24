@@ -93,6 +93,6 @@ Things Handled in Original Knowvim.com
 [#] }     Next p-graph         [#] 0   Start of line   [#] d}  Delete next p-graph      [#] I              INSERT (at beginning)
 [#] {     Prev. p-graph        [#] $   End of line     [ ] d{  Delete previous p-graph  [#] A              INSERT (at end)
 [ ] gg    Very top             [ ] gqj Format line     [ ] dgg Delete to top            [ ] s              Delete char + INSERT
-[ ] G     Very bottom          [ ] gq} Format p-graph  [ ] dG  Delete to bottom         [ ] S              Erase + INSERT
+[#] G     Very bottom          [ ] gq} Format p-graph  [ ] dG  Delete to bottom         [ ] S              Erase + INSERT
 [ ] ~     Toggle case          [ ] gqG Format to end   [ ] cw  dw + INSERT              [ ] r[char]        Replace single
 [#] m[x]  Mark pos. as x       [#] 'x  Goto pos. x     [ ] C   D + INSERT               [ ] :%s/old/new/gc Search and replace

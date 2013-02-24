@@ -26,7 +26,7 @@ describe('Tokenizer', function() {
 
     describe('Initialization', function() {
         it('Should initialize to READY state', function() {
-            expect(tokenizer.state).to.be('xREADY');
+            expect(tokenizer.state).to.be('READY');
         });
     });
 
