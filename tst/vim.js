@@ -1,40 +1,9 @@
 describe('Vim', function() {
 
-    window.vim = new Vim();
     var LOG = new Logger({
         module : 'test',
         prefix : 'TEST'
     });
-
-    runTest = function(args) {
-        var msg = args.msg || args.cmd + ' command';
-        it(msg, function() {
-            runVimCommand(args.cmd);
-            expect(vim.get('row')).to.be(args.row);
-            expect(vim.get('col')).to.be(args.col);
-        });
-    };
-
-    xrunTest = function(args) {
-        var msg = args.msg || args.cmd + ' command';
-        it(msg, function(done) {
-            LOG.debug('row = ' + vim.get('row') + ', col = ' + vim.get('col') + ', args:', args);
-            runVimCommand(args.cmd);
-            expect(vim.get('row')).to.be(args.row);
-            expect(vim.get('col')).to.be(args.col);
-            LOG.warn('Finishing "it" function of xrunTest');
-            done();
-        });
-        LOG.warn('Finishing xrunTest');
-    };
-
-    runVimCommand = function(commandString) {
-        var re = /(<[^<>]+>|.)/g;
-        commandString.match(re).forEach(function(letter) {
-            // LOG.debug('Inputing key: "' + letter + '"');
-            vim.receiveKey(letter);
-        });
-    };
 
     getPositionsFromStrings = function(lines) {
         var startRow
@@ -69,6 +38,11 @@ describe('Vim', function() {
     };
 
     describe('Initialization', function() {
+        var vim;
+        before(function() {
+            vim = new Vim();
+        });
+
         it('Should initialize in NORMAL mode', function() {
             expect(vim.get('mode')).to.be('NORMAL');
         });
@@ -80,6 +54,11 @@ describe('Vim', function() {
     });
 
     describe('NORMAL happy path motions', function() {
+        var vim;
+        before(function() {
+            vim = new Vim();
+        });
+
         beforeEach(function() {
             vim.get('buffer').set({
                 lines : [ 'abc', 'def', 'ghi' ]
@@ -87,16 +66,69 @@ describe('Vim', function() {
             vim.set({row : 1, col : 1});
         });
 
-        runTest({cmd : 'h', row : 1, col : 0});
-        runTest({cmd : 'j', row : 2, col : 1});
-        runTest({cmd : 'k', row : 0, col : 1});
-        runTest({cmd : 'l', row : 1, col : 2});
-        runTest({cmd : '$', row : 1, col : 2});
-        runTest({cmd : '0', row : 1, col : 0});
-        runTest({cmd : 'G', row : 2, col : 0});
-        runTest({cmd : '1G', row : 0, col : 0});
-        runTest({cmd : '2G', row : 1, col : 0});
-        runTest({cmd : '3G', row : 2, col : 0});
+        it('h motion', function() {
+            vim.receiveKey('h');
+            expect(vim.get('row')).to.be(1);
+            expect(vim.get('col')).to.be(0);
+        });
+
+        it('j motion', function() {
+            vim.receiveKey('j');
+            expect(vim.get('row')).to.be(2);
+            expect(vim.get('col')).to.be(1);
+        });
+
+        it('k motion', function() {
+            vim.receiveKey('k');
+            expect(vim.get('row')).to.be(0);
+            expect(vim.get('col')).to.be(1);
+        });
+
+        it('l motion', function() {
+            vim.receiveKey('l');
+            expect(vim.get('row')).to.be(1);
+            expect(vim.get('col')).to.be(2);
+        });
+
+        it('0 motion', function() {
+            vim.receiveKey('0');
+            expect(vim.get('row')).to.be(1);
+            expect(vim.get('col')).to.be(0);
+        });
+
+        it('$ motion', function() {
+            vim.receiveKey('$');
+            expect(vim.get('row')).to.be(1);
+            expect(vim.get('col')).to.be(2);
+        });
+
+        it('G motion', function() {
+            vim.receiveKey('G');
+            expect(vim.get('row')).to.be(2);
+            expect(vim.get('col')).to.be(0);
+        });
+
+        it('1G motion', function() {
+            vim.receiveKey('1');
+            vim.receiveKey('G');
+            expect(vim.get('row')).to.be(0);
+            expect(vim.get('col')).to.be(0);
+        });
+
+        it('2G motion', function() {
+            vim.receiveKey('2');
+            vim.receiveKey('G');
+            expect(vim.get('row')).to.be(1);
+            expect(vim.get('col')).to.be(0);
+        });
+
+        it('3G motion', function() {
+            vim.receiveKey('3');
+            vim.receiveKey('G');
+            expect(vim.get('row')).to.be(2);
+            expect(vim.get('col')).to.be(0);
+        });
+
         getPositionsFromStrings([
             'here is a sentence',
             '^    ^'
@@ -111,7 +143,9 @@ describe('Vim', function() {
     });
 
     describe('NORMAL motion boundary conditions', function() {
+        var vim;
         before(function() {
+            vim = new Vim();
             vim.get('buffer').set({
                 lines : [ 'abc', 'def', 'ghi' ]
             });
@@ -121,94 +155,112 @@ describe('Vim', function() {
             vim.set({row : 1, col : 1});
         });
 
-        runTest({
-            msg : 'Bounded h movement',
-            cmd : 'hhhhhhhh',
-            row : 1,
-            col : 0
-        });
-        runTest({
-            msg : 'Bounded l movement',
-            cmd : 'llllllll',
-            row : 1,
-            col : 2
-        });
-        runTest({
-            msg : 'Bounded j movement',
-            cmd : 'jjjjjjjj',
-            row : 2,
-            col : 1
-        });
-        runTest({
-            msg : 'Bounded k movement',
-            cmd : 'kkkkkkkk',
-            row : 0,
-            col : 1
+        it('Bounded h movement', function() {
+            vim.receiveKey('h');
+            vim.receiveKey('h');
+            vim.receiveKey('h');
+            vim.receiveKey('h');
+            vim.receiveKey('h');
+            expect(vim.get('row')).to.be(1);
+            expect(vim.get('col')).to.be(0);
         });
 
+        it('Bounded l movement', function() {
+            vim.receiveKey('l');
+            vim.receiveKey('l');
+            vim.receiveKey('l');
+            vim.receiveKey('l');
+            vim.receiveKey('l');
+            expect(vim.get('row')).to.be(1);
+            expect(vim.get('col')).to.be(2);
+        });
+
+        it('Bounded j movement', function() {
+            vim.receiveKey('j');
+            vim.receiveKey('j');
+            vim.receiveKey('j');
+            vim.receiveKey('j');
+            vim.receiveKey('j');
+            expect(vim.get('row')).to.be(2);
+            expect(vim.get('col')).to.be(1);
+        });
+
+        it('Bounded k movement', function() {
+            vim.receiveKey('k');
+            vim.receiveKey('k');
+            vim.receiveKey('k');
+            vim.receiveKey('k');
+            vim.receiveKey('k');
+            expect(vim.get('row')).to.be(0);
+            expect(vim.get('col')).to.be(1);
+        });
     });
 
     describe('Mode transitions', function() {
+        var vim;
         beforeEach(function() {
             vim = new Vim();
         });
 
         it('NORMAL to INSERT on i', function() {
-            runVimCommand('i');
+            vim.receiveKey('i');
             expect(vim.get('mode')).to.be('INSERT');
         });
 
         it('NORMAL to INSERT on I', function() {
-            runVimCommand('I');
+            vim.receiveKey('I');
             expect(vim.get('mode')).to.be('INSERT');
         });
 
         it('NORMAL to INSERT on a', function() {
-            runVimCommand('a');
+            vim.receiveKey('a');
             expect(vim.get('mode')).to.be('INSERT');
         });
 
         it('NORMAL to INSERT on A', function() {
-            runVimCommand('A');
+            vim.receiveKey('A');
             expect(vim.get('mode')).to.be('INSERT');
         });
 
         it('NORMAL to INSERT on o', function() {
-            runVimCommand('o');
+            vim.receiveKey('o');
             expect(vim.get('mode')).to.be('INSERT');
         });
 
         it('NORMAL to INSERT on O', function() {
-            runVimCommand('O');
+            vim.receiveKey('O');
             expect(vim.get('mode')).to.be('INSERT');
         });
 
         it('NORMAL to CMDLINE on :', function() {
-            runVimCommand(':');
+            vim.receiveKey(':');
             expect(vim.get('mode')).to.be('CMDLINE');
         });
 
         it('NORMAL from INSERT on <ESC>', function() {
             vim.changeMode('INSERT');
-            runVimCommand('<ESC>');
+            vim.receiveKey('<ESC>');
             expect(vim.get('mode')).to.be('NORMAL');
         });
 
         it('NORMAL from CMDLINE on <CR>', function() {
             vim.changeMode('CMDLINE');
-            runVimCommand('<CR>');
+            vim.receiveKey('<CR>');
             expect(vim.get('mode')).to.be('NORMAL');
         });
     });
 
     describe('NORMAL empty Buffer handling', function() {
+        var vim;
         beforeEach(function() {
             vim = new Vim();
+            vim.get('buffer').set({lines : []});
         });
 
         it('Should not crash when INSERTing when buffer is []', function() {
-            vim.get('buffer').set({lines : []});
-            runVimCommand('ix<ESC>');
+            vim.receiveKey('i');
+            vim.receiveKey('x');
+            vim.receiveKey('<ESC>');
             expect(vim.get('buffer').get('lines')).to.have.length(1);
             expect(vim.get('row')).to.be(0);
             expect(vim.get('col')).to.be(0);
@@ -216,50 +268,114 @@ describe('Vim', function() {
         });
 
         it('Should not crash when INSERTing when buffer is [""]', function() {
-            vim.get('buffer').set({lines : []});
-            runVimCommand('ix<ESC>');
+            vim.receiveKey('i');
+            vim.receiveKey('x');
+            vim.receiveKey('<ESC>');
             expect(vim.get('buffer').get('lines')).to.have.length(1);
             expect(vim.get('row')).to.be(0);
             expect(vim.get('col')).to.be(0);
             expect(vim.get('buffer').get('lines')[0]).to.be('x');
         });
 
-        describe('Motions should go nowhere when buffer is empty', function() {
-            LOG.info('Motions should go nowhere when buffer is empty');
-            vim.get('buffer').set({lines : []});
-            vim.set({row : 0, col : 0});
-            xrunTest({cmd : 'h', row : 0, col : 0, msg : 'h motion when buffer is []'});
-            LOG.debug('motion = h, row = ' + vim.get('row') + ', col = ' + vim.get('col'));
+        describe('Motions should go nowhere when buffer is []', function() {
+            var vim;
+            beforeEach(function() {
+                vim = new Vim();
+                vim.get('buffer').set({lines : []});
+            });
 
-            xrunTest({cmd : 'j', row : 0, col : 0, msg : 'j motion when buffer is []'});
-            LOG.debug('motion = j, row = ' + vim.get('row') + ', col = ' + vim.get('col'));
+            it('h motion when buffer is []', function() {
+                vim.receiveKey('h');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
 
-            runTest({cmd : 'k', row : 0, col : 0, msg : 'k motion when buffer is []'});
-            LOG.debug('row = ' + vim.get('row') + ', col = ' + vim.get('col'));
+            it('j motion when buffer is []', function() {
+                vim.receiveKey('j');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
 
-            runTest({cmd : 'l', row : 0, col : 0, msg : 'l motion when buffer is []'});
-            LOG.debug('row = ' + vim.get('row') + ', col = ' + vim.get('col'));
+            it('k motion when buffer is []', function() {
+                vim.receiveKey('k');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
 
-            runTest({cmd : '0', row : 0, col : 0, msg : '0 motion when buffer is []'});
-            LOG.debug('row = ' + vim.get('row') + ', col = ' + vim.get('col'));
+            it('l motion when buffer is []', function() {
+                vim.receiveKey('l');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
 
-            runTest({cmd : '$', row : 0, col : 0, msg : '$ motion when buffer is []'});
-            LOG.debug('row = ' + vim.get('row') + ', col = ' + vim.get('col'));
+            it('0 motion when buffer is []', function() {
+                vim.receiveKey('0');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
 
-            runTest({cmd : 'G', row : 0, col : 0, msg : 'G motion when buffer is []'});
-            LOG.debug('row = ' + vim.get('row') + ', col = ' + vim.get('col'));
+            it('$ motion when buffer is []', function() {
+                vim.receiveKey('$');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
+
+            it('G motion when buffer is []', function() {
+                vim.receiveKey('G');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
         });
 
-        describe('Motions should go nowhere when buffer is empty string', function() {
-            vim.get('buffer').set({lines : [""]});
-            vim.set({row : 0, col : 0});
-            runTest({cmd : 'h', row : 0, col : 0, msg : 'h motion when buffer is [""]'});
-            runTest({cmd : 'j', row : 0, col : 0, msg : 'j motion when buffer is [""]'});
-            runTest({cmd : 'k', row : 0, col : 0, msg : 'k motion when buffer is [""]'});
-            runTest({cmd : 'l', row : 0, col : 0, msg : 'l motion when buffer is [""]'});
-            runTest({cmd : '0', row : 0, col : 0, msg : '0 motion when buffer is [""]'});
-            runTest({cmd : '$', row : 0, col : 0, msg : '$ motion when buffer is [""]'});
-            runTest({cmd : 'G', row : 0, col : 0, msg : 'G motion when buffer is [""]'});
+        describe('Motions should go nowhere when buffer is [""]', function() {
+            var vim;
+            before(function() {
+                vim = new Vim();
+                vim.get('buffer').set({lines : [""]});
+            });
+
+            it('h motion when buffer is [""]', function() {
+                vim.receiveKey('h');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
+            
+            it('j motion when buffer is [""]', function() {
+                vim.receiveKey('j');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
+            
+            it('k motion when buffer is [""]', function() {
+                vim.receiveKey('k');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
+            
+            it('l motion when buffer is [""]', function() {
+                vim.receiveKey('l');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
+            
+            it('0 motion when buffer is [""]', function() {
+                vim.receiveKey('0');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
+            
+            it('$ motion when buffer is [""]', function() {
+                vim.receiveKey('$');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
+            
+            it('G motion when buffer is [""]', function() {
+                vim.receiveKey('G');
+                expect(vim.get('row')).to.be(0);
+                expect(vim.get('col')).to.be(0);
+            });
+            
         });
     });
 
