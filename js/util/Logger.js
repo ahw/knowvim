@@ -8,6 +8,7 @@ var Logger = function(args) {
 
     this.module = args.module;
     this.prefix = args.prefix + ':';
+    this.padding = args.padding || '';
 
     this.isEnabled = function() {
         // Matches log=mod1;mod2;mod3
@@ -50,7 +51,7 @@ var Logger = function(args) {
         if (!this.isEnabled() || !this.meetsThreshold(level))
             return;
 
-        var augmentedMsg = sprintf('%5s - %s %s', level, this.prefix, msg);
+        var augmentedMsg = sprintf('%s%5s - %s %s', this.padding, level, this.prefix, msg);
         if (typeof obj != 'undefined')
             console[level]('%c' + augmentedMsg, this.colors[level], obj);
         else

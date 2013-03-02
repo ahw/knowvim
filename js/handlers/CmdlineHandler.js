@@ -4,21 +4,22 @@
  *  vim : Reference to the Vim model
  */
 var CmdlineHandler = function(args) {
-    var logger = new Logger({
+    var LOG = new Logger({
         module : 'cmdline|handler',
         prefix : 'CMDLINE-HANDLER'
     });
 
+    LOG.info('Instantiating new CmdlineHandler with args:', args);
     this.vim = args.vim;
     this.parser = new CmdlineParser({ executeHandler : this });
     this.isInShowRegisterMode = false;
 
     this.done = function() {
-        logger.info('Parsing command string: "' + statusBar() + '"');
+        LOG.info('Parsing command string: "' + this.statusBar() + '"');
         // Parse all text on the status bar from the colon onwards.
         // TODO: This feels ugly.
-        var executeCommand = this.parser.parseCmdlineCommand(statusBar().substring(1));
-        logger.info('Finished parsing execute comamnd:', executeCommand);
+        var executeCommand = this.parser.parseCmdlineCommand(this.statusBar().substring(1));
+        LOG.info('Finished parsing execute comamnd:', executeCommand);
 
         switch(executeCommand.name) {
             case Helpers.executeCommands.OPEN:
@@ -30,23 +31,23 @@ var CmdlineHandler = function(args) {
                 this.isInShowRegisterMode = true;
                 break;
             default:
-                logger.error('No implementation for command:', executeCommand.name);
+                LOG.error('No implementation for command:', executeCommand.name);
                 this.vim.changeMode(Helpers.modeNames.NORMAL);
         }
     };
 
     // Helper to get the statusBarCol
-    var statusBarCol = function() {
+    this.statusBarCol = function() {
         return this.vim.get('statusBarCol');
     };
 
     // Helper to get the statusBar
-    var statusBar = function() {
+    this.statusBar = function() {
         return this.vim.get('statusBar');
     };
 
     this.receiveKey = function(key) {
-        logger.debug('Received key:', key);
+        LOG.debug('Received key:', key);
         // Small hack: if we recently executed a :reg command then Vim
         // should go into a special "mini" mode where the list of register
         // contents is shown and the next input key closes the list and goes
@@ -61,7 +62,7 @@ var CmdlineHandler = function(args) {
         switch(key) {
             case Helpers.controlCharacters.ESC:
                 var mode = Helpers.modeNamesByKey[key];
-                logger.log('Setting Vim mode to "' + mode + '" from CMDLINE');
+                LOG.log('Setting Vim mode to "' + mode + '" from CMDLINE');
                 this.vim.changeMode(mode);
                 break;
 
@@ -71,29 +72,29 @@ var CmdlineHandler = function(args) {
 
             case Helpers.controlCharacters.BACKSPACE:
                 var newStatusBar = KeyboardOperations.applyControlCharacter({
-                    line : statusBar(),
+                    line : this.statusBar(),
                     control : Helpers.controlCharacters.BACKSPACE,
-                    cursorPosition : statusBarCol() + 1
+                    cursorPosition : this.statusBarCol() + 1
                 });
                 this.vim.set({
-                    statusBarCol : statusBarCol() - 1,
+                    statusBarCol : this.statusBarCol() - 1,
                     statusBar : newStatusBar
                 });
                 if (newStatusBar == "") {
-                    logger.info('Removed all characters; changing to NORMAL mode');
+                    LOG.info('Removed all characters; changing to NORMAL mode');
                     this.vim.changeMode(Helpers.modeNames.NORMAL);
                 }
                 break;
 
             case Helpers.controlCharacters.DELETE:
-                logger.debug('Received DELETE');
-                logger.warn('No implementation to handle "' + Helpers.controlCharacters.DELETE + '" controls from CMDLINE mode');
+                LOG.debug('Received DELETE');
+                LOG.warn('No implementation to handle "' + Helpers.controlCharacters.DELETE + '" controls from CMDLINE mode');
                 break;
 
             default:
                 this.vim.set({
-                    statusBar : statusBar() + key,
-                    statusBarCol : statusBarCol() + 1
+                    statusBar : this.statusBar() + key,
+                    statusBarCol : this.statusBarCol() + 1
                 });
         }
     };

@@ -49,7 +49,7 @@ var WordMotions = {
                 // line. There are no more rows!
                 this.logger.debug('w-motion has hit EOF; set position to last row and col');
                 row = args.startRow;
-                col = lines[args.startRow].length - 1;
+                col = Math.max(0, lines[args.startRow].length - 1);
                 motionResult.hitEol = true;
                 break;
             }

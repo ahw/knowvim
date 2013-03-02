@@ -97,8 +97,8 @@ a.panel_link:active { color:green; }
 
 a:link { color:#555; } /* unvisited link  */
 a:visited { color:#555; } /* visited link    */
-a:hover { color: #DDD; }
-a:active { color: #DDD; }
+a:hover { color: black; }
+a:active { color: black; }
 /* a:hover { color:#A0C0FF; } mouse over link */
 /* a:active { color:#DEF5FF; } selected link   */
 

@@ -71,7 +71,7 @@ var Tokenizer = function(options) {
     this.receiveChar = function(ch) {
         // TODO: Remove the magin strings here and use some sort of
         // enum-like construct.
-        logger.debug('Received "' + ch + '"');
+        logger.debug('Received key:', ch);
         var tokenizer = this; 
         switch(tokenizer.state) {
 

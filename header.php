@@ -81,6 +81,7 @@
         <a class="source_code_link" id="python" href="/python.php">python</a>
         <a class="source_code_link" id="latex" href="/latex.php">latex</a>
         <a class="source_code_link" id="java" href="/java.php">java</a>
+        <a class="source_code_link" id="test" href="/test.php">tests</a>
     </div>
     <div id="vimwindow">
     <div id="buffer">

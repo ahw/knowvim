@@ -116,7 +116,7 @@ var NormalParser = function(options) {
     };
 
     this.receiveToken = function(token) {
-        logger.debug('Received token ' + token);
+        logger.debug('Received token:', token);
         if (validNextTokens[token.type]) {
             // If this token type is valid, assign the appropriate property
             // in the normalCommand structure. Remember that the values of

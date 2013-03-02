@@ -95,7 +95,7 @@ var EditorView = Backbone.View.extend({
 
             $($('.line')[cursorRow]).html(currentLine);
             newLine = $($('.line')[row]).text();
-            this.logger.debug('Jumping to a new line. new line = "' + newLine + '"');
+            this.logger.debug('Jumping to a new line: "' + newLine + '"');
         } else {
             newLine = currentLine;
             this.logger.debug('Moving within same lines = "' + newLine + '"');

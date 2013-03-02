@@ -171,15 +171,15 @@ var YankOperations = {
 
         // If the motion is inclusive, then add 1 to the end index.
         if (motionResult.inclusive) {
-            this.logger.warn('Motion result is inclusive; adding 1 to the endCol value');
-            this.logger.debug('TODO -- Should not adjust motionResult from within YankOperations');
+            this.logger.debug('Motion result is inclusive; adding 1 to the endCol value');
+            this.logger.warn('TODO -- Should not adjust motionResult from within YankOperations');
             motionResult.endCol++;
         }
 
         // If we hit the end of the line, add 1 to the end index
         if (motionResult.hitEol) {
-            this.logger.warn('Motion result hit EOL; adding 1 to the endCol value');
-            this.logger.debug('TODO -- Should not adjust motionResult from within YankOperations');
+            this.logger.debug('Motion result hit EOL; adding 1 to the endCol value');
+            this.logger.warn('TODO -- Should not adjust motionResult from within YankOperations');
             motionResult.endCol++;
         }
 
