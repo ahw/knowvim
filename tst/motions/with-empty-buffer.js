@@ -56,6 +56,18 @@ describe('Motions with empty buffer', function() {
             expect(vim.get('row')).to.be(0);
             expect(vim.get('col')).to.be(0);
         });
+
+        it('} motion when buffer is []', function() {
+            vim.receiveKey('}');
+            expect(vim.get('row')).to.be(0);
+            expect(vim.get('col')).to.be(0);
+        });
+
+        it('{ motion when buffer is []', function() {
+            vim.receiveKey('{');
+            expect(vim.get('row')).to.be(0);
+            expect(vim.get('col')).to.be(0);
+        });
     });
 
     describe('When buffer is [""]', function() {
@@ -113,5 +125,16 @@ describe('Motions with empty buffer', function() {
             expect(vim.get('col')).to.be(0);
         });
         
+        it('} motion when buffer is [""]', function() {
+            vim.receiveKey('}');
+            expect(vim.get('row')).to.be(0);
+            expect(vim.get('col')).to.be(0);
+        });
+
+        it('{ motion when buffer is [""]', function() {
+            vim.receiveKey('{');
+            expect(vim.get('row')).to.be(0);
+            expect(vim.get('col')).to.be(0);
+        });
     });
 });

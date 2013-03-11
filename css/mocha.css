@@ -196,12 +196,15 @@
 }
 
 #mocha-stats {
-  /* position: fixed; */
-  /* top: 15px; */
-  /* right: 10px; */
   font-size: 10pt;
   margin: 0;
   color: #888;
+  position:fixed;
+  top:0;
+  right:0;
+  z-index:100;
+  background-color:white;
+  padding:4px !important;
 }
 
 #mocha-stats .progress {
@@ -240,7 +243,7 @@
   padding-top: 11px;
 }
 
-code .comment { color: #ddd }
+code .comment { color: #ccc }
 code .init { color: #2F6FAD }
 code .string { color: blue }
 code .keyword { color: #8A6343 }

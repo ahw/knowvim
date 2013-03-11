@@ -114,6 +114,33 @@ var Vim = Backbone.DeepModel.extend({
             }
         });
     },
+    
+    reset : function() {
+        // TODO: So far, this function is only used in unit tests, to reset
+        // the state from one test to another. This is because simply
+        // calling new Vim() isn't enough to reset the deep attributes (as
+        // of Backbone.DeepModel v. 0.7. This is fixed in the latest
+        // Backbone.DeepModel.
+        this.logger().info('Resetting Vim state');
+        var buffer = new Buffer();
+        delete this.attributes.registers;
+        delete this.attributes.marks;
+        this.set({
+            buffer : new Buffer(),
+            row : 0,
+            col : 0,
+            cursorRow : 0,
+            cursorCol : 0,
+            marks : {},
+            registers : {
+                '%' : { // The filename register
+                    type : 'linewise',
+                    text : [buffer.get('name')]
+                }
+            }
+        });
+        this.logger().warn('registers ' + JSON.stringify(this.get('registers')));
+    },
 
     receiveKey : function(key) {
         var model = this;

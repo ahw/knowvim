@@ -75,4 +75,65 @@ describe('Motions (boundary conditions)', function() {
         expect(vim.get('row')).to.be(2);
         expect(vim.get('col')).to.be(2);
     });
+
+    it('Bounded } movement', function() {
+        var lines = [
+            'foo bar baz',
+            '    ^      ',
+            'foo bar baz',
+            '',
+            'foo bar baz',
+            '          ^'
+        ];
+        var positions = TestHelpers.getPositionsFromStrings({
+            lines : lines,
+            higherOrLower : 'higher'
+        });
+        vim.get('buffer').set({
+            lines : TestHelpers.removeCaretsFromStrings(lines)
+        });
+        vim.set({
+            row : positions.startRow,
+            col : positions.startCol
+        });
+        vim.receiveKey('}');
+        vim.receiveKey('}');
+        vim.receiveKey('}');
+        vim.receiveKey('}');
+        vim.receiveKey('}');
+        vim.receiveKey('}');
+        vim.receiveKey('}');
+        expect(vim.get('row')).to.be(positions.endRow);
+        expect(vim.get('col')).to.be(positions.endCol);
+    });
+
+    it('Bounded { movement', function() {
+        var lines = [
+            'foo bar baz',
+            '^          ',
+            'foo bar baz',
+            '',
+            'foo bar baz',
+            '          ^'
+        ];
+        var positions = TestHelpers.getPositionsFromStrings({
+            lines : lines,
+            higherOrLower : 'lower'
+        });
+        vim.get('buffer').set({
+            lines : TestHelpers.removeCaretsFromStrings(lines)
+        });
+        vim.set({
+            row : positions.startRow,
+            col : positions.startCol
+        });
+        vim.receiveKey('{');
+        vim.receiveKey('{');
+        vim.receiveKey('{');
+        vim.receiveKey('{');
+        vim.receiveKey('{');
+        vim.receiveKey('{');
+        expect(vim.get('row')).to.be(positions.endRow);
+        expect(vim.get('col')).to.be(positions.endCol);
+    });
 });

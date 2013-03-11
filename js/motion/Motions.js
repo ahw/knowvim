@@ -1,125 +1,8 @@
-var Motions = {
-    logger : new Logger({
+var Motions = function () {
+    var LOG = new Logger({
         module : 'motion',
         prefix : 'MOTION'
-    }),
-
-    /**
-     * Returns the result of a named motion, in the context of startRow,
-     * startCol, and an array of lines. It is expected that args contains
-     * the following properties:
-     *
-     *  normalCommand : The object received in
-     *      NormalHandler.receiveNormalCommand.
-     *  lines : An array of strings representing the buffer
-     *  startRow : Number
-     *  startCol : Number
-     *  vim : The Vim model
-     */
-    getMotionResult : function(args) {
-        this.logger.debug('Called getMotionResult with args', args);
-
-        if (args.lines.length == 0) {
-            this.logger.warn('Buffer is entirely empty; returning early');
-            this.logger.info('Returning null motionResult');
-            return null;
-        }
-
-        // Compute convenience variables
-        var normalCommand = args.normalCommand
-          , startRow = args.startRow
-          , startCol = args.startCol
-          , lines = args.lines
-          , vim = args.vim
-          , totalMotionCount = 1; // Default motion count value is 1.
-
-        // If this normalCommand has an operationCount, multiply the
-        // motionCount by that value since it is equivalent to simply apply
-        // the motion (operationCount * motionCount) number of times.
-        if (normalCommand.motionCount && normalCommand.operationCount)
-            totalMotionCount = normalCommand.motionCount * normalCommand.operationCount;
-        else if (normalCommand.motionCount)
-            totalMotionCount = normalCommand.motionCount;
-        else if (normalCommand.operationCount)
-            totalMotionCount = normalCommand.operationCount;
-
-        var motionResult = {};
-
-        this.logger.debug('Calling applyMotion for "' + normalCommand.motionName + '" motion.');
-        motionResult = this.applyMotion({
-            normalCommand : normalCommand,
-            startRow : startRow,
-            startCol : startCol,
-            lines : lines,
-            vim : vim
-        });
-
-        for (var i = 0; i < totalMotionCount - 1; i++) {
-            this.logger.debug('Calling applyMotion for "' + normalCommand.motionName + '" motion iteration #' + (i+2));
-            // For each iteration, compute the motionResult starting
-            // from the previous motion's end positions.
-            motionResult = this.applyMotion({
-                normalCommand : normalCommand,
-                startRow : motionResult.endRow,
-                startCol : motionResult.endCol,
-                lines : lines,
-                vim : vim,
-                isRepeat : true
-            });
-
-            // If the motionResult hasn't changed, then drop out of the
-            // loop for efficiency.
-            if (motionResult.startRow == motionResult.endRow
-                && motionResult.startCol == motionResult.endCol) {
-                break;
-            }
-        }
-
-        // Reset the starting position to the original starting
-        // position (if there was any totalMotionCount iteration, the
-        // starting position values change with each iteration).
-        motionResult.startRow = startRow;
-        motionResult.startCol = startCol;
-
-        // If the overall motion moved the cursor to a higher row/col
-        // position, then reset lower position. Conversely, if the overall
-        // motion moved the cursor to a lower row/col position, then reset
-        // the higher position.
-        if (motionResult.startRow > motionResult.endRow) {
-            motionResult.higherOrLower = 'lower';
-            motionResult.lowerPosition.row = motionResult.endRow;
-            motionResult.lowerPosition.col = motionResult.endCol;
-            motionResult.higherPosition.row = motionResult.startRow;
-            motionResult.higherPosition.col = motionResult.startCol;
-
-        } else if (motionResult.startRow < motionResult.endRow) {
-            motionResult.higherOrLower = 'higher';
-            motionResult.lowerPosition.row = motionResult.startRow;
-            motionResult.lowerPosition.col = motionResult.startCol;
-            motionResult.higherPosition.row = motionResult.endRow;
-            motionResult.higherPosition.col = motionResult.endCol;
-
-        } else if (motionResult.startCol < motionResult.endCol) {
-            motionResult.higherOrLower = 'higher';
-            motionResult.lowerPosition.row = motionResult.startRow;
-            motionResult.lowerPosition.col = motionResult.startCol;
-            motionResult.higherPosition.row = motionResult.endRow;
-            motionResult.higherPosition.col = motionResult.endCol;
-
-        } else if (motionResult.startCol > motionResult.endCol) {
-            motionResult.higherOrLower = 'lower';
-            motionResult.lowerPosition.row = motionResult.endRow;
-            motionResult.lowerPosition.col = motionResult.endCol;
-            motionResult.higherPosition.row = motionResult.startRow;
-            motionResult.higherPosition.col = motionResult.startCol;
-
-        } else {
-            this.logger.warn('Not changing motionResult.higherPosition or motionResult.lowerPosition because startRow == endRow, startCol == endCol');
-        }
-
-        this.logger.info('Returning motionResult', motionResult);
-        return motionResult;
-    },
+    });
 
     /**
      * This is a helper function and should not be called directly. It is
@@ -137,8 +20,8 @@ var Motions = {
      *  isRepeat : true if this is the Nth iteration of some {count}{motion}
      *  command, for all N in {2, 3, 4, ...}
      */
-    applyMotion : function(args) {
-        this.logger.debug('Called applyMotion with args', args);
+    applyMotion = function(args) {
+        LOG.debug('Called applyMotion with args', args);
         var normalCommand = args.normalCommand
           , startRow = args.startRow
           , startCol = args.startCol
@@ -303,7 +186,7 @@ var Motions = {
             // If normalCommand.motionCount == null then we move to last line of file by
             // default.
             if (typeof normalCommand.motionCount == 'undefined') {
-                this.logger.warn('Received G command with null count; moving to bottom of file');
+                LOG.warn('Received G command with null count; moving to bottom of file');
                 normalCommand.motionCount = lines.length;
             }
 
@@ -374,7 +257,7 @@ var Motions = {
         case "'":
             var markName = normalCommand.markName;
             if (typeof vim.get('marks')[markName] == 'undefined') {
-                this.logger.error('Mark "' + markName + '" not set');
+                LOG.error('Mark "' + markName + '" not set');
                 motionResult.error = 'E20: Mark not set';
                 break;
             }
@@ -405,7 +288,7 @@ var Motions = {
         case '`':
             var markName = normalCommand.markName;
             if (typeof vim.get('marks')[markName] == 'undefined') {
-                this.logger.warn('Mark "' + markName + '" not set');
+                LOG.warn('Mark "' + markName + '" not set');
                 motionResult.error = 'E20: Mark not set';
                 break;
             }
@@ -453,16 +336,16 @@ var Motions = {
             // must be added to startOffset to get the absolute position of
             // this character.
             var charIndex = searchString.indexOf(letter);
-            this.logger.debug('Searching for "' + letter + '" in string "' + searchString + '"');
+            LOG.debug('Searching for "' + letter + '" in string "' + searchString + '"');
             if (charIndex > -1) {
-                this.logger.debug('Found character "' + letter + '" at index ' + (startOffset + charIndex));
+                LOG.debug('Found character "' + letter + '" at index ' + (startOffset + charIndex));
                 motionResult.higherOrLower = 'higher';
                 motionResult.higherPosition.col = startOffset + charIndex + endOffset;
                 motionResult.endCol = startOffset + charIndex + endOffset;
                 motionResult.type = 'characterwise';
                 motionResult.inclusive = true;
             } else {
-                this.logger.debug('Did not find character "' + letter + '". Doing nothing.');
+                LOG.debug('Did not find character "' + letter + '". Doing nothing.');
             }
             break;
 
@@ -487,13 +370,132 @@ var Motions = {
                 motionResult.type = 'characterwise';
                 motionResult.inclusive = false;
             } else {
-                this.logger.debug('Did not find character "' + letter + '". Doing nothing.');
+                LOG.debug('Did not find character "' + letter + '". Doing nothing.');
             }
             break;
 
         default:
-            this.logger.warn('The "' + normalCommand.motionName + '" motion has not been implemented. Defaulting to no motion.');
+            LOG.warn('The "' + normalCommand.motionName + '" motion has not been implemented. Defaulting to no motion.');
         }
         return motionResult;
-    }
-};
+    };
+
+    return {
+        /**
+         * Returns the result of a named motion, in the context of startRow,
+         * startCol, and an array of lines. It is expected that args contains
+         * the following properties:
+         *
+         *  normalCommand : The object received in
+         *      NormalHandler.receiveNormalCommand.
+         *  lines : An array of strings representing the buffer
+         *  startRow : Number
+         *  startCol : Number
+         *  vim : The Vim model
+         */
+        getMotionResult : function(args) {
+            LOG.debug('Called getMotionResult with args', args);
+
+            if (args.lines.length == 0) {
+                LOG.warn('Buffer is entirely empty; returning early');
+                LOG.info('Returning null motionResult');
+                return null;
+            }
+
+            // Compute convenience variables
+            var normalCommand = args.normalCommand
+              , startRow = args.startRow
+              , startCol = args.startCol
+              , lines = args.lines
+              , vim = args.vim
+              , totalMotionCount = 1; // Default motion count value is 1.
+
+            // If this normalCommand has an operationCount, multiply the
+            // motionCount by that value since it is equivalent to simply apply
+            // the motion (operationCount * motionCount) number of times.
+            if (normalCommand.motionCount && normalCommand.operationCount)
+                totalMotionCount = normalCommand.motionCount * normalCommand.operationCount;
+            else if (normalCommand.motionCount)
+                totalMotionCount = normalCommand.motionCount;
+            else if (normalCommand.operationCount)
+                totalMotionCount = normalCommand.operationCount;
+
+            var motionResult = {};
+
+            LOG.debug('Calling applyMotion for "' + normalCommand.motionName + '" motion.');
+            motionResult = applyMotion({
+                normalCommand : normalCommand,
+                startRow : startRow,
+                startCol : startCol,
+                lines : lines,
+                vim : vim
+            });
+
+            for (var i = 0; i < totalMotionCount - 1; i++) {
+                LOG.debug('Calling applyMotion for "' + normalCommand.motionName + '" motion iteration #' + (i+2));
+                // For each iteration, compute the motionResult starting
+                // from the previous motion's end positions.
+                motionResult = applyMotion({
+                    normalCommand : normalCommand,
+                    startRow : motionResult.endRow,
+                    startCol : motionResult.endCol,
+                    lines : lines,
+                    vim : vim,
+                    isRepeat : true
+                });
+
+                // If the motionResult hasn't changed, then drop out of the
+                // loop for efficiency.
+                if (motionResult.startRow == motionResult.endRow
+                    && motionResult.startCol == motionResult.endCol) {
+                    break;
+                }
+            }
+
+            // Reset the starting position to the original starting
+            // position (if there was any totalMotionCount iteration, the
+            // starting position values change with each iteration).
+            motionResult.startRow = startRow;
+            motionResult.startCol = startCol;
+
+            // If the overall motion moved the cursor to a higher row/col
+            // position, then reset lower position. Conversely, if the overall
+            // motion moved the cursor to a lower row/col position, then reset
+            // the higher position.
+            if (motionResult.startRow > motionResult.endRow) {
+                motionResult.higherOrLower = 'lower';
+                motionResult.lowerPosition.row = motionResult.endRow;
+                motionResult.lowerPosition.col = motionResult.endCol;
+                motionResult.higherPosition.row = motionResult.startRow;
+                motionResult.higherPosition.col = motionResult.startCol;
+
+            } else if (motionResult.startRow < motionResult.endRow) {
+                motionResult.higherOrLower = 'higher';
+                motionResult.lowerPosition.row = motionResult.startRow;
+                motionResult.lowerPosition.col = motionResult.startCol;
+                motionResult.higherPosition.row = motionResult.endRow;
+                motionResult.higherPosition.col = motionResult.endCol;
+
+            } else if (motionResult.startCol < motionResult.endCol) {
+                motionResult.higherOrLower = 'higher';
+                motionResult.lowerPosition.row = motionResult.startRow;
+                motionResult.lowerPosition.col = motionResult.startCol;
+                motionResult.higherPosition.row = motionResult.endRow;
+                motionResult.higherPosition.col = motionResult.endCol;
+
+            } else if (motionResult.startCol > motionResult.endCol) {
+                motionResult.higherOrLower = 'lower';
+                motionResult.lowerPosition.row = motionResult.endRow;
+                motionResult.lowerPosition.col = motionResult.endCol;
+                motionResult.higherPosition.row = motionResult.startRow;
+                motionResult.higherPosition.col = motionResult.startCol;
+
+            } else {
+                LOG.warn('Not changing motionResult.higherPosition or motionResult.lowerPosition because startRow == endRow, startCol == endCol');
+            }
+
+            LOG.info('Returning motionResult', motionResult);
+            return motionResult;
+        }
+    };
+}();

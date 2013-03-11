@@ -68,19 +68,19 @@
     }
     ?>
 
-    <a id="homelink" href="/">know vim</a> <span id="beta">(beta)</span>
+    <a id="homelink" href="/">know vim</a></span>
     </h1>
     <div id="file_links">
-        <a class="source_code_link" id="what" href="/">what</a>
-        <a class="source_code_link" id="explain" href="/explain.php">explain</a>
-        <a class="source_code_link" id="why" href="/why.php">why</a>
-        <a class="source_code_link" id="start" href="/start.php">start</a>
+        <a class="source_code_link" id="what" href="/">:o what</a>
+        <a class="source_code_link" id="explain" href="/explain.php">:o explain</a>
+        <a class="source_code_link" id="why" href="/why.php">:o why</a>
+        <a class="source_code_link" id="start" href="/start.php">:o start</a>
         <!-- Is the advanced page necessary?
         <a class="source_code_link" id="advanced" href="#">advanced</a>
         -->
-        <a class="source_code_link" id="python" href="/python.php">python</a>
-        <a class="source_code_link" id="latex" href="/latex.php">latex</a>
-        <a class="source_code_link" id="java" href="/java.php">java</a>
+        <a class="source_code_link" id="python" href="/python.php">:o python.py</a>
+        <a class="source_code_link" id="latex" href="/latex.php">:o latex.tex</a>
+        <a class="source_code_link" id="java" href="/java.php">:o java.java</a>
         <a class="source_code_link" id="test" href="/test.php">tests</a>
     </div>
     <div id="vimwindow">

@@ -19,6 +19,7 @@ browser)
 <script src="/tst/motions/happy-path-with-counts.js"></script>
 <script src="/tst/motions/boundary-conditions.js"></script>
 <script src="/tst/motions/with-empty-buffer.js"></script>
+<script src="/tst/operators/delete.js"></script>
 <script src="/tst/modes.js"></script>
 
 <!-- Run the tests using Mocha -->

@@ -27,7 +27,7 @@ write output.</a><br/> <pre>
 
 
 <p style="padding-bottom:1em; font-size:8pt">
-&copy; 2012 Andrew W. Hallagan.
+&copy; 2011 Andrew W. Hallagan.
 
 <?php global $browser;
 if ($browser != "mobile") {

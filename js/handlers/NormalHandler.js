@@ -171,11 +171,17 @@ var NormalHandler = Backbone.DeepModel.extend({
 
                 // Set the small delete register, if appropriate
                 if (operationResult.motionResult.type == 'characterwise'
-                    && operationResult.text.length ==1) {
-                    this.logger().info('Setting the "small delete" register (-)', operationResult.text[1]);
+                    && operationResult.text.length == 1) {
+                    this.logger().info('Setting the "small delete" register (-)', operationResult.text[0]);
                     // Assert: The amount of deleted text was less than one
                     // line which means this is a "small delete"
                     attributes['registers.' + Helpers.registerTypes.SMALL_DELETE] = {
+                        type : operationResult.motionResult.type,
+                        text : operationResult.text
+                    };
+                } else {
+                    this.logger().info('Setting the "1" register (this isn\'t a small delete)', operationResult.text[1]);
+                    attributes['registers.1'] = {
                         type : operationResult.motionResult.type,
                         text : operationResult.text
                     };

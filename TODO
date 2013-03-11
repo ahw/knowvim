@@ -50,6 +50,7 @@ Code Maintenance
 [ ] Create colorscheme module so we don't have to use magic strings
 [ ] Create MotionResult object that automatically handles the updating of
     higherPosition.row, higherPosition.col variables. Do we even need those?
+[ ] Upgrade to the newest Backbone and Backbone DeepModel
 
 Performance
 -----------
