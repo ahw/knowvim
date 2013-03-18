@@ -1,6 +1,7 @@
 - <C-M> maps to <CR> in NORMAL mode
 - Fixing the annoying spacing that happens in Python comments.
     - filetype plugin indent on
+    - au! FileType python setl nosmartindent
 - Recording/running macros that case lines to be hard-wrapped
 - Formatting text with gqj
 - set ruler to show row/column numbers
