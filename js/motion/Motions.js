@@ -200,12 +200,23 @@ var Motions = function () {
             motionResult.endCol = endCol;
             break;
 
-
         case 'w':
             motionResult.inclusive = false;
             motionResult.type = 'characterwise';
             motionResult.higherOrLower = 'higher';
             WordMotions.w({
+                startRow : startRow,
+                startCol : startCol,
+                lines : lines,
+                motionResult : motionResult
+            });
+            break;
+
+        case 'b':
+            motionResult.inclusive = false;
+            motionResult.type = 'characterwise';
+            motionResult.higherOrLower = 'lower';
+            WordMotions.b({
                 startRow : startRow,
                 startCol : startCol,
                 lines : lines,

@@ -76,6 +76,27 @@ describe('Motions (boundary conditions)', function() {
         expect(vim.get('col')).to.be(2);
     });
 
+    it('Bounded b movement', function() {
+        // First b motion should put cursor at beginning of word
+        vim.receiveKey('b');
+        expect(vim.get('row')).to.be(1);
+        expect(vim.get('col')).to.be(0);
+
+        // Next b motion should put cursor at beginning of previous word
+        vim.receiveKey('b');
+        expect(vim.get('row')).to.be(0);
+        expect(vim.get('col')).to.be(0);
+
+        // Subsequent b motions should not affect cursor
+        vim.receiveKey('b');
+        vim.receiveKey('b');
+        vim.receiveKey('b');
+        vim.receiveKey('b');
+        vim.receiveKey('b');
+        expect(vim.get('row')).to.be(0);
+        expect(vim.get('col')).to.be(0);
+    });
+
     it('Bounded } movement', function() {
         var lines = [
             'foo bar baz',

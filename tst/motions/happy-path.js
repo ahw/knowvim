@@ -221,6 +221,156 @@ describe('Motions (happy path)', function() {
         expect(vim.get('col')).to.be(positions.endCol);
     });
 
+    it('b motion', function() {
+        var positions = TestHelpers.getPositionsFromStrings({
+            lines : [
+                'one two three',
+                '    ^   ^'
+            ],
+            higherOrLower : 'lower'
+        });
+        vim.get('buffer').set({
+            lines : ['one two three']
+        });
+        vim.set({
+            row : positions.startRow,
+            col : positions.startCol
+        });
+        vim.receiveKey('b');
+        expect(vim.get('row')).to.be(positions.endRow);
+        expect(vim.get('col')).to.be(positions.endCol);
+    });
+
+    it('b motion with punctuation (Punct to Word)', function() {
+        var lines = [
+            'one two# three',
+            '    ^  ^'
+        ];
+        var positions = TestHelpers.getPositionsFromStrings({
+            lines : lines,
+            higherOrLower : 'lower'
+        });
+        vim.get('buffer').set({
+            lines : TestHelpers.removeCaretsFromStrings(lines)
+        });
+        vim.set({
+            row : positions.startRow,
+            col : positions.startCol
+        });
+        vim.receiveKey('b');
+        expect(vim.get('row')).to.be(positions.endRow);
+        expect(vim.get('col')).to.be(positions.endCol);
+    });
+
+    it('b motion with punctuation (Word to Punct)', function() {
+        var lines = [
+            'one @#$ w three',
+            '    ^   ^'
+        ];
+        var positions = TestHelpers.getPositionsFromStrings({
+            lines : lines,
+            higherOrLower : 'lower'
+        });
+        vim.get('buffer').set({
+            lines : TestHelpers.removeCaretsFromStrings(lines)
+        });
+        vim.set({
+            row : positions.startRow,
+            col : positions.startCol
+        });
+        vim.receiveKey('b');
+        expect(vim.get('row')).to.be(positions.endRow);
+        expect(vim.get('col')).to.be(positions.endCol);
+    });
+
+    it('b motion over newline', function() {
+        var lines = [
+            'one two three',
+            '        ^',
+            ' four',
+            ' ^'
+        ];
+        var positions = TestHelpers.getPositionsFromStrings({
+            lines : lines,
+            higherOrLower : 'lower'
+        });
+        vim.get('buffer').set({
+            lines : TestHelpers.removeCaretsFromStrings(lines)
+        });
+        vim.set({
+            row : positions.startRow,
+            col : positions.startCol
+        });
+        vim.receiveKey('b');
+        expect(vim.get('row')).to.be(positions.endRow);
+        expect(vim.get('col')).to.be(positions.endCol);
+    });
+
+    it('b motion over blank lines', function() {
+        LOG.reportTest(this.test.title);
+        var lines = [
+            'one two three',
+            '         ^',
+            '',
+            '',
+            '',
+            '',
+            '^',
+            ' four',
+            ' ^'
+        ];
+        var positions = TestHelpers.getPositionsFromStrings({
+            lines : lines,
+            higherOrLower : 'lower'
+        });
+        vim.get('buffer').set({
+            lines : TestHelpers.removeCaretsFromStrings(lines)
+        });
+        vim.set({
+            row : positions.startRow,
+            col : positions.startCol
+        });
+
+        // The initial b should move the previous newline
+        vim.receiveKey('b');
+        expect(vim.get('row')).to.be(positions.endRow);
+        expect(vim.get('col')).to.be(positions.endCol);
+
+        // Another b should move to the previous newline
+        vim.receiveKey('b');
+        expect(vim.get('row')).to.be(positions.endRow - 1);
+        expect(vim.get('col')).to.be(positions.endCol);
+    });
+
+    it('b motion over whitespace lines', function() {
+        LOG.reportTest(this.test.title);
+        var lines = [
+            'one two three',
+            '        ^',
+            '    ',
+            '   ',
+            '  ',
+            ' ',
+            ' four',
+            ' ^',
+        ];
+        var positions = TestHelpers.getPositionsFromStrings({
+            lines : lines,
+            higherOrLower : 'lower'
+        });
+        vim.get('buffer').set({
+            lines : TestHelpers.removeCaretsFromStrings(lines)
+        });
+        vim.set({
+            row : positions.startRow,
+            col : positions.startCol
+        });
+        vim.receiveKey('b');
+        expect(vim.get('row')).to.be(positions.endRow);
+        expect(vim.get('col')).to.be(positions.endCol);
+    });
+
+
     it('} motion', function() {
         var lines = [
             'foo bar baz',

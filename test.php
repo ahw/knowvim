@@ -20,9 +20,24 @@ browser)
 <script src="/tst/motions/boundary-conditions.js"></script>
 <script src="/tst/motions/with-empty-buffer.js"></script>
 <script src="/tst/operators/delete.js"></script>
+<script src="/tst/operators/delete-boundary-conditions.js"></script>
+<script src="/tst/operators/delete-with-empty-buffer.js"></script>
 <script src="/tst/modes.js"></script>
 
 <!-- Run the tests using Mocha -->
-<script>mocha.run();</script>
+<script>mocha.run(function () {
+    // Some test cleanup
+    $('.test.fail h2').click(function () {
+        $(this).siblings('.error').show();
+    });
+
+    var numFailures = $('.failures').children('em').html();
+    if (numFailures > 0) {
+        $('.failures').css({
+            'color' : '#c00',
+            'background-color' : '#faa'
+        });
+    }
+});</script>
 
 <?php require('footer.php'); ?>

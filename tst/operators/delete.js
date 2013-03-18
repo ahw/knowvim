@@ -164,4 +164,120 @@ describe('Deletions (happy path)', function() {
         // The small delete register should not be set
         expect(vim.get('registers')['-']).to.be(undefined);
     });
+
+    it('d0', function() {
+        LOG.reportTest(this.test.title);
+        var lines = ['foo bar baz'];
+        var linesAfter = ['ar baz'];
+
+        vim.get('buffer').set({
+            lines : lines
+        });
+
+        vim.set({row : 0, col : 5});
+        vim.receiveKey('d');
+        vim.receiveKey('0');
+        expect(vim.get('row')).to.be(0);
+        expect(vim.get('col')).to.be(0);
+
+        // The unnamed register should be set
+        expect(vim.get('registers')['"']['type']).to.be('characterwise');
+        expect(vim.get('registers')['"']['text'].length).to.be(1);
+        expect(vim.get('registers')['"']['text'][0]).to.be('foo b');
+
+        // The 1 register should not be set.
+        expect(vim.get('registers')['1']).to.be(undefined);
+
+        // The small delete register should be set
+        expect(vim.get('registers')['-']['type']).to.be('characterwise');
+        expect(vim.get('registers')['-']['text'].length).to.be(1);
+        expect(vim.get('registers')['-']['text'][0]).to.be('foo b');
+    });
+
+    it('d$', function() {
+        LOG.reportTest(this.test.title);
+        var lines = ['foo bar baz'];
+        var linesAfter = ['foo b'];
+
+        vim.get('buffer').set({
+            lines : lines
+        });
+
+        vim.set({row : 0, col : 5});
+        vim.receiveKey('d');
+        vim.receiveKey('$');
+        expect(vim.get('row')).to.be(0);
+        expect(vim.get('col')).to.be(4);
+
+        // The unnamed register should be set
+        expect(vim.get('registers')['"']['type']).to.be('characterwise');
+        expect(vim.get('registers')['"']['text'].length).to.be(1);
+        expect(vim.get('registers')['"']['text'][0]).to.be('ar baz');
+
+        // The 1 register should not be set.
+        expect(vim.get('registers')['1']).to.be(undefined);
+
+        // The small delete register should be set
+        expect(vim.get('registers')['-']['type']).to.be('characterwise');
+        expect(vim.get('registers')['-']['text'].length).to.be(1);
+        expect(vim.get('registers')['-']['text'][0]).to.be('ar baz');
+    });
+
+    it('dw', function() {
+        LOG.reportTest(this.test.title);
+        var lines = ['foo bar baz'];
+        var linesAfter = ['foo b'];
+
+        vim.get('buffer').set({
+            lines : lines
+        });
+
+        vim.set({row : 0, col : 4});
+        vim.receiveKey('d');
+        vim.receiveKey('w');
+        expect(vim.get('row')).to.be(0);
+        expect(vim.get('col')).to.be(4);
+
+        // The unnamed register should be set
+        expect(vim.get('registers')['"']['type']).to.be('characterwise');
+        expect(vim.get('registers')['"']['text'].length).to.be(1);
+        expect(vim.get('registers')['"']['text'][0]).to.be('bar');
+
+        // The 1 register should not be set.
+        expect(vim.get('registers')['1']).to.be(undefined);
+
+        // The small delete register should be set
+        expect(vim.get('registers')['-']['type']).to.be('characterwise');
+        expect(vim.get('registers')['-']['text'].length).to.be(1);
+        expect(vim.get('registers')['-']['text'][0]).to.be('bar');
+    });
+
+    it('db', function() {
+        LOG.reportTest(this.test.title);
+        var lines = ['foo bar baz'];
+        var linesAfter = ['bar baz'];
+
+        vim.get('buffer').set({
+            lines : lines
+        });
+
+        vim.set({row : 0, col : 4});
+        vim.receiveKey('d');
+        vim.receiveKey('b');
+        expect(vim.get('row')).to.be(0);
+        expect(vim.get('col')).to.be(0);
+
+        // The unnamed register should be set
+        expect(vim.get('registers')['"']['type']).to.be('characterwise');
+        expect(vim.get('registers')['"']['text'].length).to.be(1);
+        expect(vim.get('registers')['"']['text'][0]).to.be('foo');
+
+        // The 1 register should not be set.
+        expect(vim.get('registers')['1']).to.be(undefined);
+
+        // The small delete register should be set
+        expect(vim.get('registers')['-']['type']).to.be('characterwise');
+        expect(vim.get('registers')['-']['text'].length).to.be(1);
+        expect(vim.get('registers')['-']['text'][0]).to.be('foo');
+    });
 });

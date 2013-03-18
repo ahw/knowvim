@@ -132,6 +132,7 @@
   max-height: 300px;
   overflow: auto;
   font-weight:normal;
+  display:none;
 }
 
 #mocha .test pre {

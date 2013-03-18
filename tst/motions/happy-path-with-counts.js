@@ -112,10 +112,6 @@ describe('Motions (happy path with counts)', function() {
     });
 
     it('[count] w motion', function() {
-        vim.get('buffer').set({
-            lines : [ 'foo bar baz', 'foo bar baz', 'foo bar baz' ]
-        });
-        vim.set({row : 1, col : 5});
         var lines = [
             'one two three',
             '     ^       ',
@@ -136,6 +132,31 @@ describe('Motions (happy path with counts)', function() {
         });
         vim.receiveKey('6');
         vim.receiveKey('w');
+        expect(vim.get('row')).to.be(positions.endRow);
+        expect(vim.get('col')).to.be(positions.endCol);
+    });
+
+    it('[count] b motion', function() {
+        var lines = [
+            'one two three',
+            '    ^        ',
+            'one two three',
+            'one two three',
+            '     ^       '
+        ];
+        var positions = TestHelpers.getPositionsFromStrings({
+            lines : lines,
+            higherOrLower : 'lower'
+        });
+        vim.get('buffer').set({
+            lines : TestHelpers.removeCaretsFromStrings(lines)
+        });
+        vim.set({
+            row : positions.startRow,
+            col : positions.startCol
+        });
+        vim.receiveKey('7');
+        vim.receiveKey('b');
         expect(vim.get('row')).to.be(positions.endRow);
         expect(vim.get('col')).to.be(positions.endCol);
     });
@@ -263,5 +284,4 @@ describe('Motions (happy path with counts)', function() {
         expect(vim.get('row')).to.be(positions.endRow);
         expect(vim.get('col')).to.be(positions.endCol);
     });
-
 });
