@@ -1,0 +1,23 @@
+- <C-M> maps to <CR> in NORMAL mode
+- Fixing the annoying spacing that happens in Python comments.
+    - filetype plugin indent on
+- Recording/running macros that case lines to be hard-wrapped
+- Formatting text with gqj
+- set ruler to show row/column numbers
+- Going back to previous edit positions with g; and g,
+- help index to get list of all mappings
+- Fix indenting with =G
+
+- Vim Regular Expressions
+    - Things that need escaping: \( \), \{n}, \+, \=
+    - &  : The whole matched pattern
+    - \0 : The whole matched pattern
+    - \1 : The matched pattern in the first grouping
+    - \n : The matched pattern in the nth grouping
+    - ~  : The previous substitute string
+    - \L : The following characters are lowercased
+    - \U : The following characters are uppercased
+    - \l : The following character is lowercased
+    - \u : The following character is uppercased
+    - \E or \e : End of \U or \L
+    - \r : Newline
