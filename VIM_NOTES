@@ -59,6 +59,7 @@ macros
 
 plugins
     - NERDTree
+        - Refresh file list with r
     - Supertab
     - ctrlp
     - SnipMate
