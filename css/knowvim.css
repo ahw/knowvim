@@ -387,3 +387,19 @@ td.def {
     padding-left:10px;
     font-size:12pt;
 }
+
+.fork-me {
+    font-size:10pt;
+    position:absolute;
+    right:-110px;
+    top:-15px;
+    transform:rotate(45deg);
+    -webkit-transform:rotate(45deg);
+    -o-transform:rotate(45deg);
+    -moz-transform:rotate(45deg);
+}
+
+.fork-me a:hover {
+    color:black;
+    border-bottom:1px dashed black;
+}

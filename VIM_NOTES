@@ -16,6 +16,9 @@ quitting
 quitting without save
 copying
 pasting
+editing a register
+    - :let @x='<C-R><C-R>'
+    - :let x=a;
 copying to specific reg
 pasting from specifc reg
 searching

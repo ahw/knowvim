@@ -59,15 +59,21 @@
 </head>
 
 <body>
+    <pre class="fork-me">
+......................................................
+======================================================
+              <a href="https://github.com/ahw/knowvim" target="_blank">Fork me on Github</a>
+......................................................
+======================================================
+    </pre>
     <div id="main" class="mainbox">
     <h1>
     <?php
 
     if ($_SERVER['SERVER_NAME'] == "dev.knowvim.com") {
-        echo '<span style="color:#c00; font-size:80%">dev .</span>';
+        echo '<span style="color:#777;">dev</span>';
     }
     ?>
-
     <a id="homelink" href="/">know vim</a></span>
     </h1>
     <div id="file_links">
