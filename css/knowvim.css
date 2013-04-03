@@ -128,6 +128,7 @@ html {
 body {
     text-align:center; /* for IE */
     background-color:#DEF5FF;
+    overflow:hidden;
 }
 
 .mainbox {
@@ -388,11 +389,19 @@ td.def {
     font-size:12pt;
 }
 
+#rotate-outer {
+    float:right;
+    margin:0;
+    padding:0;
+}
+
 .fork-me {
     font-size:10pt;
-    position:absolute;
-    right:-110px;
-    top:-15px;
+    font-family:"Monospace",monospace;
+    margin:0;
+    padding:0;
+    float:right;
+    margin-right:-35%;
     transform:rotate(45deg);
     -webkit-transform:rotate(45deg);
     -o-transform:rotate(45deg);
