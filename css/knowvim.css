@@ -128,7 +128,7 @@ html {
 body {
     text-align:center; /* for IE */
     background-color:#DEF5FF;
-    overflow:hidden;
+    overflow-x:hidden;
 }
 
 .mainbox {
