@@ -29,33 +29,33 @@
     <script type="text/javascript" src="/js/knowvim-ui.js"></script>
     <script type="text/javascript" src="/js/knowvim.js"></script>
     -->
-    <script type="text/javascript" src="/js/application/util/Helpers.js"></script>
-    <script type="text/javascript" src="/js/application/util/Logger.js"></script>
-    <script type="text/javascript" src="/js/application/util/KeystrokeLogger.js"></script>
-    <script type="text/javascript" src="/js/application/tokenizer/Token.js"></script>
-    <script type="text/javascript" src="/js/application/tokenizer/Tokenizer.js"></script>
-    <script type="text/javascript" src="/js/application/parser/NormalParser.js"></script>
-    <script type="text/javascript" src="/js/application/parser/CmdlineParser.js"></script>
-    <script type="text/javascript" src="/js/application/motion/Motions.js"></script>
-    <script type="text/javascript" src="/js/application/motion/WordMotions.js"></script>
-    <script type="text/javascript" src="/js/application/motion/ObjectMotions.js"></script>
-    <script type="text/javascript" src="/js/application/motion/JumpMotions.js"></script>
-    <script type="text/javascript" src="/js/application/util/Positioning.js"></script>
-    <script type="text/javascript" src="/js/application/util/KeyboardOperations.js"></script>
-    <script type="text/javascript" src="/js/application/operations/YankOperations.js"></script>
-    <script type="text/javascript" src="/js/application/operations/DeleteOperations.js"></script>
-    <script type="text/javascript" src="/js/application/operations/MarkOperations.js"></script>
-    <script type="text/javascript" src="/js/application/operations/PutOperations.js"></script>
-    <script type="text/javascript" src="/js/application/util/Macros.js"></script>
-    <script type="text/javascript" src="/js/application/util/Colors.js"></script>
+    <script type="text/javascript" src="/js/build/util/Helpers.js"></script>
+    <script type="text/javascript" src="/js/build/util/Logger.js"></script>
+    <script type="text/javascript" src="/js/build/util/KeystrokeLogger.js"></script>
+    <script type="text/javascript" src="/js/build/tokenizer/Token.js"></script>
+    <script type="text/javascript" src="/js/build/tokenizer/Tokenizer.js"></script>
+    <script type="text/javascript" src="/js/build/parser/NormalParser.js"></script>
+    <script type="text/javascript" src="/js/build/parser/CmdlineParser.js"></script>
+    <script type="text/javascript" src="/js/build/motion/Motions.js"></script>
+    <script type="text/javascript" src="/js/build/motion/WordMotions.js"></script>
+    <script type="text/javascript" src="/js/build/motion/ObjectMotions.js"></script>
+    <script type="text/javascript" src="/js/build/motion/JumpMotions.js"></script>
+    <script type="text/javascript" src="/js/build/util/Positioning.js"></script>
+    <script type="text/javascript" src="/js/build/util/KeyboardOperations.js"></script>
+    <script type="text/javascript" src="/js/build/operations/YankOperations.js"></script>
+    <script type="text/javascript" src="/js/build/operations/DeleteOperations.js"></script>
+    <script type="text/javascript" src="/js/build/operations/MarkOperations.js"></script>
+    <script type="text/javascript" src="/js/build/operations/PutOperations.js"></script>
+    <script type="text/javascript" src="/js/build/util/Macros.js"></script>
+    <script type="text/javascript" src="/js/build/util/Colors.js"></script>
 
-    <script type="text/javascript" src="/js/application/models/Buffer.js"></script>
-    <script type="text/javascript" src="/js/application/handlers/NormalHandler.js"></script>
-    <script type="text/javascript" src="/js/application/handlers/InsertHandler.js"></script>
-    <script type="text/javascript" src="/js/application/handlers/CmdlineHandler.js"></script>
-    <script type="text/javascript" src="/js/application/models/Vim.js"></script>
-    <script type="text/javascript" src="/js/application/views/Application.js"></script>
-    <script type="text/javascript" src="/js/application/views/Editor.js"></script>
+    <script type="text/javascript" src="/js/build/models/Buffer.js"></script>
+    <script type="text/javascript" src="/js/build/handlers/NormalHandler.js"></script>
+    <script type="text/javascript" src="/js/build/handlers/InsertHandler.js"></script>
+    <script type="text/javascript" src="/js/build/handlers/CmdlineHandler.js"></script>
+    <script type="text/javascript" src="/js/build/models/Vim.js"></script>
+    <script type="text/javascript" src="/js/build/views/Application.js"></script>
+    <script type="text/javascript" src="/js/build/views/Editor.js"></script>
 </head>
 
 <body>
