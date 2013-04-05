@@ -87,7 +87,16 @@ var Helpers = {
         EMPTY : /^$/,
         SPECIAL : /[^\w\s]/,
         NON_BLANK : /[^\s]/
+    },
+
+    smallWordTokenTypes : {
+        SPECIAL : 'SPECIAL', // Things that aren't alphanumeric
+        ALPHA_NUM : 'ALPHA_NUM', // I.e., a-zA-Z0-9_
+        EMPTY_LINE : 'EMPTY_LINE' // Empty lines: ""
+    },
+
+    bigWordTokenTypes : {
+        NON_BLANK : 'NON_BLANK',
+        EMPTY_LINE : 'EMPTY_LINE'
     }
-
-
 };
