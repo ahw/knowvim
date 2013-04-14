@@ -90,10 +90,10 @@ var Helpers = {
     },
 
     smallWordTokenRegexps : {
-        SPECIAL : '/[^\w\s]/', // Things that aren't alphanumeric
-        ALPHA_NUM : '/\w/', // I.e., a-zA-Z0-9_
-        EMPTY_LINE : '/^$/', // Empty lines: ""
-        WHITESPACE : '/\s/'
+        SPECIAL    : /[^\w\s]/, // Things that aren't alphanumeric
+        ALPHA_NUM  : /\w/, // I.e., a-zA-Z0-9_
+        EMPTY_LINE : /^$/, // Empty lines: ""
+        WHITESPACE : /\s/
     },
 
     smallWordTokenTypes : {
