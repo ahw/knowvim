@@ -34,6 +34,7 @@
     <script type="text/javascript" src="/js/build/util/KeystrokeLogger.js"></script>
     <script type="text/javascript" src="/js/build/tokenizer/Token.js"></script>
     <script type="text/javascript" src="/js/build/tokenizer/Tokenizer.js"></script>
+    <script type="text/javascript" src="/js/build/tokenizer/WordTokenizer.js"></script>
     <script type="text/javascript" src="/js/build/parser/NormalParser.js"></script>
     <script type="text/javascript" src="/js/build/parser/CmdlineParser.js"></script>
     <script type="text/javascript" src="/js/build/motion/Motions.js"></script>
