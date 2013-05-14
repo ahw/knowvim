@@ -1,4 +1,4 @@
-all:
+all: setup
 	cp -rf js/application/* js/build/
 	find js/build -name "*.coffee" | xargs rm -f
 	coffee --compile --output js/build/ js/application/
@@ -11,12 +11,16 @@ clean:
 	rm -rf js/build/*
 	rm -rf js/build-tst/*
 
-compile:
+compile: setup
 	coffee --compile --output js/build/ js/application/
 	coffee --compile --output js/build-tst/ js/application-tst/
 
-watch:
+watch: setup
 	coffee --compile --watch --output js/build/ js/application/
 
-watch-test:
+watch-test: setup
 	coffee --compile --watch --output js/build-tst/ js/tst/
+
+setup:
+	mkdir -p js/build
+	mkdir -p js/build-tst

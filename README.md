@@ -26,7 +26,8 @@ Although it's not in a releasable state yet, you can demo the tip of
 * http://dev.knowvim.com?log=all will emit log messages from all modules.
   If you want individual modules you can specify one or more of the modules
   listed below. To include multiple modules just separate them with a
-  semicolon. E.g., `?log=normal` or `?log=normal;parser;tokenizer`.
+  semicolon. E.g., `?log=normal` or `?log=normal;parser;tokenizer`. Possible
+  modules include:
   * `vim`
   * `view`
   * `motion`
@@ -48,3 +49,8 @@ Although it's not in a releasable state yet, you can demo the tip of
 * http://dev.knowvim.com?macro=jjkd2l will run whatever arbitrary sequence
   of characters you associate with the `macro` query parameter as if they
   were typed into the editor starting from NORMAL mode.
+
+Tests
+-----
+I've started writing some unit tests. They run in the browser and are
+available at http://dev.knowvim.com/test.php.
