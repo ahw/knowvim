@@ -13,7 +13,7 @@ clean:
 
 compile: setup
 	coffee --compile --output js/build/ js/application/
-	coffee --compile --output js/build-tst/ js/application-tst/
+	coffee --compile --output js/build-tst/ js/tst/
 
 watch: setup
 	coffee --compile --watch --output js/build/ js/application/
