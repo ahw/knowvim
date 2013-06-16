@@ -21,6 +21,18 @@ watch: setup
 watch-test: setup
 	coffee --compile --watch --output js/build-tst/ js/tst/
 
+
 setup:
 	mkdir -p js/build
 	mkdir -p js/build-tst
+
+help:
+	@echo "Possible targets include:"
+	@echo ""
+	@echo "    all (default) : Build all application and test JavaScript"
+	@echo "    clean         : Clean (remove) both js/build/* and js/build-tst/*"
+	@echo "    compile       : One-time compile both application and test CoffeeScript"
+	@echo "    watch         : Compile and watch application CoffeeScript"
+	@echo "    watch-test    : Compile and watch test CoffeeScript"
+	@echo "    help          : Print this help text"
+	@echo ""
