@@ -1,8 +1,12 @@
 knowvim
 =======
 
-A Vim web demo.  http://knowvim.com aims to provide a friendly introduction
-to beginners fresh off their first Google searches on the subject.
+A Vim web demo. http://knowvim.com aims to provide a friendly introduction
+to beginners fresh off their first Google searches on the subject. It was
+a fun thing that I worked on for a while just because I could, but no longer
+really make time for. Although it's unfinished, I'm particularly proud of
+http://dev.knowvim.com?log=all, which represents a fairly significant refactoring
+of what began at http://knowvim.com.
 
 Background
 ----------
@@ -14,8 +18,8 @@ tokenizer and parser that I think will do a much better job of treating the
 set of NORMAL commands as a language, rather than simply a collection of
 discrete movements and operations. So whereas the old version at
 http://knowvim.com required additional implementation for every particular
-d{motion} or y{motion} I wanted to handle, the most recent code separates
-the {motion} logic entirely and makes it easy to add new motions and have
+`d{motion}` or `y{motion}` I wanted to handle, the most recent code separates
+the `{motion}` logic entirely and makes it easy to add new motions and have
 them "just work" with delete and yank operations.
 
 Demo
