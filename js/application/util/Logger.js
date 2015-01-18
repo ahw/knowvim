@@ -74,6 +74,7 @@ var Logger = function(args) {
     };
 
     this.error = function(msg, obj) {
+        toastr.error(msg + '. You may have to refresh the page.');
         this.printMessage('error', msg, obj);
     };
 
