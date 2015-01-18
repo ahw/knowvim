@@ -74,7 +74,11 @@ var Logger = function(args) {
     };
 
     this.error = function(msg, obj) {
-        toastr.error(msg + '. You may have to refresh the page.');
+        var toastMsg = msg;
+        try {
+            toastMsg += ' ' + obj.toString();
+        } catch(e) {}
+        toastr.error(toastMsg);
         this.printMessage('error', msg, obj);
     };
 

@@ -1,0 +1,22 @@
+.toast-top-center {
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+}
+
+#toast-container>.toast-error {
+    background-color: #c00;
+    background-image: none !important;
+    background-repeat: no-repeat;
+    background-position: top right;
+}
+
+#toast-container {
+    font-family:"Monospace", monospace;
+    font-size:10pt;
+    text-align:left;
+}
+
+#toast-container > div {
+    padding:15px;
+}
