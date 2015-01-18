@@ -60,7 +60,7 @@ img {
 }
 
 h1 {
-    margin-bottom:0px;
+    margin-bottom:15px;
     text-align:center;
 }
 
@@ -389,7 +389,9 @@ td.def {
 }
 
 #rotate-outer {
-    float:right;
+    position:absolute;
+    right:0;
+    top:0;
     margin:0;
     padding:0;
 }

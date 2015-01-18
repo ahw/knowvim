@@ -44,21 +44,7 @@ pre {
     margin-left:-0.5em;
 }
 
-a#homelink {
-    text-decoration:none;
-}
-
-a#homelink:visited {
-    color:#555;
-}
-a#homelink:hover {
-    color:#555;
-}
-a#homelink:visited {
-    color:#555;
-}
-a#homelink:active {
-    color:#555;
+#homelink {
 }
 
 .tagname {
