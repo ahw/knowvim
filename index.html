@@ -29,38 +29,34 @@
     <script type="text/javascript" src="js/lib/deep-model.js"></script>
     <script type="text/javascript" src="js/lib/sprintf.js"></script>
 
-    <!--
-    <script type="text/javascript" src="js/knowvim-ui.js"></script>
-    <script type="text/javascript" src="js/knowvim.js"></script>
-    -->
-    <script type="text/javascript" src="js/build/util/Helpers.js"></script>
-    <script type="text/javascript" src="js/build/util/Logger.js"></script>
-    <script type="text/javascript" src="js/build/util/KeystrokeLogger.js"></script>
-    <script type="text/javascript" src="js/build/tokenizer/Token.js"></script>
-    <script type="text/javascript" src="js/build/tokenizer/Tokenizer.js"></script>
-    <script type="text/javascript" src="js/build/tokenizer/WordTokenizer.js"></script>
-    <script type="text/javascript" src="js/build/parser/NormalParser.js"></script>
-    <script type="text/javascript" src="js/build/parser/CmdlineParser.js"></script>
-    <script type="text/javascript" src="js/build/motion/Motions.js"></script>
-    <script type="text/javascript" src="js/build/motion/WordMotions.js"></script>
-    <script type="text/javascript" src="js/build/motion/ObjectMotions.js"></script>
-    <script type="text/javascript" src="js/build/motion/JumpMotions.js"></script>
-    <script type="text/javascript" src="js/build/util/Positioning.js"></script>
-    <script type="text/javascript" src="js/build/util/KeyboardOperations.js"></script>
-    <script type="text/javascript" src="js/build/operations/YankOperations.js"></script>
-    <script type="text/javascript" src="js/build/operations/DeleteOperations.js"></script>
-    <script type="text/javascript" src="js/build/operations/MarkOperations.js"></script>
-    <script type="text/javascript" src="js/build/operations/PutOperations.js"></script>
-    <script type="text/javascript" src="js/build/util/Macros.js"></script>
-    <script type="text/javascript" src="js/build/util/Colors.js"></script>
+    <script type="text/javascript" src="js/application/util/Helpers.js"></script>
+    <script type="text/javascript" src="js/application/util/Logger.js"></script>
+    <script type="text/javascript" src="js/application/util/KeystrokeLogger.js"></script>
+    <script type="text/javascript" src="js/application/tokenizer/Token.js"></script>
+    <script type="text/javascript" src="js/application/tokenizer/Tokenizer.js"></script>
+    <script type="text/javascript" src="js/application/tokenizer/WordTokenizer.js"></script>
+    <script type="text/javascript" src="js/application/parser/NormalParser.js"></script>
+    <script type="text/javascript" src="js/application/parser/CmdlineParser.js"></script>
+    <script type="text/javascript" src="js/application/motion/Motions.js"></script>
+    <script type="text/javascript" src="js/application/motion/WordMotions.js"></script>
+    <script type="text/javascript" src="js/application/motion/ObjectMotions.js"></script>
+    <script type="text/javascript" src="js/application/motion/JumpMotions.js"></script>
+    <script type="text/javascript" src="js/application/util/Positioning.js"></script>
+    <script type="text/javascript" src="js/application/util/KeyboardOperations.js"></script>
+    <script type="text/javascript" src="js/application/operations/YankOperations.js"></script>
+    <script type="text/javascript" src="js/application/operations/DeleteOperations.js"></script>
+    <script type="text/javascript" src="js/application/operations/MarkOperations.js"></script>
+    <script type="text/javascript" src="js/application/operations/PutOperations.js"></script>
+    <script type="text/javascript" src="js/application/util/Macros.js"></script>
+    <script type="text/javascript" src="js/application/util/Colors.js"></script>
 
-    <script type="text/javascript" src="js/build/models/Buffer.js"></script>
-    <script type="text/javascript" src="js/build/handlers/NormalHandler.js"></script>
-    <script type="text/javascript" src="js/build/handlers/InsertHandler.js"></script>
-    <script type="text/javascript" src="js/build/handlers/CmdlineHandler.js"></script>
-    <script type="text/javascript" src="js/build/models/Vim.js"></script>
-    <script type="text/javascript" src="js/build/views/Application.js"></script>
-    <script type="text/javascript" src="js/build/views/Editor.js"></script>
+    <script type="text/javascript" src="js/application/models/Buffer.js"></script>
+    <script type="text/javascript" src="js/application/handlers/NormalHandler.js"></script>
+    <script type="text/javascript" src="js/application/handlers/InsertHandler.js"></script>
+    <script type="text/javascript" src="js/application/handlers/CmdlineHandler.js"></script>
+    <script type="text/javascript" src="js/application/models/Vim.js"></script>
+    <script type="text/javascript" src="js/application/views/Application.js"></script>
+    <script type="text/javascript" src="js/application/views/Editor.js"></script>
 </head>
 
 <body>
@@ -105,24 +101,20 @@ Enjoy!</p>
 <pre class="num"> 18</pre><pre class="line"> </pre>
 <pre class="num"> 19</pre><pre class="line"> </pre>
 <pre class="num"> 20</pre><pre class="line"> </pre>
-</div> <!-- end #buffer -->
+</div>
 
     <div id="bottom_bar">
         <pre id="statusbar"></pre><pre id="row">1</pre><pre>,</pre><pre id="col">1</pre>
-    </div> <!-- end #bottom_bar -->
+    </div>
 
     <div id="console">
     </div>
-</div> <!-- end #vimwindow -->
-
-<div style="text-align:center">
-<!-- <a class="panel_link" id="settings_show_link" href="#">Show settings.</a> -->
-<!-- <a class="panel_link" id="basic_commands_panel_show_link" href="#">Show basic commands.</a> -->
-<!-- <a class="panel_link" id="advanced_commands_panel_show_link" href="#">Show advanced commands.</a> -->
-<!-- <a class="panel_link" id="instruction_panel_show_link" href="#">Show instructions.</a> -->
 </div>
 
-</div> <!-- end #main -->
+<div style="text-align:center">
+</div>
+
+</div>
   
 <div id="write_output" class="mainbox">
 <span style="color:#D00; font-size:8pt">Use this panel to copy text.  Turn
@@ -140,12 +132,6 @@ https://github.com/ahw/knowvim
 <a href="test.html" style="color:#555; padding-bottom:1em; font-size:8pt">
 browser tests
 </a>
-
-<!-- <a class="panel_link" href="about.php">about</a> -->
-<!-- <a class="panel_link" href="faq.php">faq</a> -->
-<!-- <a class="panel_link" href="contact.php">contact</a> -->
-<!-- <a class="panel_link" href="devnotes.php">dev_notes</a> -->
-
+<script src="js/init.js"></script>
 </body>
 </html>
-<script src="js/init.js"></script>
