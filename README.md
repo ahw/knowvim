@@ -1,12 +1,12 @@
 knowvim
 =======
 
-A Vim web demo that used to exist at http://knowvim.com. It's aim was to
-provide a friendly introduction to beginners fresh off their first "vim"
-Google searches, and I thought maybe it could be worked into some sort of
-Chrome extension or integrated into the ACE editor or something. Ultimately,
-it was a fun thing that I worked on for a while just because I could, but
-something I no longer really make time for.
+A Vim web demo that now exists at https://ahw.github.io/knowvim. Originally,
+this project's aim was to provide a friendly introduction to beginners fresh
+off their first "vim" Google searches, and I thought maybe it could be
+worked into some sort of Chrome extension or integrated into the ACE editor
+or something. Ultimately, it was a fun thing that I worked on for a while
+just because I could, but something I no longer really make time for.
 
 Demo
 ----
